@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Order Qty: Quantity requested
 /// </summary>

@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Iex.Deep;
+
 /// <summary>
 ///  Adjusted Poc Price: Corporate action adjusted previous official closing price
 /// </summary>

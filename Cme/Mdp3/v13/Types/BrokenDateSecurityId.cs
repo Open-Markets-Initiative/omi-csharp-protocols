@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Broken Date Security Id: Broken date Instrument Globex Security ID
 /// </summary>

@@ -19,7 +19,7 @@ public partial class MarketStateChangeMessage
     public TradingStatus TradingStatus => Fields.TradingStatus.Value;
 
     /// <summary>
-    ///  Date time the trade was investigated. Milliseconds since Jan 1st, 1970, 00:00:00 GMT
+    ///  Date time the trade was investigated
     /// </summary>
     public DateTime MessageDateTime => Fields.MessageDateTime.Value;
 

@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Eurex.Eobi;
+
 /// <summary>
 ///  Packet Sequence Number: Packet Sequence Number
 /// </summary>

@@ -24,9 +24,9 @@ public partial class DeletePriceLevelMessage
     public sbyte PriceLevelPosition => Fields.PriceLevelPosition.Value;
 
     /// <summary>
-    ///  Timestamp of last update used to derive the price level message. The format is nanoseconds since
+    ///  Timestamp of last update used to derive the price level message
     /// </summary>
-    public long Timestamp => Fields.Timestamp.Value;
+    public DateTime Timestamp => Fields.Timestamp.Value;
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct Layout

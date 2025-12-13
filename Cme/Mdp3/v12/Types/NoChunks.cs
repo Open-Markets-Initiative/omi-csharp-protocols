@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  No Chunks: Total number of packets that constitutes a single instrument order book
 /// </summary>

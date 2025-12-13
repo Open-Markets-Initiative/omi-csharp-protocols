@@ -9,24 +9,19 @@ using System.Runtime.CompilerServices;
 public sealed class QuoteUpdateFlags
 {
     /// <summary>
-    ///  Unused 4
+    ///  Unused 6
     /// </summary>
-    public const byte Unused4 = 1 << 0;
-
-    /// <summary>
-    ///  Symbol Availability
-    /// </summary>
-    public const byte SymbolAvailability = 1 << 4;
+    public const byte Unused6 = 1 << 0;
 
     /// <summary>
     ///  Market Session
     /// </summary>
-    public const byte MarketSession = 1 << 5;
+    public const byte MarketSession = 1 << 6;
 
     /// <summary>
-    ///  Unused 2
+    ///  Symbol Availability
     /// </summary>
-    public const byte Unused2 = 1 << 6;
+    public const byte SymbolAvailability = 1 << 7;
 
     /// <summary>
     ///  Length of Quote Update Flags in bytes

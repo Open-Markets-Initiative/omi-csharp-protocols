@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3
 {
+
     /// <summary>
     ///  Trading Reference Price: Reference price for prelisted instruments or the last calculated Settlement whether it be Theoretical, Preliminary or a Final Settle of the session.
     /// </summary>

@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Iex.Deep;
+
 /// <summary>
 ///  Auction Book Clearing Price: Clearing price using orders on the Auction Book
 /// </summary>

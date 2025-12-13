@@ -34,7 +34,7 @@ public partial class OldStyleOptionsTradeAndMarketStatsMessage
     public char OldOffMarketTradeType => Fields.OldOffMarketTradeType.Value;
 
     /// <summary>
-    ///  Deal date time. Milliseconds since Jan 1st, 1970,
+    ///  Deal date time
     /// </summary>
     public DateTime TransactDateTime => Fields.TransactDateTime.Value;
 

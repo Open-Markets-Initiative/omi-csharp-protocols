@@ -24,12 +24,12 @@ public partial class OpenInterestMessage
     public int OpenInterestChange => Fields.OpenInterestChange.Value;
 
     /// <summary>
-    ///  Date time the trade was investigated. Milliseconds since Jan 1st, 1970, 00:00:00 GMT
+    ///  Date time the trade was investigated
     /// </summary>
     public DateTime MessageDateTime => Fields.MessageDateTime.Value;
 
     /// <summary>
-    ///  The date Open Interest is effective for, in the format of YYYY-MM-DD.
+    ///  The date Open Interest is effective for
     /// </summary>
     public string OpenInterestDate => Fields.OpenInterestDate.Value;
 

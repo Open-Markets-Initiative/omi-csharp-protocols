@@ -5,7 +5,7 @@ namespace Ice.iMpact
 {
 
     /// <summary>
-    ///  Transact Date Time: Deal date time. Milliseconds since Jan 1st, 1970,
+    ///  Transact Date Time: Deal date time
     /// </summary>
 
     public struct TransactDateTime

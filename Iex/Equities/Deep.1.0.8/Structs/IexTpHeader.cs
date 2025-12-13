@@ -3,13 +3,13 @@ using System.Runtime.InteropServices;
 namespace Iex.Deep;
 
 /// <summary>
-///  Iex Tp Header
+///  Iextp Header: IexTp packet header
 /// </summary>
 
-public partial class IexTpHeader
+public partial class IextpHeader
 {
     /// <summary>
-    ///  Version of Transport specification
+    ///  Version of transport specification
     /// </summary>
     public byte Version => Fields.Version.Value;
 
@@ -19,7 +19,7 @@ public partial class IexTpHeader
     public string Reserved => Fields.Reserved.Value;
 
     /// <summary>
-    ///  Unique identifier of the higher-layer protocol
+    ///  Unique identifier of the higher layer protocol
     /// </summary>
     public ushort MessageProtocolId => Fields.MessageProtocolId.Value;
 

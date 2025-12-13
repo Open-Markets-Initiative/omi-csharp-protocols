@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Alt Min Quote Life: MQL duration in number of microseconds applied to orders at AltMinPriceIncrement
 /// </summary>

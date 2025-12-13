@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Rpt Seq: Sequence number of the last Market Data entry processed for the instrument
 /// </summary>

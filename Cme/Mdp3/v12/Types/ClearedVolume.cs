@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Cleared Volume: The total cleared volume of instrument traded during the prior trading session.
 /// </summary>

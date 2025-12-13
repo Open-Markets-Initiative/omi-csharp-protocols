@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Iex.Tops;
+
 /// <summary>
 ///  Bid Size: Aggregate quoted best bid size
 /// </summary>

@@ -1,12 +1,18 @@
 using System.Runtime.CompilerServices;
 
 namespace Iex.Tops;
+
 /// <summary>
-///  Message Protocol Id: Unique identifier of the higher-layer protocol
+///  Message Protocol Id: Unique identifier of the higher layer protocol
 /// </summary>
 
 public struct MessageProtocolId
 {
+    /// <summary>
+    ///  Required value for Message Protocol Id
+    /// </summary>
+    public const ushort StaticValue = 32771;
+
     /// <summary>
     ///  Size of Message Protocol Id in bytes
     /// </summary>

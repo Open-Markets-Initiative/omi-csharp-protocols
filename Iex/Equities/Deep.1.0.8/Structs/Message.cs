@@ -9,7 +9,7 @@ namespace Iex.Deep;
 public partial class Message
 {
     /// <summary>
-    ///  Message Header
+    ///  IexTp message header
     /// </summary>
     public string MessageHeader => Fields.MessageHeader.Value;
 

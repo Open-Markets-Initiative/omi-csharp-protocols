@@ -3,13 +3,13 @@ using System.Runtime.InteropServices;
 namespace Eurex.Eobi;
 
 /// <summary>
-///  Packet
+///  Packet: Eurex Eobi Packet
 /// </summary>
 
 public partial class Packet
 {
     /// <summary>
-    ///  Packet Header
+    ///  Eurex Eobi Packet Header
     /// </summary>
     public string PacketHeader => Fields.PacketHeader.Value;
 

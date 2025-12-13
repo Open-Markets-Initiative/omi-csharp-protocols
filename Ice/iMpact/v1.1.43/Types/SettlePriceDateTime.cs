@@ -5,7 +5,7 @@ namespace Ice.iMpact
 {
 
     /// <summary>
-    ///  Settle Price Date Time: Milliseconds since Jan 1st, 1970, 00:00:00 GMT. If there is no settlement price, the value is -1.
+    ///  Settle Price Date Time: Settlement price time
     /// </summary>
 
     public struct SettlePriceDateTime

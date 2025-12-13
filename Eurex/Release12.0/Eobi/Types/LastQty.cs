@@ -2,8 +2,9 @@ using System.Runtime.CompilerServices;
 
 namespace Eurex.Eobi
 {
+
     /// <summary>
-    ///  Last Qty: Total executed matched quantity of this match event
+    ///  Last Qty
     /// </summary>
 
     public struct LastQty

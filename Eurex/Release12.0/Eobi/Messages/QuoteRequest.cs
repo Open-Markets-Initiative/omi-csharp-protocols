@@ -9,12 +9,12 @@ namespace Eurex.Eobi;
 public partial class QuoteRequest
 {
     /// <summary>
-    ///  Unique instrument identifier
+    ///  Security Id
     /// </summary>
     public long SecurityId => Fields.SecurityId.Value;
 
     /// <summary>
-    ///  Total executed matched quantity of this match event
+    ///  Last Qty
     /// </summary>
     public ulong LastQty => Fields.LastQty.Value;
 

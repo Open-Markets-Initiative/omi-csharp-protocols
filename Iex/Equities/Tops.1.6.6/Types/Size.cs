@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Iex.Tops;
+
 /// <summary>
 ///  Size: Trade volume
 /// </summary>

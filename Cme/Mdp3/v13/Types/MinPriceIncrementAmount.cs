@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3
 {
+
     /// <summary>
     ///  Min Price Increment Amount: Monetary value equivalent to the minimum price fluctuation
     /// </summary>

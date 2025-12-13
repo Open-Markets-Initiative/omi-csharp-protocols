@@ -84,12 +84,12 @@ public partial class NewExpiryMessage
     public string ClearedAlias => Fields.ClearedAlias.Value;
 
     /// <summary>
-    ///  Minimum Price. OrderPriceDenominator should be applied to this field.
+    ///  Minimum Price, OrderPriceDenominator should be applied to this field
     /// </summary>
     public long MinPrice => Fields.MinPrice.Value;
 
     /// <summary>
-    ///  Maximum Price. OrderPriceDenominator should be applied to this field.
+    ///  Maximum Price, OrderPriceDenominator should be applied to this field
     /// </summary>
     public long MaxPrice => Fields.MaxPrice.Value;
 

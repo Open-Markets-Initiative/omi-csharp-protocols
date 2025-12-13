@@ -49,7 +49,7 @@ public partial class AddOrModifyOrderMessage
     public IsRfq IsRfq => Fields.IsRfq.Value;
 
     /// <summary>
-    ///  Order entry date time. Milliseconds since Jan 1st, 1970, 00:00:00 GMT.
+    ///  Order entry date time
     /// </summary>
     public DateTime OrderEntryDateTime => Fields.OrderEntryDateTime.Value;
 
@@ -66,12 +66,12 @@ public partial class AddOrModifyOrderMessage
     /// <summary>
     ///  This field can be used to get the order modification time
     /// </summary>
-    public long ModificationTimestamp => Fields.ModificationTimestamp.Value;
+    public DateTime ModificationTimestamp => Fields.ModificationTimestamp.Value;
 
     /// <summary>
-    ///  This field can be used to get the time the trading engine received the request that triggers this message
+    ///  time the trading engine received the request that triggers this message
     /// </summary>
-    public long RequestTradingEngineReceivedTimestamp => Fields.RequestTradingEngineReceivedTimestamp.Value;
+    public DateTime RequestTradingEngineReceivedTimestamp => Fields.RequestTradingEngineReceivedTimestamp.Value;
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct Layout

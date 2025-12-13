@@ -31,12 +31,12 @@ public partial class SnapshotFullRefreshLongQty
     /// <summary>
     ///  Start of event processing time in number of nanoseconds since Unix epoch
     /// </summary>
-    public ulong TransactTime => Fields.TransactTime.Value;
+    public DateTime TransactTime => Fields.TransactTime.Value;
 
     /// <summary>
     ///  UTC Date and time of last Security Definition add, update or delete on a given Market Data channel
     /// </summary>
-    public ulong LastUpdateTime => Fields.LastUpdateTime.Value;
+    public DateTime LastUpdateTime => Fields.LastUpdateTime.Value;
 
     /// <summary>
     ///  Trade Session Date

@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Md Order Priority Optional: Order priority for execution on the order book
 /// </summary>

@@ -49,7 +49,7 @@ public partial class MarketSnapshotOrderMessage
     public IsRfq IsRfq => Fields.IsRfq.Value;
 
     /// <summary>
-    ///  Order entry date time. Milliseconds since Jan 1st, 1970, 00:00:00 GMT.
+    ///  Order entry date time
     /// </summary>
     public DateTime OrderEntryDateTime => Fields.OrderEntryDateTime.Value;
 

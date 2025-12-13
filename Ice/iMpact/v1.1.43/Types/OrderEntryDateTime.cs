@@ -5,7 +5,7 @@ namespace Ice.iMpact
 {
 
     /// <summary>
-    ///  Order Entry Date Time: Order entry date time. Milliseconds since Jan 1st, 1970, 00:00:00 GMT.
+    ///  Order Entry Date Time: Order entry date time
     /// </summary>
 
     public struct OrderEntryDateTime

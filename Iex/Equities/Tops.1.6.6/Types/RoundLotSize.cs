@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Iex.Tops;
+
 /// <summary>
 ///  Round Lot Size: Number of shares that represent a round lot
 /// </summary>

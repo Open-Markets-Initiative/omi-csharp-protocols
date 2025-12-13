@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Iex.Deep;
+
 /// <summary>
 ///  Payload Length: Byte length of the payload
 /// </summary>

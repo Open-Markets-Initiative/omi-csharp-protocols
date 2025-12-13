@@ -9,7 +9,7 @@ namespace Eurex.Eobi;
 public partial class TradeReport
 {
     /// <summary>
-    ///  Unique instrument identifier
+    ///  Security Id
     /// </summary>
     public long SecurityId => Fields.SecurityId.Value;
 
@@ -19,7 +19,7 @@ public partial class TradeReport
     public DateTime TransactTime => Fields.TransactTime.Value;
 
     /// <summary>
-    ///  Total executed matched quantity of this match event
+    ///  Last Qty
     /// </summary>
     public ulong LastQty => Fields.LastQty.Value;
 

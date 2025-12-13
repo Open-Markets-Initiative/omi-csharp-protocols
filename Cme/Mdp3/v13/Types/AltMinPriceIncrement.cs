@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3
 {
+
     /// <summary>
     ///  Alt Min Price Increment: New sub-tick which is only available for order entry when certain conditions are met, tick value which corresponds to the Alt Min Quote Life
     /// </summary>

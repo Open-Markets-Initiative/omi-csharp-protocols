@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 namespace Ice.iMpact;
 
 /// <summary>
-///  Max Price: Maximum Price. OrderPriceDenominator should be applied to this field.
+///  Max Price: Maximum Price, OrderPriceDenominator should be applied to this field
 /// </summary>
 
 public struct MaxPrice

@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Iex.Tops;
+
 /// <summary>
 ///  Ask Price: Best quoted ask price
 /// </summary>

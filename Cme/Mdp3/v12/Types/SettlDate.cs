@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Settl Date: Settle (Value) Date corresponding to Trade Date
 /// </summary>

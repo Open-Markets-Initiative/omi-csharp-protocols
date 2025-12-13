@@ -1,40 +1,39 @@
-using System.Runtime.CompilerServices;
-
 namespace Ice.iMpact;
 
 /// <summary>
-///  Special Field Id: Special Field Identifier
+///  Special Field Id: Special field type
 /// </summary>
 
-public struct SpecialFieldId
+public enum SpecialFieldId : sbyte
 {
     /// <summary>
-    ///  Length of Special Field Id in bytes
+    ///  Eris Futures Price
     /// </summary>
-    public const int Size = 1;
+    AltPrice = 1,
 
     /// <summary>
-    ///  Read Special Field Id
+    ///  High Eris Futures Price
     /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte Decode()
-        => Byte;
+    AltHighPrice = 2,
 
     /// <summary>
-    ///  Write Special Field Id
+    ///  Low Eris Futures Price
     /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Encode(byte value)
-        => Byte = value;
+    AltLowPrice = 3,
 
     /// <summary>
-    ///  Special Field Id as string
+    ///  Volume-weighted Average Eris Futures Price
     /// </summary>
-    public readonly override string ToString()
-        => $"{Decode()}";
+    AltVwap = 4,
 
     /// <summary>
-    ///  Underlying byte
+    ///  Last Trade Eris Futures Price
     /// </summary>
-    internal byte Byte;
+    AltLastTradePrice = 5,
+
+    /// <summary>
+    ///  Order is All-Or-None
+    /// </summary>
+    Aon = 6,
+
 }

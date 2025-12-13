@@ -26,7 +26,7 @@ public partial class MdInstrumentDefinitionOption
     /// <summary>
     ///  UTC Date and time of last Security Definition add, update or delete on a given Market Data channel
     /// </summary>
-    public ulong LastUpdateTime => Fields.LastUpdateTime.Value;
+    public DateTime LastUpdateTime => Fields.LastUpdateTime.Value;
 
     /// <summary>
     ///  Identifies the current trading state of the instrument

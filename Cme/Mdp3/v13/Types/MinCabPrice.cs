@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3
 {
+
     /// <summary>
     ///  Min Cab Price: Defines cabinet price for outright options products
     /// </summary>

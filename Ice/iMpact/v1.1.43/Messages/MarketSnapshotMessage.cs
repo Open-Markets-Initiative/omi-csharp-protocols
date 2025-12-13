@@ -89,12 +89,12 @@ public partial class MarketSnapshotMessage
     public int LastTradeQuantity => Fields.LastTradeQuantity.Value;
 
     /// <summary>
-    ///  Milliseconds since Jan 1st, 1970, 00:00:00 GMT
+    ///  time of last trade
     /// </summary>
     public DateTime LastTradeDateTime => Fields.LastTradeDateTime.Value;
 
     /// <summary>
-    ///  Milliseconds since Jan 1st, 1970, 00:00:00 GMT. If there is no settlement price, the value is -1.
+    ///  Settlement price time
     /// </summary>
     public DateTime SettlePriceDateTime => Fields.SettlePriceDateTime.Value;
 
@@ -106,10 +106,10 @@ public partial class MarketSnapshotMessage
     /// <summary>
     ///  Reserved for future use
     /// </summary>
-    public string Reserved2Bytes => Fields.Reserved2Bytes.Value;
+    public string Reserved2 => Fields.Reserved2.Value;
 
     /// <summary>
-    ///  The date Open Interest is effective for, in the format of YYYY-MM-DD.
+    ///  The date Open Interest is effective for
     /// </summary>
     public string OpenInterestDate => Fields.OpenInterestDate.Value;
 
@@ -155,7 +155,7 @@ public partial class MarketSnapshotMessage
         public LastTradeDateTime LastTradeDateTime;
         public SettlePriceDateTime SettlePriceDateTime;
         public LastMessageSequenceId LastMessageSequenceId;
-        public Reserved2Bytes Reserved2Bytes;
+        public Reserved2 Reserved2;
         public OpenInterestDate OpenInterestDate;
         public IsSettlePriceOfficial IsSettlePriceOfficial;
         public SettlementPrice SettlementPrice;

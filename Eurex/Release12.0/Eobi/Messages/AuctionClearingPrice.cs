@@ -14,7 +14,7 @@ public partial class AuctionClearingPrice
     public DateTime TransactTime => Fields.TransactTime.Value;
 
     /// <summary>
-    ///  Unique instrument identifier
+    ///  Security Id
     /// </summary>
     public long SecurityId => Fields.SecurityId.Value;
 
@@ -24,7 +24,7 @@ public partial class AuctionClearingPrice
     public ulong LastPx => Fields.LastPx.Value;
 
     /// <summary>
-    ///  Total executed matched quantity of this match event
+    ///  Last Qty
     /// </summary>
     public ulong LastQty => Fields.LastQty.Value;
 

@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Iex.Deep;
+
 /// <summary>
 ///  Collar Reference Price: Reference priced used for the auction collar, if any
 /// </summary>

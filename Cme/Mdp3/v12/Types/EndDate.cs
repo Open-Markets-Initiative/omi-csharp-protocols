@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  End Date: End date of a financing deal, i.e. the date the seller reimburses the buyer and takes back control of the collateral
 /// </summary>

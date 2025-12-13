@@ -12,8 +12,8 @@ public partial class SnapshotFullRefreshGroup
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct Layout
     {
-        public MdEntryPxOptional MdEntryPxOptional;
-        public MdEntrySizeOptional MdEntrySizeOptional;
+        public MdEntryPxOptionalEx MdEntryPxOptionalEx;
+        public MdEntrySizeShortOptional MdEntrySizeShortOptional;
         public NumberOfOrdersOptional NumberOfOrdersOptional;
         public MdPriceLevelOptional MdPriceLevelOptional;
         public TradingReferenceDate TradingReferenceDate;

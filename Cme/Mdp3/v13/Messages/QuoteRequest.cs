@@ -11,7 +11,7 @@ public partial class QuoteRequest
     /// <summary>
     ///  Start of event processing time in number of nanoseconds since Unix epoch
     /// </summary>
-    public ulong TransactTime => Fields.TransactTime.Value;
+    public DateTime TransactTime => Fields.TransactTime.Value;
 
     /// <summary>
     ///  Quote Request ID defined by the exchange

@@ -71,7 +71,7 @@ public partial class NewFuturesStrategyDefinitionMessage
     /// <summary>
     ///  Reserved for future use
     /// </summary>
-    public int ReservedBytes4 => Fields.ReservedBytes4.Value;
+    public string Reserved4 => Fields.Reserved4.Value;
 
     /// <summary>
     ///  Indicates MIFID-II market. ‘Y’ or ‘N’
@@ -129,12 +129,12 @@ public partial class NewFuturesStrategyDefinitionMessage
     public AllowsImplied AllowsImplied => Fields.AllowsImplied.Value;
 
     /// <summary>
-    ///  Minimum Price. OrderPriceDenominator should be applied to this field.
+    ///  Minimum Price, OrderPriceDenominator should be applied to this field
     /// </summary>
     public long MinPrice => Fields.MinPrice.Value;
 
     /// <summary>
-    ///  Maximum Price. OrderPriceDenominator should be applied to this field.
+    ///  Maximum Price, OrderPriceDenominator should be applied to this field
     /// </summary>
     public long MaxPrice => Fields.MaxPrice.Value;
 
@@ -273,7 +273,7 @@ public partial class NewFuturesStrategyDefinitionMessage
         public IsBlockOnly IsBlockOnly;
         public StrategySymbol StrategySymbol;
         public GtAllowed GtAllowed;
-        public ReservedBytes4 ReservedBytes4;
+        public Reserved4 Reserved4;
         public MifidRegulatedMarket MifidRegulatedMarket;
         public MarketDesc MarketDesc;
         public MaturityYear MaturityYear;

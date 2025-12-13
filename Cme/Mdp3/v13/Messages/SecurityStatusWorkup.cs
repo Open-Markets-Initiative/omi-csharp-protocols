@@ -11,12 +11,12 @@ public partial class SecurityStatusWorkup
     /// <summary>
     ///  Start of event processing time in number of nanoseconds since Unix epoch
     /// </summary>
-    public ulong TransactTime => Fields.TransactTime.Value;
+    public DateTime TransactTime => Fields.TransactTime.Value;
 
     /// <summary>
     ///  Workup price
     /// </summary>
-    public long MdEntryPxOptional => Fields.MdEntryPxOptional.Value;
+    public long MdEntryPxOptionalEx => Fields.MdEntryPxOptionalEx.Value;
 
     /// <summary>
     ///  Security ID
@@ -57,7 +57,7 @@ public partial class SecurityStatusWorkup
     public unsafe struct Layout
     {
         public TransactTime TransactTime;
-        public MdEntryPxOptional MdEntryPxOptional;
+        public MdEntryPxOptionalEx MdEntryPxOptionalEx;
         public SecurityId SecurityId;
         public MatchEventIndicator MatchEventIndicator;
         public TradeDate TradeDate;

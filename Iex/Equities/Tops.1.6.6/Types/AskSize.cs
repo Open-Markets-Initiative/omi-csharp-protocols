@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Iex.Tops;
+
 /// <summary>
 ///  Ask Size: Aggregate quoted best ask size
 /// </summary>

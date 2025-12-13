@@ -9,7 +9,7 @@ namespace Eurex.Eobi;
 public partial class ProductSummary
 {
     /// <summary>
-    ///  Last message sequence number that was processed, regardless of message type
+    ///  Last Msg Seq Num Processed
     /// </summary>
     public uint LastMsgSeqNumProcessed => Fields.LastMsgSeqNumProcessed.Value;
 

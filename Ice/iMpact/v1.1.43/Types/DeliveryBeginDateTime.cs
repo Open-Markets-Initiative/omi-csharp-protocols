@@ -5,7 +5,7 @@ namespace Ice.iMpact
 {
 
     /// <summary>
-    ///  Delivery Begin Date Time: Delivery begin date time. Milliseconds since Jan 1st, 1970, 00:00:00 GMT
+    ///  Delivery Begin Date Time: Delivery begin date time
     /// </summary>
 
     public struct DeliveryBeginDateTime

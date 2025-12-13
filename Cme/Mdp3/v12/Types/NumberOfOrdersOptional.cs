@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Number Of Orders Optional: In Book entry - aggregate number of orders at given price level
 /// </summary>

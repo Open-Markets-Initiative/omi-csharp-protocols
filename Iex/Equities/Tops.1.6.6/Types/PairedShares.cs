@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Iex.Tops;
+
 /// <summary>
 ///  Paired Shares: Number of shares paired at the Reference Price using orders on the Auction Book
 /// </summary>

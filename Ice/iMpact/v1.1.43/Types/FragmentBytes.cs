@@ -12,6 +12,6 @@ namespace Ice.iMpact
         /// <summary>
         ///  Length of Fragment Bytes in bytes
         /// </summary>
-        public const int Length = 0;
+        public const int Length = 9;
     }
 }

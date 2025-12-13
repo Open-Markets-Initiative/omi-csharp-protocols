@@ -9,34 +9,44 @@ using System.Runtime.CompilerServices;
 public sealed class SettlPriceType
 {
     /// <summary>
-    ///  Null Value
+    ///  Final Daily
     /// </summary>
-    public const byte NullValue = 1 << 0;
-
-    /// <summary>
-    ///  Reserved Bits
-    /// </summary>
-    public const byte ReservedBits = 1 << 1;
-
-    /// <summary>
-    ///  Intraday
-    /// </summary>
-    public const byte Intraday = 1 << 4;
-
-    /// <summary>
-    ///  Rounded
-    /// </summary>
-    public const byte Rounded = 1 << 5;
+    public const byte FinalDaily = 1 << 0;
 
     /// <summary>
     ///  Actual
     /// </summary>
-    public const byte Actual = 1 << 6;
+    public const byte Actual = 1 << 1;
 
     /// <summary>
-    ///  Final Daily
+    ///  Rounded
     /// </summary>
-    public const byte FinalDaily = 1 << 7;
+    public const byte Rounded = 1 << 2;
+
+    /// <summary>
+    ///  Intraday
+    /// </summary>
+    public const byte Intraday = 1 << 3;
+
+    /// <summary>
+    ///  Reserved Bits
+    /// </summary>
+    public const byte ReservedBits = 1 << 4;
+
+    /// <summary>
+    ///  Unused Settl Price Type 5
+    /// </summary>
+    public const byte UnusedSettlPriceType5 = 1 << 5;
+
+    /// <summary>
+    ///  Unused Settl Price Type 6
+    /// </summary>
+    public const byte UnusedSettlPriceType6 = 1 << 6;
+
+    /// <summary>
+    ///  Null Value
+    /// </summary>
+    public const byte NullValue = 1 << 7;
 
     /// <summary>
     ///  Length of Settl Price Type in bytes

@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Open Interest Qty: The total open interest for the market at the close of the prior trading session.
 /// </summary>

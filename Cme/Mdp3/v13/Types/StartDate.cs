@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Start Date: Start date of a financing deal, i.e. the date the buyer pays the seller cash and takes control of the collateral
 /// </summary>

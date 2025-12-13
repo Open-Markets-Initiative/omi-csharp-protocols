@@ -9,24 +9,24 @@ using System.Runtime.CompilerServices;
 public sealed class SecurityDirectoryFlags
 {
     /// <summary>
-    ///  Test Security
+    ///  Unused 5
     /// </summary>
-    public const byte TestSecurity = 1 << 0;
-
-    /// <summary>
-    ///  When Issued
-    /// </summary>
-    public const byte WhenIssued = 1 << 1;
+    public const byte Unused5 = 1 << 0;
 
     /// <summary>
     ///  Etp
     /// </summary>
-    public const byte Etp = 1 << 2;
+    public const byte Etp = 1 << 5;
 
     /// <summary>
-    ///  Unused 5
+    ///  When Issued
     /// </summary>
-    public const byte Unused5 = 1 << 3;
+    public const byte WhenIssued = 1 << 6;
+
+    /// <summary>
+    ///  Test Security
+    /// </summary>
+    public const byte TestSecurity = 1 << 7;
 
     /// <summary>
     ///  Length of Security Directory Flags in bytes

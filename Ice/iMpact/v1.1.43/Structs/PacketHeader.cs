@@ -21,20 +21,20 @@ public partial class PacketHeader
     /// <summary>
     ///  Field indicates the number of messages contained in the block.
     /// </summary>
-    public ushort Count => Fields.Count.Value;
+    public ushort NumberOfMsgs => Fields.NumberOfMsgs.Value;
 
     /// <summary>
-    ///  Timestamp of last update used to derive the price level message. The format is nanoseconds since
+    ///  Field is the timestamp of when the message block is sent, the number of milliseconds since Jan 1st, 1970, 00:00:00 GMT
     /// </summary>
-    public long Timestamp => Fields.Timestamp.Value;
+    public DateTime SendDatetime => Fields.SendDatetime.Value;
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct Layout
     {
         public Session Session;
         public Sequence Sequence;
-        public Count Count;
-        public Timestamp Timestamp;
+        public NumberOfMsgs NumberOfMsgs;
+        public SendDatetime SendDatetime;
     };
 
     protected Layout Fields;

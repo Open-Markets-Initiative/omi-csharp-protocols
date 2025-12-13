@@ -24,7 +24,7 @@ public partial class OrderModifySamePrio
     public ulong PrevDisplayQty => Fields.PrevDisplayQty.Value;
 
     /// <summary>
-    ///  Unique instrument identifier
+    ///  Security Id
     /// </summary>
     public long SecurityId => Fields.SecurityId.Value;
 

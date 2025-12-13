@@ -11,7 +11,7 @@ public partial class CollateralMarketValue
     /// <summary>
     ///  Start of event processing time in number of nanoseconds since Unix epoch
     /// </summary>
-    public ulong TransactTime => Fields.TransactTime.Value;
+    public DateTime TransactTime => Fields.TransactTime.Value;
 
     /// <summary>
     ///  MatchEventIndicator bit set

@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Broken Date Guid: External unique broken date Instrument ID
 /// </summary>

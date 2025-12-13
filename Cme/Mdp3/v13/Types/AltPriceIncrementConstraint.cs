@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3
 {
+
     /// <summary>
     ///  Alt Price Increment Constraint: Minimum price offset better than the best Standard Tick order for an order to be allowed into the market
     /// </summary>

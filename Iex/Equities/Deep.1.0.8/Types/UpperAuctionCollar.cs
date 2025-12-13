@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Iex.Deep;
+
 /// <summary>
 ///  Upper Auction Collar: Upper threshold price of the auction collar, if any
 /// </summary>

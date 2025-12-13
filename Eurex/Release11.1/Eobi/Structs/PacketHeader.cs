@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace Eurex.Eobi;
 
 /// <summary>
-///  Packet Header
+///  Packet Header: Eurex Eobi Packet Header
 /// </summary>
 
 public partial class PacketHeader

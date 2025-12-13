@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Eurex.Eobi;
+
 /// <summary>
 ///  Last Msg Seq Num Processed
 /// </summary>

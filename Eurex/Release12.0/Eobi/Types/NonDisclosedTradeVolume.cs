@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace Eurex.Eobi
 {
+
     /// <summary>
     ///  Non Disclosed Trade Volume
     /// </summary>

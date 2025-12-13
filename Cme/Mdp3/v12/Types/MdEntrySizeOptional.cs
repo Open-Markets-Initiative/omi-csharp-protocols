@@ -1,8 +1,9 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
-///  Md Entry Size Optional: Market Data entry size
+///  Md Entry Size Optional: Aggregate booked qty at price level, notional
 /// </summary>
 
 public struct MdEntrySizeOptional
@@ -15,17 +16,17 @@ public struct MdEntrySizeOptional
     /// <summary>
     ///  Sentinel null value for Md Entry Size Optional
     /// </summary>
-    public const int NoValue = 2147483647;
+    public const ulong NoValue = 18446744073709551615;
 
     /// <summary>
     ///  Size of Md Entry Size Optional in bytes
     /// </summary>
-    public const int Size = 4;
+    public const int Size = 8;
 
     /// <summary>
     ///  Md Entry Size Optional value
     /// </summary>
-    public readonly int Value
+    public readonly ulong Value
         => Decode();
 
     /// <summary>
@@ -38,14 +39,14 @@ public struct MdEntrySizeOptional
     ///  Read Md Entry Size Optional
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly int Decode()
+    public readonly ulong Decode()
         => Underlying;
 
     /// <summary>
     ///  Try Read Md Entry Size Optional
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly bool TryRead(out int value)
+    public readonly bool TryRead(out ulong value)
     {
         value = Decode();
         return HasValue;
@@ -55,7 +56,7 @@ public struct MdEntrySizeOptional
     ///  Write Md Entry Size Optional
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Encode(int value)
+    public void Encode(ulong value)
         => Underlying = value;
 
     /// <summary>
@@ -74,5 +75,5 @@ public struct MdEntrySizeOptional
     /// <summary>
     ///  Underlying bytes
     /// </summary>
-    internal int Underlying;
+    internal ulong Underlying;
 }

@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Tot Num Reports Optional: Total number of instruments in the Replay loop. Used on Replay Feed only
 /// </summary>

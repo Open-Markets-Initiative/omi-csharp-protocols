@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace Cme.Mdp3;
 
 /// <summary>
-///  Message
+///  Message: Cme Market Data Message
 /// </summary>
 
 public partial class Message

@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Tot Num Reports: Total number of messages replayed in the loop
 /// </summary>

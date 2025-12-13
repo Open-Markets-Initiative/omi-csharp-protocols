@@ -5,7 +5,7 @@ namespace Ice.iMpact
 {
 
     /// <summary>
-    ///  Last Trade Date Time: Milliseconds since Jan 1st, 1970, 00:00:00 GMT
+    ///  Last Trade Date Time: time of last trade
     /// </summary>
 
     public struct LastTradeDateTime

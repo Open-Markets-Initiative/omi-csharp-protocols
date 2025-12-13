@@ -19,7 +19,7 @@ public partial class DeleteOrderMessage
     public long OrderId => Fields.OrderId.Value;
 
     /// <summary>
-    ///  Date time the trade was investigated. Milliseconds since Jan 1st, 1970, 00:00:00 GMT
+    ///  Date time the trade was investigated
     /// </summary>
     public DateTime MessageDateTime => Fields.MessageDateTime.Value;
 
@@ -29,9 +29,9 @@ public partial class DeleteOrderMessage
     public int SequenceWithinMillis => Fields.SequenceWithinMillis.Value;
 
     /// <summary>
-    ///  This field can be used to get the time the trading engine received the request that triggers this message
+    ///  time the trading engine received the request that triggers this message
     /// </summary>
-    public long RequestTradingEngineReceivedTimestamp => Fields.RequestTradingEngineReceivedTimestamp.Value;
+    public DateTime RequestTradingEngineReceivedTimestamp => Fields.RequestTradingEngineReceivedTimestamp.Value;
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct Layout

@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Underlying Instrument Guid: Underlying Instrument GUID. Collateral security identifier in REF Data API services
 /// </summary>

@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Iex.Deep;
+
 /// <summary>
 ///  Trade Id: IEX Generated Identifier. Trade ID is also
 /// </summary>

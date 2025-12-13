@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Iex.Tops;
+
 /// <summary>
 ///  Reference Price: Clearing price at or within the Reference Price Range using orders on the Auction Book
 /// </summary>

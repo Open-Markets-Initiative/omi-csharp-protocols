@@ -1,8 +1,9 @@
 using System.Runtime.CompilerServices;
 
 namespace Iex.Deep;
+
 /// <summary>
-///  Message Protocol Id: Unique identifier of the higher-layer protocol
+///  Message Protocol Id: Unique identifier of the higher layer protocol
 /// </summary>
 
 public struct MessageProtocolId

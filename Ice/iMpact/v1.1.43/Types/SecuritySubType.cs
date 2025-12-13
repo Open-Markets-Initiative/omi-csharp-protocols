@@ -332,12 +332,12 @@ public enum SecuritySubType : short
     1X2PutSpreadToThe1 = 75,
 
     /// <summary>
-    ///  Ratio C Spr 1x
+    ///  Ratio C Spr 1 X
     /// </summary>
     Hedged1X2CallSpreadToThe1 = 76,
 
     /// <summary>
-    ///  Ratio P Spr 1x
+    ///  Ratio P Spr 1 X
     /// </summary>
     Hedged1X2PutSpreadToThe1 = 77,
 
@@ -577,17 +577,17 @@ public enum SecuritySubType : short
     CustomDailyCfd = 711,
 
     /// <summary>
-    ///  Cust Daily 7x 8
+    ///  Cust Daily 7 X 8
     /// </summary>
     CustomDaily7X8 = 712,
 
     /// <summary>
-    ///  Cust Daily 7x 16
+    ///  Cust Daily 7 X 16
     /// </summary>
     CustomDaily7X16 = 713,
 
     /// <summary>
-    ///  Cust Daily 7x 6
+    ///  Cust Daily 7 X 6
     /// </summary>
     CustomDaily7X6 = 714,
 

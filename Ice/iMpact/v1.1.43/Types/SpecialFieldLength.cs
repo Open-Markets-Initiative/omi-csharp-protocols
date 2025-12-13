@@ -17,21 +17,21 @@ public struct SpecialFieldLength
     /// <summary>
     ///  Special Field Length value
     /// </summary>
-    public readonly ushort Value
+    public readonly short Value
         => Decode();
 
     /// <summary>
     ///  Read Special Field Length
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly ushort Decode()
+    public readonly short Decode()
         => BinaryPrimitives.ReverseEndianness(Underlying);
 
     /// <summary>
     ///  Write Special Field Length
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Encode(ushort value)
+    public void Encode(short value)
         => Underlying = BinaryPrimitives.ReverseEndianness(value);
 
     /// <summary>
@@ -43,5 +43,5 @@ public struct SpecialFieldLength
     /// <summary>
     ///  Underlying bytes
     /// </summary>
-    internal ushort Underlying;
+    internal short Underlying;
 }

@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Iex.Deep;
+
 /// <summary>
 ///  Imbalance Shares: Number of unpaired shares at the Reference Price using orders on the Auction Book
 /// </summary>

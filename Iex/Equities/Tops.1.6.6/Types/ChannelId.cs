@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Iex.Tops;
+
 /// <summary>
 ///  Channel Id: Identifies the stream of bytes sequenced messages
 /// </summary>

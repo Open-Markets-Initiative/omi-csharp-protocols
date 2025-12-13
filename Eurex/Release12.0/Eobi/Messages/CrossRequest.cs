@@ -9,7 +9,7 @@ namespace Eurex.Eobi;
 public partial class CrossRequest
 {
     /// <summary>
-    ///  Unique instrument identifier
+    ///  Security Id
     /// </summary>
     public long SecurityId => Fields.SecurityId.Value;
 
@@ -19,7 +19,7 @@ public partial class CrossRequest
     public ulong LastPx => Fields.LastPx.Value;
 
     /// <summary>
-    ///  Total executed matched quantity of this match event
+    ///  Last Qty
     /// </summary>
     public ulong LastQty => Fields.LastQty.Value;
 

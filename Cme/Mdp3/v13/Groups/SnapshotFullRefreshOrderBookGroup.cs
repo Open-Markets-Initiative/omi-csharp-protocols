@@ -14,7 +14,7 @@ public partial class SnapshotFullRefreshOrderBookGroup
     {
         public OrderId OrderId;
         public MdOrderPriorityOptional MdOrderPriorityOptional;
-        public MdEntryPx MdEntryPx;
+        public MdEntryPxEx MdEntryPxEx;
         public MdDisplayQty MdDisplayQty;
         public MdEntryTypeBook MdEntryTypeBook;
     };

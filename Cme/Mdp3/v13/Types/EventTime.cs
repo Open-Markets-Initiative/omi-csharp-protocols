@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Event Time: Date and Time of instument Activation or Expiration event sent as number of nanoseconds since Unix epoch
 /// </summary>
@@ -20,22 +21,22 @@ public struct EventTime
     /// <summary>
     ///  Event Time value
     /// </summary>
-    public readonly ulong Value
+    public readonly DateTime Value
         => Decode();
 
     /// <summary>
     ///  Read Event Time
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly ulong Decode()
-        => Underlying;
+    public readonly DateTime Decode()
+        => DateTime.UnixEpoch.AddTicks(Underlying / TimeSpan.NanosecondsPerTick);
 
     /// <summary>
-    ///  Write Event Time
+    ///  Write Event Time as Nanoseconds since Jan 1st, 1970, 00:00:00 GMT
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Encode(ulong value)
-        => Underlying = value;
+    public void Encode(DateTime timestamp)
+        => Underlying = timestamp.Ticks * TimeSpan.NanosecondsPerTick;
 
     /// <summary>
     ///  Event Time as string
@@ -46,5 +47,5 @@ public struct EventTime
     /// <summary>
     ///  Underlying bytes
     /// </summary>
-    internal ulong Underlying;
+    internal long Underlying;
 }

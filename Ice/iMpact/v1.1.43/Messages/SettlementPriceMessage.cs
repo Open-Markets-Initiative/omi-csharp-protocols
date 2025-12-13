@@ -19,17 +19,17 @@ public partial class SettlementPriceMessage
     public long SettlementPriceWithDealPricePrecision => Fields.SettlementPriceWithDealPricePrecision.Value;
 
     /// <summary>
-    ///  Date time the trade was investigated. Milliseconds since Jan 1st, 1970, 00:00:00 GMT
+    ///  Date time the trade was investigated
     /// </summary>
     public DateTime MessageDateTime => Fields.MessageDateTime.Value;
 
     /// <summary>
-    ///  Flag to indicate this is official settlement price or not. ‘Y’ or ‘N’.
+    ///  Flag to indicate this is official settlement price or not
     /// </summary>
     public IsOfficial IsOfficial => Fields.IsOfficial.Value;
 
     /// <summary>
-    ///  Date time the settlement price is for. Milliseconds since Jan 1st, 1970, 00:00:00 GMT
+    ///  Date time the settlement price is for
     /// </summary>
     public DateTime ValuationDateTime => Fields.ValuationDateTime.Value;
 

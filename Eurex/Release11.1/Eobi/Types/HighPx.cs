@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace Eurex.Eobi
 {
+
     /// <summary>
     ///  High Px
     /// </summary>

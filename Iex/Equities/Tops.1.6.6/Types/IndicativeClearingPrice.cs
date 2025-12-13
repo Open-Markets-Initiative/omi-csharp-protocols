@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Iex.Tops;
+
 /// <summary>
 ///  Indicative Clearing Price: Clearing price using Eligible Auction Orders
 /// </summary>

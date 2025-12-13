@@ -14,7 +14,7 @@ public partial class AuctionBbo
     public DateTime TransactTime => Fields.TransactTime.Value;
 
     /// <summary>
-    ///  Unique instrument identifier
+    ///  Security Id
     /// </summary>
     public long SecurityId => Fields.SecurityId.Value;
 

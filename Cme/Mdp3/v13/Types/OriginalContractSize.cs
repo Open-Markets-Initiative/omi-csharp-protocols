@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Original Contract Size: Fixed contract value assigned to each product
 /// </summary>

@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3
 {
+
     /// <summary>
     ///  Min Price Increment Optional: Minimum constant tick for the instrument
     /// </summary>

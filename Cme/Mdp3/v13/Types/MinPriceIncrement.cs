@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Min Price Increment: Minimum constant tick for the instrument, sent only if instrument is non-VTT (Variable Tick table) eligible
 /// </summary>

@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Display Factor: Contains the multiplier to convert the CME Globex display price to the conventional price
 /// </summary>

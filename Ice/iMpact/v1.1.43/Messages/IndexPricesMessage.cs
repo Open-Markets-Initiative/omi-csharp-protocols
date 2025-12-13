@@ -24,24 +24,24 @@ public partial class IndexPricesMessage
     public string ShortName => Fields.ShortName.Value;
 
     /// <summary>
-    ///  The date and time the marker was put into. Milliseconds since Jan 1st, 1970, 00:00:00 GMT
+    ///  The date and time the marker was put into
     /// </summary>
     public DateTime PublishedDateTime => Fields.PublishedDateTime.Value;
 
     /// <summary>
-    ///  The date this price is effective for, in the format of YYYY-MM-DD
+    ///  The date this price is effective for
     /// </summary>
-    public string ValuationDate => Fields.ValuationDate.Value;
+    public string ValuationDateApplyingDate => Fields.ValuationDateApplyingDate.Value;
 
     /// <summary>
-    ///  ‘C‘  – Current, ‘D’ – Default, ‘F’ – Final
+    ///  For Endex Spot markets
     /// </summary>
-    public EndexStatus EndexStatus => Fields.EndexStatus.Value;
+    public char Status => Fields.Status.Value;
 
     /// <summary>
     ///  Reserved for future use
     /// </summary>
-    public string Reserved2Bytes => Fields.Reserved2Bytes.Value;
+    public string Reserved2 => Fields.Reserved2.Value;
 
     /// <summary>
     ///  This field should be applied to the Price field to get the number of decimals for the Marker/Index.
@@ -55,9 +55,9 @@ public partial class IndexPricesMessage
         public Price Price;
         public ShortName ShortName;
         public PublishedDateTime PublishedDateTime;
-        public ValuationDate ValuationDate;
-        public EndexStatus EndexStatus;
-        public Reserved2Bytes Reserved2Bytes;
+        public ValuationDateApplyingDate ValuationDateApplyingDate;
+        public Status Status;
+        public Reserved2 Reserved2;
         public IndexPriceDenominator IndexPriceDenominator;
     };
 

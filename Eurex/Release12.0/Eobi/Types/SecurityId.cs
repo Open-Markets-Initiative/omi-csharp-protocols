@@ -1,8 +1,9 @@
 using System.Runtime.CompilerServices;
 
 namespace Eurex.Eobi;
+
 /// <summary>
-///  Security Id: Unique instrument identifier
+///  Security Id
 /// </summary>
 
 public struct SecurityId

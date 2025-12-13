@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace Iex.Tops;
 
 /// <summary>
-///  Message Header
+///  Message Header: IexTp message header
 /// </summary>
 
 public partial class MessageHeader

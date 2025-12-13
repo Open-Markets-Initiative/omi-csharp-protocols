@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace Eurex.Eobi;
 
 /// <summary>
-///  Message
+///  Message: Eurex Eobi Message
 /// </summary>
 
 public partial class Message

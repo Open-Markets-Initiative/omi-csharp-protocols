@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace Eurex.Eobi
 {
+
     /// <summary>
     ///  Md Entry Size
     /// </summary>

@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Trading Reference Date: Indicates session date corresponding to the settlement price in tag 1150-TradingReferencePrice
 /// </summary>

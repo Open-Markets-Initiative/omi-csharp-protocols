@@ -14,7 +14,7 @@ public partial class ExtraLegDefinition
     {
         public LegBodyLength LegBodyLength;
         public LegMarketId LegMarketId;
-        public Reserved2Bytes Reserved2Bytes;
+        public Reserved2 Reserved2;
         public LegSide LegSide;
         public LegStrategyCode LegStrategyCode;
         public LegRatioQtyNumerator LegRatioQtyNumerator;

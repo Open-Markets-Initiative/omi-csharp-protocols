@@ -39,7 +39,7 @@ public partial class TradeMessage
     public char OldOffMarketTradeType => Fields.OldOffMarketTradeType.Value;
 
     /// <summary>
-    ///  Deal date time. Milliseconds since Jan 1st, 1970,
+    ///  Deal date time
     /// </summary>
     public DateTime TransactDateTime => Fields.TransactDateTime.Value;
 
@@ -64,7 +64,7 @@ public partial class TradeMessage
     public AggressorSide AggressorSide => Fields.AggressorSide.Value;
 
     /// <summary>
-    ///  Trage Message Flags
+    ///  Trade Message Flags
     /// </summary>
     public string TradeFlags => Fields.TradeFlags.Value;
 
@@ -79,9 +79,9 @@ public partial class TradeMessage
     public int SequenceWithinMillis => Fields.SequenceWithinMillis.Value;
 
     /// <summary>
-    ///  This field can be used to get the time the trading engine received the request that triggers this message
+    ///  time the trading engine received the request that triggers this message
     /// </summary>
-    public long RequestTradingEngineReceivedTimestamp => Fields.RequestTradingEngineReceivedTimestamp.Value;
+    public DateTime RequestTradingEngineReceivedTimestamp => Fields.RequestTradingEngineReceivedTimestamp.Value;
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct Layout

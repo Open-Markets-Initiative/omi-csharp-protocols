@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Trade Link Id: Contains the workup ID; unique per instrument per day
 /// </summary>

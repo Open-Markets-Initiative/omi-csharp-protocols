@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Coupon Frequency Period: Time unit multiplier for the frequency of the bond's coupon payment
 /// </summary>

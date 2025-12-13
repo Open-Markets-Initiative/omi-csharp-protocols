@@ -3,13 +3,13 @@ using System.Runtime.InteropServices;
 namespace Cme.Mdp3;
 
 /// <summary>
-///  Packet
+///  Packet: Cme Mdp Packet
 /// </summary>
 
 public partial class Packet
 {
     /// <summary>
-    ///  Binary Packet Header
+    ///  Cme Mdp Packet Header
     /// </summary>
     public string BinaryPacketHeader => Fields.BinaryPacketHeader.Value;
 

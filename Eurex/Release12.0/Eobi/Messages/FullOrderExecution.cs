@@ -44,12 +44,12 @@ public partial class FullOrderExecution
     public DateTime TrdRegTsTimePriority => Fields.TrdRegTsTimePriority.Value;
 
     /// <summary>
-    ///  Unique instrument identifier
+    ///  Security Id
     /// </summary>
     public long SecurityId => Fields.SecurityId.Value;
 
     /// <summary>
-    ///  Total executed matched quantity of this match event
+    ///  Last Qty
     /// </summary>
     public ulong LastQty => Fields.LastQty.Value;
 

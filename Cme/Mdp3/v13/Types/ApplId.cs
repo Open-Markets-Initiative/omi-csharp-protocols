@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Appl Id: The channel ID as defined in the XML Configuration file
 /// </summary>

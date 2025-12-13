@@ -10,6 +10,11 @@ namespace Siac.Recipient;
 public struct StrikePriceShort
 {
     /// <summary>
+    ///  Decimal place factor for Strike Price Short
+    /// </summary>
+    public const ushort Factor = 10;
+
+    /// <summary>
     ///  Size of Strike Price Short in bytes
     /// </summary>
     public const int Size = 2;
@@ -25,14 +30,14 @@ public struct StrikePriceShort
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly ushort Decode()
-        => BinaryPrimitives.ReverseEndianness(Underlying);
+        => BinaryPrimitives.ReverseEndianness(Underlying) / Factor;
 
     /// <summary>
     ///  Write Strike Price Short
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Encode(ushort value)
-        => Underlying = BinaryPrimitives.ReverseEndianness(value);
+        => Underlying = BinaryPrimitives.ReverseEndianness(value) * Factor;
 
     /// <summary>
     ///  Strike Price Short as string

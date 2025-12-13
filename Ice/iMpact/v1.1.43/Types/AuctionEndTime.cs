@@ -5,7 +5,7 @@ namespace Ice.iMpact
 {
 
     /// <summary>
-    ///  Auction End Time: Date time the Auction will end. Milliseconds since Jan 1st, 1970, 00:00:00 GMT
+    ///  Auction End Time: Date time the Auction will end
     /// </summary>
 
     public struct AuctionEndTime

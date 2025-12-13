@@ -29,7 +29,7 @@ public partial class SpotMarketTradeMessage
     public int Quantity => Fields.Quantity.Value;
 
     /// <summary>
-    ///  Deal date time. Milliseconds since Jan 1st, 1970,
+    ///  Deal date time
     /// </summary>
     public DateTime TransactDateTime => Fields.TransactDateTime.Value;
 
@@ -39,12 +39,12 @@ public partial class SpotMarketTradeMessage
     public sbyte ExtraFlags => Fields.ExtraFlags.Value;
 
     /// <summary>
-    ///  Delivery begin date time. Milliseconds since Jan 1st, 1970, 00:00:00 GMT
+    ///  Delivery begin date time
     /// </summary>
     public DateTime DeliveryBeginDateTime => Fields.DeliveryBeginDateTime.Value;
 
     /// <summary>
-    ///  Delivery end date time. Milliseconds since Jan 1st, 1970, 00:00:00 GMT
+    ///  Delivery end date time
     /// </summary>
     public DateTime DeliveryEndDateTime => Fields.DeliveryEndDateTime.Value;
 

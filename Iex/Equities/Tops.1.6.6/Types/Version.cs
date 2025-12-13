@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 namespace Iex.Tops;
 
 /// <summary>
-///  Version: Version of Transport specification
+///  Version: Version of transport specification
 /// </summary>
 
 public struct Version

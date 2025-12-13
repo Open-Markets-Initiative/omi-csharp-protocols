@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Collateral Market Price: Market price of the collateral, either from external market sources or a result of trading activity on the platform. Clean price
 /// </summary>

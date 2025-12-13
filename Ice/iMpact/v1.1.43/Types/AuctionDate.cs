@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 namespace Ice.iMpact;
 
 /// <summary>
-///  Auction Date: Date format: MM-DD-YYYY
+///  Auction Date: Date format
 /// </summary>
 
 public unsafe struct AuctionDate

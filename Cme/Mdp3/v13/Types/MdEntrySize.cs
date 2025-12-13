@@ -1,8 +1,9 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
-///  Md Entry Size: Cumulative traded volume
+///  Md Entry Size: Consolidated trade quantity, notional
 /// </summary>
 
 public struct MdEntrySize
@@ -15,26 +16,26 @@ public struct MdEntrySize
     /// <summary>
     ///  Size of Md Entry Size in bytes
     /// </summary>
-    public const int Size = 4;
+    public const int Size = 8;
 
     /// <summary>
     ///  Md Entry Size value
     /// </summary>
-    public readonly int Value
+    public readonly ulong Value
         => Decode();
 
     /// <summary>
     ///  Read Md Entry Size
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly int Decode()
+    public readonly ulong Decode()
         => Underlying;
 
     /// <summary>
     ///  Write Md Entry Size
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Encode(int value)
+    public void Encode(ulong value)
         => Underlying = value;
 
     /// <summary>
@@ -46,5 +47,5 @@ public struct MdEntrySize
     /// <summary>
     ///  Underlying bytes
     /// </summary>
-    internal int Underlying;
+    internal ulong Underlying;
 }

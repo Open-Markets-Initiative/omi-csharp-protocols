@@ -14,14 +14,14 @@ public partial class FixingLockdownMessage
     public int MarketId => Fields.MarketId.Value;
 
     /// <summary>
-    ///  Date format: MM-DD-YYYY
+    ///  Date format
     /// </summary>
     public string AuctionDate => Fields.AuctionDate.Value;
 
     /// <summary>
-    ///  Date time the message was sent. Milliseconds since Jan 1st, 1970, 00:00:00 GMT
+    ///  Date time the trade was investigated
     /// </summary>
-    public DateTime Time => Fields.Time.Value;
+    public DateTime MessageDateTime => Fields.MessageDateTime.Value;
 
     /// <summary>
     ///  The auction runs twice daily at 10:30am and 3:00pm London time.  The values disseminated via this field are: ‘GOLD_1030’, ‘GOLD_1500’
@@ -73,7 +73,7 @@ public partial class FixingLockdownMessage
     {
         public MarketId MarketId;
         public AuctionDate AuctionDate;
-        public Time Time;
+        public MessageDateTime MessageDateTime;
         public Description Description;
         public Round Round;
         public AggBidQty AggBidQty;

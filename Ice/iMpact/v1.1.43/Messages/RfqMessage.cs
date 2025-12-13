@@ -14,9 +14,9 @@ public partial class RfqMessage
     public int MarketId => Fields.MarketId.Value;
 
     /// <summary>
-    ///  Date time of the RFQ; milliseconds since Jan 1st, 1970, 00:00:00 GMT
+    ///  Date time of the RFQ
     /// </summary>
-    public long MessageTimestamp => Fields.MessageTimestamp.Value;
+    public DateTime MessageTimestamp => Fields.MessageTimestamp.Value;
 
     /// <summary>
     ///  System ID of the RFQ

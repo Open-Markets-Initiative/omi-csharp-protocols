@@ -19,7 +19,7 @@ public partial class FixingTransitionMessage
     public FixingStatus FixingStatus => Fields.FixingStatus.Value;
 
     /// <summary>
-    ///  Date time the Auction will end. Milliseconds since Jan 1st, 1970, 00:00:00 GMT
+    ///  Date time the Auction will end
     /// </summary>
     public DateTime AuctionEndTime => Fields.AuctionEndTime.Value;
 
@@ -29,7 +29,7 @@ public partial class FixingTransitionMessage
     public int ThresholdImbalanceQty => Fields.ThresholdImbalanceQty.Value;
 
     /// <summary>
-    ///  Date time the trade was investigated. Milliseconds since Jan 1st, 1970, 00:00:00 GMT
+    ///  Date time the trade was investigated
     /// </summary>
     public DateTime MessageDateTime => Fields.MessageDateTime.Value;
 

@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Decay Quantity: Indicates the quantity that a contract will decay daily by once the decay start date is reached
 /// </summary>

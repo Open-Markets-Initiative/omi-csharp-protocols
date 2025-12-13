@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3
 {
+
     /// <summary>
     ///  Leg Option Delta: Delta used to calculate the quantity of futures used to cover the option or option strategy
     /// </summary>

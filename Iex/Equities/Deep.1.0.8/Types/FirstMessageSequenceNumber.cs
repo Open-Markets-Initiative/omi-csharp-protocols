@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Iex.Deep;
+
 /// <summary>
 ///  First Message Sequence Number: Sequence of the first message in the segment
 /// </summary>

@@ -46,7 +46,7 @@ public partial class BlockHeader
     /// <summary>
     ///  Block Timestamp
     /// </summary>
-    public string BlockTimestamp => Fields.BlockTimestamp.Value;
+    public DateTime BlockTimestamp => Fields.BlockTimestamp.Value;
 
     /// <summary>
     ///  Lower 16 Bits Of The 32 Bit Sum Of All Bytes In The Block Excluding The Block Checksum Field

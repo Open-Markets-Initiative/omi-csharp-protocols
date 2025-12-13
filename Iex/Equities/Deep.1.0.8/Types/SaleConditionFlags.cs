@@ -9,34 +9,34 @@ using System.Runtime.CompilerServices;
 public sealed class SaleConditionFlags
 {
     /// <summary>
-    ///  Intermarket Sweep
+    ///  Unused 3
     /// </summary>
-    public const byte IntermarketSweep = 1 << 0;
-
-    /// <summary>
-    ///  Extended Hours
-    /// </summary>
-    public const byte ExtendedHours = 1 << 1;
-
-    /// <summary>
-    ///  Odd Lot
-    /// </summary>
-    public const byte OddLot = 1 << 2;
-
-    /// <summary>
-    ///  Trade Through Exempt
-    /// </summary>
-    public const byte TradeThroughExempt = 1 << 3;
+    public const byte Unused3 = 1 << 0;
 
     /// <summary>
     ///  Singleprice Cross Trade
     /// </summary>
-    public const byte SinglepriceCrossTrade = 1 << 4;
+    public const byte SinglepriceCrossTrade = 1 << 3;
 
     /// <summary>
-    ///  Unused 3
+    ///  Trade Through Exempt
     /// </summary>
-    public const byte Unused3 = 1 << 5;
+    public const byte TradeThroughExempt = 1 << 4;
+
+    /// <summary>
+    ///  Odd Lot
+    /// </summary>
+    public const byte OddLot = 1 << 5;
+
+    /// <summary>
+    ///  Extended Hours
+    /// </summary>
+    public const byte ExtendedHours = 1 << 6;
+
+    /// <summary>
+    ///  Intermarket Sweep
+    /// </summary>
+    public const byte IntermarketSweep = 1 << 7;
 
     /// <summary>
     ///  Length of Sale Condition Flags in bytes

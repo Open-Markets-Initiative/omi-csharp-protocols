@@ -19,7 +19,7 @@ public partial class IntervalPriceLimitNotificationMessage
     public IplHoldType IplHoldType => Fields.IplHoldType.Value;
 
     /// <summary>
-    ///  Date time of the IPL Hold notification. Milliseconds since Jan 1st, 1970, 00:00:00 GMT
+    ///  Date time of the IPL Hold notification
     /// </summary>
     public DateTime NotificationDateTime => Fields.NotificationDateTime.Value;
 

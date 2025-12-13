@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Min Quote Life: Minimum Quote Life in number of microseconds
 /// </summary>

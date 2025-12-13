@@ -9,7 +9,7 @@ namespace Eurex.Eobi;
 public partial class AddComplexInstrument
 {
     /// <summary>
-    ///  Unique instrument identifier
+    ///  Security Id
     /// </summary>
     public long SecurityId => Fields.SecurityId.Value;
 

@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Decay Start Date: Indicates the date at which a decaying contract will begin to decay
 /// </summary>

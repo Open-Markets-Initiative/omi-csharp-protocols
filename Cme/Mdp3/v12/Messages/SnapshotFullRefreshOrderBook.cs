@@ -36,7 +36,7 @@ public partial class SnapshotFullRefreshOrderBook
     /// <summary>
     ///  Start of event processing time in number of nanoseconds since Unix epoch
     /// </summary>
-    public ulong TransactTime => Fields.TransactTime.Value;
+    public DateTime TransactTime => Fields.TransactTime.Value;
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct Layout

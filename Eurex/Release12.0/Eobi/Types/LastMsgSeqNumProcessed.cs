@@ -1,8 +1,9 @@
 using System.Runtime.CompilerServices;
 
 namespace Eurex.Eobi;
+
 /// <summary>
-///  Last Msg Seq Num Processed: Last message sequence number that was processed, regardless of message type
+///  Last Msg Seq Num Processed
 /// </summary>
 
 public struct LastMsgSeqNumProcessed

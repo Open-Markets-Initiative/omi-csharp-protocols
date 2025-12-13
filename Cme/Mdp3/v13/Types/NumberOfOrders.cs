@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Cme.Mdp3;
+
 /// <summary>
 ///  Number Of Orders: The total number of real orders per instrument that participated in a match step within a match event
 /// </summary>

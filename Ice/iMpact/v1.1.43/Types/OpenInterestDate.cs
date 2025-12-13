@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 namespace Ice.iMpact;
 
 /// <summary>
-///  Open Interest Date: The date Open Interest is effective for, in the format of YYYY-MM-DD.
+///  Open Interest Date: The date Open Interest is effective for
 /// </summary>
 
 public unsafe struct OpenInterestDate

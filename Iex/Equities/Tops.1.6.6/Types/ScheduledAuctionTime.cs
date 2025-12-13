@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 namespace Iex.Tops;
+
 /// <summary>
 ///  Scheduled Auction Time: Projected time of the auction match
 /// </summary>
