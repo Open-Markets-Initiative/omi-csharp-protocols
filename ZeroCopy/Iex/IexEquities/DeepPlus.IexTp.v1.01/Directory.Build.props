@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <Authors>Omi Developers</Authors>
+    <Version>1.01</Version>
+    <IsPackable Condition="'$(MSBuildProjectName)' != 'Iex.IexEquities.DeepPlus.IexTp.v1.01'">false</IsPackable>
+    <PackageId Condition="'$(MSBuildProjectName)' == 'Iex.IexEquities.DeepPlus.IexTp.v1.01'">Iex.IexEquities.DeepPlus.IexTp.v1.01.ZeroCopy</PackageId>
+  </PropertyGroup>
+</Project>

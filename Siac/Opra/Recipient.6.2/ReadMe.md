@@ -1,3 +1,0 @@
-
-## Securities Industry Automation Corporation
-

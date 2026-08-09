@@ -1,3 +1,0 @@
-
-## Intercontinental Exchange
-

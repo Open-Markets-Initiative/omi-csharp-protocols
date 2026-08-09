@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/Classes/">
+    <Project Path="ConsoleDumpManager/Iex.IexEquities.Tops.IexTp.v1.64.ConsoleDumpManager.csproj" />
+    <Project Path="Iex.IexEquities.Tops.IexTp.v1.64/Iex.IexEquities.Tops.IexTp.v1.64.csproj" />
+    <Project Path="Iterator/Iex.IexEquities.Tops.IexTp.v1.64.Iterator.csproj" />
+    <Project Path="Manager/Iex.IexEquities.Tops.IexTp.v1.64.Manager.csproj" />
+    <Project Path="RoundTrip/Iex.IexEquities.Tops.IexTp.v1.64.RoundTrip.csproj" />
+    <Project Path="Test/Iex.IexEquities.Tops.IexTp.v1.64.Test.csproj" />
+    <Project Path="Viewer/Iex.IexEquities.Tops.IexTp.v1.64.Viewer.csproj" />
+  </Folder>
+</Solution>

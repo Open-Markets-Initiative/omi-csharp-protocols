@@ -1,0 +1,99 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Clone Omi Data
+        run: git clone --depth=1 https://github.com/Open-Markets-Initiative/omi-data-pcaps.git
+
+      - name: Build Classes/Iex/IexEquities/Deep.IexTp.v1.06
+        run: dotnet build Classes/Iex/IexEquities/Deep.IexTp.v1.06/Iex.IexEquities.Deep.IexTp.v1.06.slnx --nologo
+
+      - name: Build Classes/Iex/IexEquities/Deep.IexTp.v1.08
+        run: dotnet build Classes/Iex/IexEquities/Deep.IexTp.v1.08/Iex.IexEquities.Deep.IexTp.v1.08.slnx --nologo
+
+      - name: Build Classes/Iex/IexEquities/DeepPlus.IexTp.v1.01
+        run: dotnet build Classes/Iex/IexEquities/DeepPlus.IexTp.v1.01/Iex.IexEquities.DeepPlus.IexTp.v1.01.slnx --nologo
+
+      - name: Build Classes/Iex/IexEquities/DeepPlus.IexTp.v1.04
+        run: dotnet build Classes/Iex/IexEquities/DeepPlus.IexTp.v1.04/Iex.IexEquities.DeepPlus.IexTp.v1.04.slnx --nologo
+
+      - name: Build Classes/Iex/IexEquities/Tops.IexTp.v1.56
+        run: dotnet build Classes/Iex/IexEquities/Tops.IexTp.v1.56/Iex.IexEquities.Tops.IexTp.v1.56.slnx --nologo
+
+      - name: Build Classes/Iex/IexEquities/Tops.IexTp.v1.64
+        run: dotnet build Classes/Iex/IexEquities/Tops.IexTp.v1.64/Iex.IexEquities.Tops.IexTp.v1.64.slnx --nologo
+
+      - name: Build Classes/Iex/IexEquities/Tops.IexTp.v1.66
+        run: dotnet build Classes/Iex/IexEquities/Tops.IexTp.v1.66/Iex.IexEquities.Tops.IexTp.v1.66.slnx --nologo
+
+      - name: Build ZeroCopy/Iex/IexEquities/Deep.IexTp.v1.06
+        run: dotnet build ZeroCopy/Iex/IexEquities/Deep.IexTp.v1.06/Iex.IexEquities.Deep.IexTp.v1.06.slnx --nologo
+
+      - name: Build ZeroCopy/Iex/IexEquities/Deep.IexTp.v1.08
+        run: dotnet build ZeroCopy/Iex/IexEquities/Deep.IexTp.v1.08/Iex.IexEquities.Deep.IexTp.v1.08.slnx --nologo
+
+      - name: Build ZeroCopy/Iex/IexEquities/DeepPlus.IexTp.v1.01
+        run: dotnet build ZeroCopy/Iex/IexEquities/DeepPlus.IexTp.v1.01/Iex.IexEquities.DeepPlus.IexTp.v1.01.slnx --nologo
+
+      - name: Build ZeroCopy/Iex/IexEquities/DeepPlus.IexTp.v1.04
+        run: dotnet build ZeroCopy/Iex/IexEquities/DeepPlus.IexTp.v1.04/Iex.IexEquities.DeepPlus.IexTp.v1.04.slnx --nologo
+
+      - name: Build ZeroCopy/Iex/IexEquities/Tops.IexTp.v1.56
+        run: dotnet build ZeroCopy/Iex/IexEquities/Tops.IexTp.v1.56/Iex.IexEquities.Tops.IexTp.v1.56.slnx --nologo
+
+      - name: Build ZeroCopy/Iex/IexEquities/Tops.IexTp.v1.64
+        run: dotnet build ZeroCopy/Iex/IexEquities/Tops.IexTp.v1.64/Iex.IexEquities.Tops.IexTp.v1.64.slnx --nologo
+
+      - name: Build ZeroCopy/Iex/IexEquities/Tops.IexTp.v1.66
+        run: dotnet build ZeroCopy/Iex/IexEquities/Tops.IexTp.v1.66/Iex.IexEquities.Tops.IexTp.v1.66.slnx --nologo
+
+      - name: Test Classes/Iex/IexEquities/Deep.IexTp.v1.08/Test
+        run: |
+          set -o pipefail
+          zstd -d -f omi-data-pcaps/iex/IexEquities/Deep.v1.0.zst -o capture.pcap
+          dotnet run --no-build --project Classes/Iex/IexEquities/Deep.IexTp.v1.08/Test -- capture.pcap | tail -25
+
+      - name: Test Classes/Iex/IexEquities/DeepPlus.IexTp.v1.04/Test
+        run: |
+          set -o pipefail
+          zstd -d -f omi-data-pcaps/iex/IexEquities/DeepPlus.v1.0.zst -o capture.pcap
+          dotnet run --no-build --project Classes/Iex/IexEquities/DeepPlus.IexTp.v1.04/Test -- capture.pcap | tail -25
+
+      - name: Test Classes/Iex/IexEquities/Tops.IexTp.v1.66/Test
+        run: |
+          set -o pipefail
+          zstd -d -f omi-data-pcaps/iex/IexEquities/Tops.v1.6.zst -o capture.pcap
+          dotnet run --no-build --project Classes/Iex/IexEquities/Tops.IexTp.v1.66/Test -- capture.pcap | tail -25
+
+      - name: Test ZeroCopy/Iex/IexEquities/Deep.IexTp.v1.08/Iex.IexEquities.Deep.IexTp.v1.08/Test
+        run: |
+          set -o pipefail
+          zstd -d -f omi-data-pcaps/iex/IexEquities/Deep.v1.0.zst -o capture.pcap
+          dotnet run --no-build --project ZeroCopy/Iex/IexEquities/Deep.IexTp.v1.08/Iex.IexEquities.Deep.IexTp.v1.08/Test -- capture.pcap | tail -25
+
+      - name: Test ZeroCopy/Iex/IexEquities/DeepPlus.IexTp.v1.04/Iex.IexEquities.DeepPlus.IexTp.v1.04/Test
+        run: |
+          set -o pipefail
+          zstd -d -f omi-data-pcaps/iex/IexEquities/DeepPlus.v1.0.zst -o capture.pcap
+          dotnet run --no-build --project ZeroCopy/Iex/IexEquities/DeepPlus.IexTp.v1.04/Iex.IexEquities.DeepPlus.IexTp.v1.04/Test -- capture.pcap | tail -25
+
+      - name: Test ZeroCopy/Iex/IexEquities/Tops.IexTp.v1.66/Iex.IexEquities.Tops.IexTp.v1.66/Test
+        run: |
+          set -o pipefail
+          zstd -d -f omi-data-pcaps/iex/IexEquities/Tops.v1.6.zst -o capture.pcap
+          dotnet run --no-build --project ZeroCopy/Iex/IexEquities/Tops.IexTp.v1.66/Iex.IexEquities.Tops.IexTp.v1.66/Test -- capture.pcap | tail -25
+

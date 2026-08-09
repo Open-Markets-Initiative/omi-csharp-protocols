@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Authors>Omi Developers</Authors>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Test/**" />
+    <EmbeddedResource Remove="Test/**" />
+    <None Remove="Test/**" />
+    <Compile Remove="ConsoleDumpManager/**" />
+    <EmbeddedResource Remove="ConsoleDumpManager/**" />
+    <None Remove="ConsoleDumpManager/**" />
+    <Compile Remove="Manager/**" />
+    <EmbeddedResource Remove="Manager/**" />
+    <None Remove="Manager/**" />
+  </ItemGroup>
+
+</Project>

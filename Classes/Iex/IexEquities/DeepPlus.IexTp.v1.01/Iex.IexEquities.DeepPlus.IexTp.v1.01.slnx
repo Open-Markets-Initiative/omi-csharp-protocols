@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/Classes/">
+    <Project Path="ConsoleDumpManager/Iex.IexEquities.DeepPlus.IexTp.v1.01.ConsoleDumpManager.csproj" />
+    <Project Path="Iex.IexEquities.DeepPlus.IexTp.v1.01/Iex.IexEquities.DeepPlus.IexTp.v1.01.csproj" />
+    <Project Path="Iterator/Iex.IexEquities.DeepPlus.IexTp.v1.01.Iterator.csproj" />
+    <Project Path="Manager/Iex.IexEquities.DeepPlus.IexTp.v1.01.Manager.csproj" />
+    <Project Path="RoundTrip/Iex.IexEquities.DeepPlus.IexTp.v1.01.RoundTrip.csproj" />
+    <Project Path="Test/Iex.IexEquities.DeepPlus.IexTp.v1.01.Test.csproj" />
+    <Project Path="Viewer/Iex.IexEquities.DeepPlus.IexTp.v1.01.Viewer.csproj" />
+  </Folder>
+</Solution>

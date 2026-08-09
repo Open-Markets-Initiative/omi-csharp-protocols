@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+<PropertyGroup>
+<TargetFramework>net10.0</TargetFramework>
+<ImplicitUsings>enable</ImplicitUsings>
+<Nullable>enable</Nullable>
+</PropertyGroup>
+
+<ItemGroup>
+<ProjectReference Include="../../../../Pcap.CSharp/Pcap.CSharp.csproj" />
+<ProjectReference Include="../Iex.IexEquities.DeepPlus.IexTp.v1.01\Iex.IexEquities.DeepPlus.IexTp.v1.01.csproj" />
+</ItemGroup>
+
+</Project>

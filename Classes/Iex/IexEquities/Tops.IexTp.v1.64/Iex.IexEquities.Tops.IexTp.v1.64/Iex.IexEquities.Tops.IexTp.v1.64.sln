@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34009.444
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{87a30924-5695-05c5-be8e-69a067058393}") = "Iex.IexEquities.Tops.IexTp.v1.64", "Iex.IexEquities.Tops.IexTp.v1.64.csproj", "{46800678-919a-ddf2-a1b0-f92fb8bb7e0a}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{46800678-919a-ddf2-a1b0-f92fb8bb7e0a}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46800678-919a-ddf2-a1b0-f92fb8bb7e0a}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46800678-919a-ddf2-a1b0-f92fb8bb7e0a}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46800678-919a-ddf2-a1b0-f92fb8bb7e0a}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {d653a196-1c9f-08c7-3dd0-3c26214f32a9}
+	EndGlobalSection
+EndGlobal

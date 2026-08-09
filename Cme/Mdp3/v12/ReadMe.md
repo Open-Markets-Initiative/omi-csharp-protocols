@@ -1,3 +1,0 @@
-
-## Chicago Mercantile Exchange
-

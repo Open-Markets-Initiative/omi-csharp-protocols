@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/ZeroCopy/">
+    <Project Path="Iex.IexEquities.Tops.IexTp.v1.64/ConsoleDumpManager/Iex.IexEquities.Tops.IexTp.v1.64.ConsoleDumpManager.csproj" />
+    <Project Path="Iex.IexEquities.Tops.IexTp.v1.64/Iex.IexEquities.Tops.IexTp.v1.64.csproj" />
+    <Project Path="Iex.IexEquities.Tops.IexTp.v1.64/Manager/Iex.IexEquities.Tops.IexTp.v1.64.Manager.csproj" />
+    <Project Path="Iex.IexEquities.Tops.IexTp.v1.64/Test/Iex.IexEquities.Tops.IexTp.v1.64.Test.csproj" />
+  </Folder>
+</Solution>
