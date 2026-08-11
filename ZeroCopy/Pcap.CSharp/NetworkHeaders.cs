@@ -3,7 +3,7 @@ using System.Buffers.Binary;
 namespace Pcap.CSharp;
 
 /// <summary>
-///  Minimal network header parsing to extract UDP payload from Ethernet frames
+///  Reads IPv4 UDP and TCP payloads from Ethernet frames.
 /// </summary>
 public static class NetworkHeaders
 {
@@ -15,8 +15,8 @@ public static class NetworkHeaders
     public const int UdpHeaderSize = 8;
 
     /// <summary>
-    ///  Returns the byte offset of the UDP payload within an Ethernet frame, or -1 if the
-    ///  frame is not IPv4/UDP. Handles optional 802.1Q VLAN tags and variable-length IP headers.
+    ///  Gets the UDP payload offset, or -1 when the frame is not IPv4 UDP.
+    ///  Supports one 802.1Q VLAN tag and variable IPv4 header lengths.
     /// </summary>
     /// <param name="frame">The full Ethernet frame, starting at the destination MAC address.</param>
     /// <returns>Byte offset of the first UDP payload byte, or -1 if not IPv4/UDP.</returns>
@@ -30,9 +30,11 @@ public static class NetworkHeaders
     }
 
     /// <summary>
-    ///  Try to extract the UDP payload from an Ethernet frame.
-    ///  Returns false if the frame is not IPv4/UDP.
+    ///  Gets the UDP payload when the frame is IPv4 UDP.
     /// </summary>
+    /// <param name="frame">The Ethernet frame.</param>
+    /// <param name="payload">The UDP payload when the method returns <see langword="true"/>.</param>
+    /// <returns><see langword="true"/> when the frame contains a UDP payload.</returns>
     public static bool TryGetUdpPayload(ReadOnlySpan<byte> frame, out ReadOnlySpan<byte> payload)
     {
         payload = default;
@@ -44,11 +46,12 @@ public static class NetworkHeaders
     }
 
     /// <summary>
-    ///  Try to find the byte offset of the UDP payload within an Ethernet frame.
-    ///  Returns false (offset -1) if the frame is not IPv4/UDP or the offset is out of range.
-    ///  Offset form of <see cref="TryGetUdpPayload"/> for callers (e.g. iterators) that cannot
-    ///  hold a <c>ReadOnlySpan&lt;byte&gt;</c> across a yield.
+    ///  Gets the UDP payload offset when the frame is IPv4 UDP.
+    ///  This form supports callers that cannot retain a <see cref="ReadOnlySpan{T}"/>.
     /// </summary>
+    /// <param name="frame">The Ethernet frame.</param>
+    /// <param name="offset">The payload offset when the method returns <see langword="true"/>; otherwise -1.</param>
+    /// <returns><see langword="true"/> when the frame contains a UDP payload.</returns>
     public static bool TryGetUdpPayloadOffset(ReadOnlySpan<byte> frame, out int offset)
     {
         offset = GetUdpPayloadOffset(frame);
@@ -61,9 +64,8 @@ public static class NetworkHeaders
     }
 
     /// <summary>
-    ///  Returns the byte offset of the TCP payload within an Ethernet frame, or -1 if the
-    ///  frame is not IPv4/TCP. Handles optional 802.1Q VLAN tags, variable-length IP headers,
-    ///  and variable-length TCP headers (options).
+    ///  Gets the TCP payload offset, or -1 when the frame is not IPv4 TCP.
+    ///  Supports one 802.1Q VLAN tag and variable IPv4 and TCP header lengths.
     /// </summary>
     /// <param name="frame">The full Ethernet frame, starting at the destination MAC address.</param>
     /// <returns>Byte offset of the first TCP payload byte, or -1 if not IPv4/TCP.</returns>
@@ -76,7 +78,7 @@ public static class NetworkHeaders
         if (frame.Length < tcpStart + 20)
             return -1;
 
-        // TCP data offset is the high nibble of byte 12 of the TCP header, in 32-bit words
+        // TCP byte 12 stores the header length in 32-bit words.
         var tcpDataOffset = (frame[tcpStart + 12] >> 4) * 4;
         if (tcpDataOffset < 20)
             return -1;
@@ -85,9 +87,11 @@ public static class NetworkHeaders
     }
 
     /// <summary>
-    ///  Try to extract the TCP payload from an Ethernet frame.
-    ///  Returns false if the frame is not IPv4/TCP. Span companion to <see cref="TryGetUdpPayload"/>.
+    ///  Gets the TCP payload when the frame is IPv4 TCP.
     /// </summary>
+    /// <param name="frame">The Ethernet frame.</param>
+    /// <param name="payload">The TCP payload when the method returns <see langword="true"/>.</param>
+    /// <returns><see langword="true"/> when the frame contains a TCP payload.</returns>
     public static bool TryGetTcpPayload(ReadOnlySpan<byte> frame, out ReadOnlySpan<byte> payload)
     {
         payload = default;
@@ -99,10 +103,11 @@ public static class NetworkHeaders
     }
 
     /// <summary>
-    ///  Try to find the byte offset of the TCP payload within an Ethernet frame.
-    ///  Returns false (offset -1) if the frame is not IPv4/TCP or the offset is out of range.
-    ///  Offset companion to <see cref="TryGetUdpPayloadOffset"/> for transport-branching callers.
+    ///  Gets the TCP payload offset when the frame is IPv4 TCP.
     /// </summary>
+    /// <param name="frame">The Ethernet frame.</param>
+    /// <param name="offset">The payload offset when the method returns <see langword="true"/>; otherwise -1.</param>
+    /// <returns><see langword="true"/> when the frame contains a TCP payload.</returns>
     public static bool TryGetTcpPayloadOffset(ReadOnlySpan<byte> frame, out int offset)
     {
         offset = GetTcpPayloadOffset(frame);
@@ -115,9 +120,8 @@ public static class NetworkHeaders
     }
 
     /// <summary>
-    ///  Parses Ethernet, optional VLAN, and IPv4 headers to find the start of the IP payload.
-    ///  Sets <paramref name="protocol"/> to the IPv4 protocol field (e.g. 6=TCP, 17=UDP).
-    ///  Returns -1 and sets protocol to 0 if the frame is too short or not IPv4.
+    ///  Gets the IPv4 payload offset and protocol value.
+    ///  Returns -1 and sets <paramref name="protocol"/> to zero for a short or non-IPv4 frame.
     /// </summary>
     private static int GetIpPayloadOffset(ReadOnlySpan<byte> frame, out byte protocol)
     {
@@ -128,7 +132,7 @@ public static class NetworkHeaders
 
         var etherType = BinaryPrimitives.ReadUInt16BigEndian(frame[12..]);
 
-        // Skip optional 802.1Q VLAN tag (4 bytes: 2 TPID + 2 TCI)
+        // An 802.1Q VLAN tag adds four bytes before the IPv4 header.
         var ipStart = EthernetHeaderSize;
         if (etherType == EtherTypeVlan)
         {

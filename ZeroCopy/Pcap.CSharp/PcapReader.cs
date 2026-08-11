@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace Pcap.CSharp;
 
 /// <summary>
-///  Pcap global file header (24 bytes)
+///  Classic pcap global header.
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct PcapGlobalHeader
@@ -16,17 +16,16 @@ public struct PcapGlobalHeader
     public uint SnapLen;
     public uint Network;
 
-    public const uint ExpectedMagic = 0xA1B2C3D4;        // microsecond timestamps
-    public const uint ExpectedMagicNsec = 0xA1B23C4D;    // nanosecond timestamps (same format)
+    public const uint ExpectedMagic = 0xA1B2C3D4; // Microsecond timestamps.
+    public const uint ExpectedMagicNsec = 0xA1B23C4D; // Nanosecond timestamps.
     public const uint ExpectedMagicSwapped = 0xD4C3B2A1;
     public const uint LinkTypeEthernet = 1;
 
     public const int Size = 24;
 
     /// <summary>
-    ///  Validates the pcap magic number and link type. Shared by <see cref="PcapReader"/> and
-    ///  <see cref="PcapCursor"/> so both apply identical acceptance rules (native/nanosecond magic,
-    ///  Ethernet link type only). Throws on byte-swapped captures, unknown magic, or non-Ethernet.
+    ///  Validates the supported native-endian pcap magic numbers and Ethernet link type.
+    ///  Throws for byte-swapped captures, unknown magic numbers, and other link types.
     /// </summary>
     internal readonly void Validate()
     {
@@ -44,7 +43,7 @@ public struct PcapGlobalHeader
 }
 
 /// <summary>
-///  Pcap per-packet record header (16 bytes)
+///  Classic pcap packet record header.
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct PcapRecordHeader
@@ -58,27 +57,28 @@ public struct PcapRecordHeader
 }
 
 /// <summary>
-///  Reads pcap files and yields raw packet payloads
+///  Reads classic pcap files and yields packet bytes.
 /// </summary>
 public static class PcapReader
 {
+    /// <summary>Reads packet bytes from a classic pcap file.</summary>
+    /// <param name="path">Path to the pcap file.</param>
+    /// <returns>Packet byte buffers in file order.</returns>
     public static IEnumerable<ReadOnlyMemory<byte>> ReadPackets(string path)
     {
         using var stream = File.OpenRead(path);
         using var reader = new BinaryReader(stream);
 
-        // Read and validate global header
         var globalHeader = Read<PcapGlobalHeader>(reader);
         globalHeader.Validate();
 
-        // Yield each packet
         while (stream.Position < stream.Length)
         {
             var recordHeader = Read<PcapRecordHeader>(reader);
             var data = reader.ReadBytes((int)recordHeader.InclLen);
 
             if (data.Length < recordHeader.InclLen)
-                break; // truncated
+                break; // The final packet is truncated.
 
             yield return data;
         }

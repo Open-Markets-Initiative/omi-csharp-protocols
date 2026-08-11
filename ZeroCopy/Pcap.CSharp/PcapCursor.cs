@@ -3,23 +3,7 @@ using System.Runtime.InteropServices;
 namespace Pcap.CSharp;
 
 /// <summary>
-///  Allocation-free forward cursor over a classic pcap file. Each packet is read into one
-///  reusable buffer and exposed as a <see cref="ReadOnlySpan{T}"/> via <see cref="Data"/>, so
-///  walking a whole capture allocates nothing per packet.
-///
-///  <para>
-///  Companion to <see cref="PcapReader.ReadPackets"/>: that iterator yields
-///  <c>ReadOnlyMemory&lt;byte&gt;</c> for callers (e.g. the test harness) that must hold a packet
-///  across a <c>yield</c>/<c>await</c>; this cursor is for the zero-copy/zero-alloc hot path
-///  (the generated managers) and parses identically (same magic validation, same Ethernet
-///  link-type requirement).
-///  </para>
-///
-///  <para>
-///  Contract: the span returned by <see cref="Data"/> is valid only until the next
-///  <see cref="Advance"/> — the buffer is overwritten in place. The <c>ReadOnlySpan</c> type
-///  enforces this; it cannot be stored, boxed, or held across the next read.
-///  </para>
+///  Reads a classic pcap file into one reusable packet buffer.
 /// </summary>
 public sealed class PcapCursor : IDisposable
 {
@@ -35,24 +19,26 @@ public sealed class PcapCursor : IDisposable
         ReadGlobalHeader();
     }
 
-    /// <summary>Opens <paramref name="path"/> and validates the pcap global header.</summary>
+    /// <summary>Opens <paramref name="path"/> and validates its pcap header.</summary>
+    /// <param name="path">Path to the pcap file.</param>
+    /// <returns>A cursor for the file.</returns>
     public static PcapCursor Open(string path)
         => new(File.OpenRead(path));
 
     /// <summary>
-    ///  The current packet's captured bytes. Valid only until the next <see cref="Advance"/>.
+    ///  Gets the current packet bytes. The span is valid until the next <see cref="Advance"/> call.
     /// </summary>
     public ReadOnlySpan<byte> Data => buffer.AsSpan(0, length);
 
     /// <summary>
-    ///  Advances to the next packet. Returns <c>true</c> if a packet was read, or <c>false</c>
-    ///  at end of file or on a truncated record.
+    ///  Reads the next packet into <see cref="Data"/>.
+    ///  Returns <c>false</c> at end of file or when a record is truncated.
     /// </summary>
     public bool Advance()
     {
         Span<byte> headerBytes = stackalloc byte[PcapRecordHeader.Size];
         if (!ReadExactly(headerBytes))
-            return false; // clean EOF (no more record headers)
+            return false; // No complete record header remains.
 
         var recordHeader = MemoryMarshal.Read<PcapRecordHeader>(headerBytes);
         var inclLen = (int)recordHeader.InclLen;
@@ -63,7 +49,7 @@ public sealed class PcapCursor : IDisposable
             buffer = new byte[Math.Max(inclLen, buffer.Length * 2)];
 
         if (!ReadExactly(buffer.AsSpan(0, inclLen)))
-            return false; // truncated final packet
+            return false; // The final packet is truncated.
 
         length = inclLen;
         return true;
@@ -83,8 +69,8 @@ public sealed class PcapCursor : IDisposable
     }
 
     /// <summary>
-    ///  Fills <paramref name="destination"/> completely, looping over partial reads. Returns
-    ///  false if the stream ends before the buffer is full (EOF or truncation).
+    ///  Reads all bytes into <paramref name="destination"/>.
+    ///  Returns <c>false</c> when the stream ends before the destination is full.
     /// </summary>
     private bool ReadExactly(Span<byte> destination)
     {

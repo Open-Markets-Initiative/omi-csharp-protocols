@@ -8,8 +8,7 @@ using global::Iex.IexEquities.DeepPlus.IexTp;
 public sealed partial class IexIexEquitiesDeepPlusIexTpManager
 {
     /// <summary>
-    ///  Per-message sequence counter. Placeholder until the model-derived sequence
-    ///  number is available. Increments once per dispatched message.
+    ///  Sequence number for dispatched messages.
     /// </summary>
     private int seq;
 
@@ -79,86 +78,86 @@ public sealed partial class IexIexEquitiesDeepPlusIexTpManager
     }
 
     /// <summary>
-    ///  Handles each <c>SystemEventMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>SystemEventMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnSystemEventMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>SecurityDirectoryMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>SecurityDirectoryMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnSecurityDirectoryMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>TradingStatusMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>TradingStatusMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnTradingStatusMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>RetailLiquidityIndicatorMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>RetailLiquidityIndicatorMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnRetailLiquidityIndicatorMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>OperationalHaltStatusMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>OperationalHaltStatusMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnOperationalHaltStatusMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>ShortSalePriceTestStatusMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>ShortSalePriceTestStatusMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnShortSalePriceTestStatusMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>SecurityEventMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>SecurityEventMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnSecurityEventMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>AddOrderMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>AddOrderMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnAddOrderMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>OrderModifyMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>OrderModifyMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnOrderModifyMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>OrderDeleteMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>OrderDeleteMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnOrderDeleteMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>OrderExecutedMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>OrderExecutedMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnOrderExecutedMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>TradeMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>TradeMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnTradeMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>TradeBreakMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>TradeBreakMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnTradeBreakMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>ClearBookMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>ClearBookMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnClearBookMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 

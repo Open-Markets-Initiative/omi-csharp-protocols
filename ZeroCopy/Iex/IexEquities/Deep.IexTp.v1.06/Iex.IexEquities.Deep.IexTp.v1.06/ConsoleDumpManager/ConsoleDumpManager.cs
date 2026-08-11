@@ -8,8 +8,7 @@ using global::Iex.IexEquities.Deep.IexTp;
 public sealed partial class ConsoleDumpManager
 {
     /// <summary>
-    ///  Per-message sequence counter. Placeholder until the model-derived sequence
-    ///  number is available. Increments once per dispatched message.
+    ///  Sequence number for dispatched messages.
     /// </summary>
     private int seq;
 
@@ -73,74 +72,74 @@ public sealed partial class ConsoleDumpManager
     }
 
     /// <summary>
-    ///  Handles each <c>SystemEventMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>SystemEventMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnSystemEventMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>SecurityDirectoryMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>SecurityDirectoryMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnSecurityDirectoryMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>TradingStatusMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>TradingStatusMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnTradingStatusMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>OperationalHaltStatusMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>OperationalHaltStatusMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnOperationalHaltStatusMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>ShortSalePriceTestStatusMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>ShortSalePriceTestStatusMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnShortSalePriceTestStatusMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>SecurityEventMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>SecurityEventMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnSecurityEventMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>PriceLevelBuyUpdateMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>PriceLevelBuyUpdateMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnPriceLevelBuyUpdateMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>PriceLevelSellUpdateMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>PriceLevelSellUpdateMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnPriceLevelSellUpdateMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>TradeReportMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>TradeReportMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnTradeReportMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>OfficialPriceMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>OfficialPriceMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnOfficialPriceMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>TradeBreakMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>TradeBreakMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnTradeBreakMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
     /// <summary>
-    ///  Handles each <c>AuctionInformationMessage</c> message.
-    ///  Pointers target the pinned frame and are valid only during the call.
+    ///  Handles a <c>AuctionInformationMessage</c> message.
+    ///  The pointer is valid only during this call.
     /// </summary>
     unsafe partial void OnAuctionInformationMessage(byte* frame, int frameLength, int transportOffset, byte* payload, int payloadLength, int seq);
 
