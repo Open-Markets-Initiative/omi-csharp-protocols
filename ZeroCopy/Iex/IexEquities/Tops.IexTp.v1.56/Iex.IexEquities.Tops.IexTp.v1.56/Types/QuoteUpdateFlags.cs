@@ -1,56 +1,64 @@
 using System.Runtime.CompilerServices;
 
-namespace Iex.IexEquities.Tops.IexTp;
+namespace Iex.IexEquities.Tops.IexTp.v1_56;
 
 /// <summary>
-///  Quote Update Flags: Bitfield
+///  Quote Update Flags
 /// </summary>
-
 public struct QuoteUpdateFlags
 {
     /// <summary>
-    ///  Applies to the container's normalized Value, not the raw underlying bytes.
+    ///  The bits of the Market Session flag in <see cref="Value"/>.
     /// </summary>
     public const byte MarketSessionMask = unchecked((byte)0x40UL);
     /// <summary>
-    ///  Market Session
+    ///  Market Session Flag
     /// </summary>
-    public readonly bool MarketSession => (Value & MarketSessionMask) != 0;
+    public bool MarketSession
+    {
+        readonly get => (Value & MarketSessionMask) != 0;
+        set => Value = value ? (byte)(Value | MarketSessionMask) : (byte)(Value & ~MarketSessionMask);
+    }
 
     /// <summary>
-    ///  Applies to the container's normalized Value, not the raw underlying bytes.
+    ///  The bits of the Symbol Availability flag in <see cref="Value"/>.
     /// </summary>
     public const byte SymbolAvailabilityMask = unchecked((byte)0x80UL);
     /// <summary>
-    ///  Symbol Availability
+    ///  Symbol is halted, paused, or otherwise not available for trading on IEX
     /// </summary>
-    public readonly bool SymbolAvailability => (Value & SymbolAvailabilityMask) != 0;
+    public bool SymbolAvailability
+    {
+        readonly get => (Value & SymbolAvailabilityMask) != 0;
+        set => Value = value ? (byte)(Value | SymbolAvailabilityMask) : (byte)(Value & ~SymbolAvailabilityMask);
+    }
 
     /// <summary>
-    ///  Size of QuoteUpdateFlags in bytes
+    ///  The size of the Quote Update Flags field in bytes.
     /// </summary>
     public const int Size = 1;
 
     /// <summary>
-    ///  Quote Update Flags value
+    ///  Quote Update Flags
     /// </summary>
-    public readonly byte Value
-        => Underlying;
+    public byte Value
+    {
+        readonly get => Underlying;
+        set => Encode(value);
+    }
 
     /// <summary>
-    ///  Quote Update Flags as string
+    ///  Returns the value of the field as text.
     /// </summary>
     public readonly override string ToString()
         => $"0x{Value:X}";
 
     /// <summary>
-    ///  Encodes a Quote Update Flags value into the underlying bytes
+    ///  Writes a value into the Quote Update Flags field.
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Encode(byte value)
         => Underlying = value;
 
-    /// <summary>
-    ///  Underlying bytes
-    /// </summary>
     internal byte Underlying;
 }

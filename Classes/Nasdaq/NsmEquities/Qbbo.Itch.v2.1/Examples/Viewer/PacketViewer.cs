@@ -1,0 +1,334 @@
+namespace Nasdaq.NsmEquities.Qbbo.Itch.v2_1.Viewer;
+
+/// <summary>
+///  Handles parsed packets and writes every field of each message to the console.
+/// </summary>
+public sealed class PacketViewer : PacketHandler
+{
+    /// <summary>
+    ///  The sequence number of the next message.
+    /// </summary>
+    private ulong sequence;
+
+    /// <summary>
+    ///  The sequence number at which the next packet starts, or null before the first packet.
+    /// </summary>
+    private ulong? expectedSequence;
+
+    /// <summary>
+    ///  The session of the last packet, or null before the first packet.
+    /// </summary>
+    private string? session;
+
+    /// <summary>
+    ///  The index of the last packet received.
+    /// </summary>
+    private int packetIndex;
+
+    /// <summary>
+    ///  The index of the last message received.
+    /// </summary>
+    private int messageIndex;
+
+    /// <summary>
+    ///  Gets the number of packets received that parsed.
+    /// </summary>
+    public long Packets { get; private set; }
+
+    /// <summary>
+    ///  Gets the number of messages in the packets received that parsed.
+    /// </summary>
+    public long Messages { get; private set; }
+
+    /// <summary>
+    ///  Writes the packet's decoded contents or reports that it did not parse.
+    /// </summary>
+    public void Receive(Packet packet)
+    {
+        ++this.packetIndex;
+        if (!packet.IsParsed)
+        {
+            Console.WriteLine($"[packet={packetIndex}] packet did not parse");
+            return;
+        }
+        ++this.Packets;
+        this.Messages += packet.Messages.Count;
+        var current = packet.Header.Session;
+        if (this.session is { } previous && current != previous)
+        {
+            this.expectedSequence = null;
+        }
+        this.session = current;
+        var first = packet.Header.SequenceNumber;
+        if (this.expectedSequence is { } expected && first is { } && first != expected)
+        {
+            Console.WriteLine($"[packet={packetIndex}] gap: expected sequence {expected}, received sequence {first}");
+        }
+        this.sequence = first;
+        this.expectedSequence = (ulong)(first + (ulong)packet.MessageCount);
+        Console.WriteLine($"[packet={packetIndex} sequence={first}] valid={packet.IsValid} count={packet.MessageCount} messages={packet.Messages.Count}");
+        WriteFields(packet.Header.Fields, "  ", writeNested: true);
+        foreach (var (index, message) in packet.Messages.Index())
+        {
+            if (message is UnknownPacketMessage unknown)
+                Console.WriteLine($"[packet={packetIndex} sequence={first}] WARNING: message {messageIndex + index + 1} has the unknown message type 0x{unknown.DataValue:X}");
+        }
+
+        Handle(packet);
+        if (!packet.Trailer.IsEmpty)
+            Console.WriteLine($"[packet={packetIndex} sequence={first}] Trailer: {Convert.ToHexString(packet.Trailer.Span)}");
+    }
+
+    /// <inheritdoc/>
+    protected override void OnSystemEventMessage(SystemEventMessage message, MessageFrame frame)
+    {
+        ++this.messageIndex;
+        DumpSystemEventMessage(message, this.messageIndex, this.sequence);
+        ++this.sequence;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnStockDirectoryMessage(StockDirectoryMessage message, MessageFrame frame)
+    {
+        ++this.messageIndex;
+        DumpStockDirectoryMessage(message, this.messageIndex, this.sequence);
+        ++this.sequence;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnStockTradingActionMessage(StockTradingActionMessage message, MessageFrame frame)
+    {
+        ++this.messageIndex;
+        DumpStockTradingActionMessage(message, this.messageIndex, this.sequence);
+        ++this.sequence;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnRegShoRestrictionMessage(RegShoRestrictionMessage message, MessageFrame frame)
+    {
+        ++this.messageIndex;
+        DumpRegShoRestrictionMessage(message, this.messageIndex, this.sequence);
+        ++this.sequence;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnMwcbDeclineLevelMessage(MwcbDeclineLevelMessage message, MessageFrame frame)
+    {
+        ++this.messageIndex;
+        DumpMwcbDeclineLevelMessage(message, this.messageIndex, this.sequence);
+        ++this.sequence;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnMwcbBreachMessage(MwcbBreachMessage message, MessageFrame frame)
+    {
+        ++this.messageIndex;
+        DumpMwcbBreachMessage(message, this.messageIndex, this.sequence);
+        ++this.sequence;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnOperationalHaltMessage(OperationalHaltMessage message, MessageFrame frame)
+    {
+        ++this.messageIndex;
+        DumpOperationalHaltMessage(message, this.messageIndex, this.sequence);
+        ++this.sequence;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnBboQuotationMessage(BboQuotationMessage message, MessageFrame frame)
+    {
+        ++this.messageIndex;
+        DumpBboQuotationMessage(message, this.messageIndex, this.sequence);
+        ++this.sequence;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnPriceImprovementMessage(PriceImprovementMessage message, MessageFrame frame)
+    {
+        ++this.messageIndex;
+        DumpPriceImprovementMessage(message, this.messageIndex, this.sequence);
+        ++this.sequence;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnIpoQuotingPeriodUpdateMessage(IpoQuotingPeriodUpdateMessage message, MessageFrame frame)
+    {
+        ++this.messageIndex;
+        DumpIpoQuotingPeriodUpdateMessage(message, this.messageIndex, this.sequence);
+        ++this.sequence;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnUnknownPacketMessage(UnknownPacketMessage message, MessageFrame frame)
+    {
+        ++this.messageIndex;
+        DumpUnknownPacketMessage(message, this.messageIndex, this.sequence);
+        ++this.sequence;
+    }
+
+    /// <summary>
+    ///  Writes each field of the Bbo Quotation Message to the console.
+    /// </summary>
+    void DumpBboQuotationMessage(BboQuotationMessage message, int index, ulong sequence)
+    {
+        Console.WriteLine($"[message={index} sequence={sequence}] BboQuotationMessage");
+        WriteFields(message.Fields, "  ", writeNested: false);
+        if (!message.Trailer.IsEmpty)
+            Console.WriteLine($"  Trailer: {Convert.ToHexString(message.Trailer.Span)}");
+    }
+
+    /// <summary>
+    ///  Writes each field of the Ipo Quoting Period Update Message to the console.
+    /// </summary>
+    void DumpIpoQuotingPeriodUpdateMessage(IpoQuotingPeriodUpdateMessage message, int index, ulong sequence)
+    {
+        Console.WriteLine($"[message={index} sequence={sequence}] IpoQuotingPeriodUpdateMessage");
+        WriteFields(message.Fields, "  ", writeNested: false);
+        if (!message.Trailer.IsEmpty)
+            Console.WriteLine($"  Trailer: {Convert.ToHexString(message.Trailer.Span)}");
+    }
+
+    /// <summary>
+    ///  Writes each field of the Mwcb Breach Message to the console.
+    /// </summary>
+    void DumpMwcbBreachMessage(MwcbBreachMessage message, int index, ulong sequence)
+    {
+        Console.WriteLine($"[message={index} sequence={sequence}] MwcbBreachMessage");
+        WriteFields(message.Fields, "  ", writeNested: false);
+        if (!message.Trailer.IsEmpty)
+            Console.WriteLine($"  Trailer: {Convert.ToHexString(message.Trailer.Span)}");
+    }
+
+    /// <summary>
+    ///  Writes each field of the Mwcb Decline Level Message to the console.
+    /// </summary>
+    void DumpMwcbDeclineLevelMessage(MwcbDeclineLevelMessage message, int index, ulong sequence)
+    {
+        Console.WriteLine($"[message={index} sequence={sequence}] MwcbDeclineLevelMessage");
+        WriteFields(message.Fields, "  ", writeNested: false);
+        if (!message.Trailer.IsEmpty)
+            Console.WriteLine($"  Trailer: {Convert.ToHexString(message.Trailer.Span)}");
+    }
+
+    /// <summary>
+    ///  Writes each field of the Operational Halt Message to the console.
+    /// </summary>
+    void DumpOperationalHaltMessage(OperationalHaltMessage message, int index, ulong sequence)
+    {
+        Console.WriteLine($"[message={index} sequence={sequence}] OperationalHaltMessage");
+        WriteFields(message.Fields, "  ", writeNested: false);
+        if (!message.Trailer.IsEmpty)
+            Console.WriteLine($"  Trailer: {Convert.ToHexString(message.Trailer.Span)}");
+    }
+
+    /// <summary>
+    ///  Writes each field of the Price Improvement Message to the console.
+    /// </summary>
+    void DumpPriceImprovementMessage(PriceImprovementMessage message, int index, ulong sequence)
+    {
+        Console.WriteLine($"[message={index} sequence={sequence}] PriceImprovementMessage");
+        WriteFields(message.Fields, "  ", writeNested: false);
+        if (!message.Trailer.IsEmpty)
+            Console.WriteLine($"  Trailer: {Convert.ToHexString(message.Trailer.Span)}");
+    }
+
+    /// <summary>
+    ///  Writes each field of the Reg Sho Restriction Message to the console.
+    /// </summary>
+    void DumpRegShoRestrictionMessage(RegShoRestrictionMessage message, int index, ulong sequence)
+    {
+        Console.WriteLine($"[message={index} sequence={sequence}] RegShoRestrictionMessage");
+        WriteFields(message.Fields, "  ", writeNested: false);
+        if (!message.Trailer.IsEmpty)
+            Console.WriteLine($"  Trailer: {Convert.ToHexString(message.Trailer.Span)}");
+    }
+
+    /// <summary>
+    ///  Writes each field of the Stock Directory Message to the console.
+    /// </summary>
+    void DumpStockDirectoryMessage(StockDirectoryMessage message, int index, ulong sequence)
+    {
+        Console.WriteLine($"[message={index} sequence={sequence}] StockDirectoryMessage");
+        WriteFields(message.Fields, "  ", writeNested: false);
+        if (!message.Trailer.IsEmpty)
+            Console.WriteLine($"  Trailer: {Convert.ToHexString(message.Trailer.Span)}");
+    }
+
+    /// <summary>
+    ///  Writes each field of the Stock Trading Action Message to the console.
+    /// </summary>
+    void DumpStockTradingActionMessage(StockTradingActionMessage message, int index, ulong sequence)
+    {
+        Console.WriteLine($"[message={index} sequence={sequence}] StockTradingActionMessage");
+        WriteFields(message.Fields, "  ", writeNested: false);
+        if (!message.Trailer.IsEmpty)
+            Console.WriteLine($"  Trailer: {Convert.ToHexString(message.Trailer.Span)}");
+    }
+
+    /// <summary>
+    ///  Writes each field of the System Event Message to the console.
+    /// </summary>
+    void DumpSystemEventMessage(SystemEventMessage message, int index, ulong sequence)
+    {
+        Console.WriteLine($"[message={index} sequence={sequence}] SystemEventMessage");
+        WriteFields(message.Fields, "  ", writeNested: false);
+        if (!message.Trailer.IsEmpty)
+            Console.WriteLine($"  Trailer: {Convert.ToHexString(message.Trailer.Span)}");
+    }
+
+    /// <summary>
+    ///  Writes each field of a message whose message type the protocol does not define to the console.
+    /// </summary>
+    void DumpUnknownPacketMessage(UnknownPacketMessage message, int index, ulong sequence)
+    {
+        Console.WriteLine($"[message={index} sequence={sequence}] UnknownPacketMessage");
+        WriteFields(message.Fields, "  ", writeNested: false);
+        Console.WriteLine($"  Bytes: {Convert.ToHexString(message.Bytes.Span)}");
+        if (!message.Trailer.IsEmpty)
+            Console.WriteLine($"  Trailer: {Convert.ToHexString(message.Trailer.Span)}");
+    }
+
+    static void WriteFields(IEnumerable<FieldView> fields, string indent, bool writeNested)
+    {
+        foreach (var field in fields)
+        {
+            if (field.Message is { } message)
+            {
+                Console.WriteLine($"{indent}{field.Name}: {message.GetType().Name}");
+                if (writeNested)
+                {
+                    WriteFields(message.Fields, indent + "  ", true);
+                    switch (message)
+                    {
+                        case UnknownPacketMessage typed:
+                            Console.WriteLine($"{indent}  Bytes: {Convert.ToHexString(typed.Bytes.Span)}");
+                            break;
+                    }
+                }
+                continue;
+            }
+            if (field.Messages is { } messages)
+            {
+                Console.WriteLine($"{indent}{field.Name}:");
+                for (var index = 0; index < messages.Count; index++)
+                {
+                    Console.WriteLine($"{indent}  [{index}] {messages[index].GetType().Name}");
+                    WriteFields(messages[index].Fields, indent + "    ", true);
+                }
+                continue;
+            }
+            if (field.Entries is not { } entries)
+            {
+                Console.WriteLine($"{indent}{field.Name}: {field.Text}");
+                continue;
+            }
+            Console.WriteLine($"{indent}{field.Name}:");
+            for (var index = 0; index < entries.Count; index++)
+            {
+                Console.WriteLine($"{indent}  [{index}]");
+                WriteFields(entries[index].Fields, indent + "    ", true);
+            }
+        }
+    }
+}

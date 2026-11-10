@@ -1,46 +1,45 @@
 using System.Runtime.CompilerServices;
 
-namespace Iex.IexEquities.Tops.IexTp;
+namespace Iex.IexEquities.Tops.IexTp.v1_66;
 
 /// <summary>
-///  Represents the ExtensionNumber field as a single ASCII character.
+///  Number of extensions an auction received
 /// </summary>
-
 public struct ExtensionNumber
 {
     /// <summary>
-    ///  Size of ExtensionNumber in bytes
+    ///  The size of the Extension Number field in bytes.
     /// </summary>
     public const int Size = 1;
 
     /// <summary>
-    ///  Gets the decoded Extension Number value.
+    ///  Number of extensions an auction received
     /// </summary>
-    public readonly char Value
-        => (char)Byte;
+    public byte Value
+    {
+        readonly get => Decode();
+        set => Encode(value);
+    }
 
     /// <summary>
-    ///  Decodes the raw bytes into the Extension Number value.
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly char Decode()
-        => (char)Byte;
-
-    /// <summary>
-    ///  Encodes a value into the underlying Extension Number bytes.
+    ///  Returns the wire value of the Extension Number field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Encode(char value)
-        => Byte = (byte)value;
+    public readonly byte Decode()
+        => Byte;
 
     /// <summary>
-    ///  Returns the string representation of the Extension Number value.
+    ///  Writes an unscaled wire value into the Extension Number field.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Encode(byte value)
+        => Byte = value;
+
+    /// <summary>
+    ///  Returns the value of the field as text.
     /// </summary>
     public readonly override string ToString()
-        => $"{Value}";
+        => string.Create(global::System.Globalization.CultureInfo.InvariantCulture, $"{Value}");
 
-    /// <summary>
-    ///  Underlying byte
-    /// </summary>
     internal byte Byte;
 }

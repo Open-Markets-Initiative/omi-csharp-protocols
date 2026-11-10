@@ -1,46 +1,50 @@
 using System.Runtime.CompilerServices;
 
-namespace Iex.IexEquities.Tops.IexTp;
+namespace Iex.IexEquities.Tops.IexTp.v1_66;
 
 /// <summary>
-///  Represents the Version field as 1-byte little-endian unsigned integer.
+///  Version of transport specification
 /// </summary>
-
 public struct Version
 {
     /// <summary>
-    ///  Size of Version in bytes
+    ///  Version of the IEX-TP transport specification
+    /// </summary>
+    public const byte StaticValue = 1;
+
+    /// <summary>
+    ///  The size of the Version field in bytes.
     /// </summary>
     public const int Size = 1;
 
     /// <summary>
-    ///  Gets the decoded Version value.
+    ///  Version of transport specification
     /// </summary>
-    public readonly byte Value
-        => Decode();
+    public byte Value
+    {
+        readonly get => Decode();
+        set => Encode(value);
+    }
 
     /// <summary>
-    ///  Decodes the raw bytes into the Version value.
+    ///  Returns the wire value of the Version field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly byte Decode()
         => Byte;
 
     /// <summary>
-    ///  Encodes a value into the underlying Version bytes.
+    ///  Writes an unscaled wire value into the Version field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Encode(byte value)
         => Byte = value;
 
     /// <summary>
-    ///  Returns the string representation of the Version value.
+    ///  Returns the value of the field as text.
     /// </summary>
     public readonly override string ToString()
-        => $"{Value}";
+        => string.Create(global::System.Globalization.CultureInfo.InvariantCulture, $"{Value}");
 
-    /// <summary>
-    ///  Underlying byte
-    /// </summary>
     internal byte Byte;
 }

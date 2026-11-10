@@ -1,46 +1,45 @@
 using System.Runtime.CompilerServices;
 
-namespace Iex.IexEquities.DeepPlus.IexTp;
+namespace Iex.IexEquities.DeepPlus.IexTp.v1_01;
 
 /// <summary>
-///  Represents the MessageLength field as 2-byte little-endian unsigned integer.
+///  Length of the message
 /// </summary>
-
 public struct MessageLength
 {
     /// <summary>
-    ///  Size of MessageLength in bytes
+    ///  The size of the Message Length field in bytes.
     /// </summary>
     public const int Size = 2;
 
     /// <summary>
-    ///  Gets the decoded Message Length value.
+    ///  Length of the message
     /// </summary>
-    public readonly ushort Value
-        => Decode();
+    public ushort Value
+    {
+        readonly get => Decode();
+        set => Encode(value);
+    }
 
     /// <summary>
-    ///  Decodes the raw bytes into the Message Length value.
+    ///  Returns the wire value of the Message Length field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly ushort Decode()
-        => Underlying;
+        => global::System.Buffers.Binary.BinaryPrimitives.ReadUInt16LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.ReadOnlySpan<ushort>(in Underlying)));
 
     /// <summary>
-    ///  Encodes a value into the underlying Message Length bytes.
+    ///  Writes an unscaled wire value into the Message Length field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Encode(ushort value)
-        => Underlying = value;
+        => global::System.Buffers.Binary.BinaryPrimitives.WriteUInt16LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.Span<ushort>(ref Underlying)), value);
 
     /// <summary>
-    ///  Returns the string representation of the Message Length value.
+    ///  Returns the value of the field as text.
     /// </summary>
     public readonly override string ToString()
-        => $"{Value}";
+        => string.Create(global::System.Globalization.CultureInfo.InvariantCulture, $"{Value}");
 
-    /// <summary>
-    ///  Underlying bytes
-    /// </summary>
     internal ushort Underlying;
 }

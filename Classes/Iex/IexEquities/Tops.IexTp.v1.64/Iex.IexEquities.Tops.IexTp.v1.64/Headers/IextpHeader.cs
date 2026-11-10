@@ -1,642 +1,1061 @@
+using System.Buffers.Binary;
 using System.Diagnostics;
-using System.Text;
 
-namespace Iex.IexEquities.Tops.IexTp;
+namespace Iex.IexEquities.Tops.IexTp.v1_64;
 
 /// <summary>
-///  Represents the IextpHeader transport header from the Tops protocol.
-/// </summary>
-/// <remarks>
 ///  IexTp packet header
-/// </remarks>
-[DebuggerDisplay("{ToFormattedString(PrintOptions.Identifier),nq}")]
-public sealed class IextpHeader : IHeader, IEquatable<IextpHeader>
+/// </summary>
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
+public sealed class IextpHeader : IHeader, IEquatable<IextpHeader>, IFieldOwner
 {
-    /// <summary>
-    ///  Total fixed byte length of this header.
-    /// </summary>
-    private const int HeaderByteLength = 40;
+    internal const int VersionOffset = 0;
+
+    internal const int VersionLength = 1;
 
     /// <summary>
-    ///  Byte length of the Reserved padding run.
+    ///  Version of the IEX-TP transport specification
     /// </summary>
-    private const int ReservedBytes = 1;
+    public const byte VersionStaticValue = (byte)1;
+
+    internal const int ReservedOffset = VersionOffset + VersionLength;
+
+    internal const int ReservedLength = 1;
+
+    internal const int MessageProtocolIdOffset = ReservedOffset + ReservedLength;
+
+    internal const int MessageProtocolIdLength = 2;
+
+    /// <summary>
+    ///  Iex Tops Protocol
+    /// </summary>
+    public const ushort MessageProtocolIdStaticValue = (ushort)32771;
+
+    internal const int ChannelIdOffset = MessageProtocolIdOffset + MessageProtocolIdLength;
+
+    internal const int ChannelIdLength = 4;
+
+    internal const int SessionIdOffset = ChannelIdOffset + ChannelIdLength;
+
+    internal const int SessionIdLength = 4;
+
+    internal const int PayloadLengthOffset = SessionIdOffset + SessionIdLength;
+
+    internal const int PayloadLengthLength = 2;
+
+    internal const int MessageCountOffset = PayloadLengthOffset + PayloadLengthLength;
+
+    internal const int MessageCountLength = 2;
+
+    internal const int StreamOffsetOffset = MessageCountOffset + MessageCountLength;
+
+    internal const int StreamOffsetLength = 8;
+
+    internal const int FirstMessageSequenceNumberOffset = StreamOffsetOffset + StreamOffsetLength;
+
+    internal const int FirstMessageSequenceNumberLength = 8;
+
+    internal const int SendTimeOffset = FirstMessageSequenceNumberOffset + FirstMessageSequenceNumberLength;
+
+    internal const int SendTimeLength = 8;
+
+    /// <summary>
+    ///  The number of nanoseconds in one unit of the wire value of <see cref="SendTime"/>.
+    /// </summary>
+    public const long SendTimeNanosecondsPerUnit = 1;
+
+    /// <summary>
+    ///  The encoded length in bytes, not counting variable-length content or fields that a message can omit.
+    /// </summary>
+    public const int HeaderByteLength = VersionLength + ReservedLength + MessageProtocolIdLength + ChannelIdLength + SessionIdLength + PayloadLengthLength + MessageCountLength + StreamOffsetLength + FirstMessageSequenceNumberLength + SendTimeLength;
+
+    internal byte version;
 
     /// <summary>
     ///  Version of transport specification
     /// </summary>
-    public VersionField Version { get; set; } = new();
+    public byte Version
+    {
+        get => this.version;
+        set
+        {
+            this.version = value;
+            Touch();
+        }
+    }
+
+    internal ushort messageProtocolId;
 
     /// <summary>
     ///  Unique identifier of the higher layer protocol
     /// </summary>
-    public MessageProtocolIdField MessageProtocolId { get; set; } = new();
+    public ushort MessageProtocolId
+    {
+        get => this.messageProtocolId;
+        set
+        {
+            this.messageProtocolId = value;
+            Touch();
+        }
+    }
+
+    internal uint channelId;
 
     /// <summary>
     ///  Identifies the stream of bytes sequenced messages
     /// </summary>
-    public ChannelIdField ChannelId { get; set; } = new();
+    public uint ChannelId
+    {
+        get => this.channelId;
+        set
+        {
+            this.channelId = value;
+            Touch();
+        }
+    }
+
+    internal uint sessionId;
 
     /// <summary>
     ///  Identifies the session
     /// </summary>
-    public SessionIdField SessionId { get; set; } = new();
+    public uint SessionId
+    {
+        get => this.sessionId;
+        set
+        {
+            this.sessionId = value;
+            Touch();
+        }
+    }
+
+    internal ushort payloadLength;
 
     /// <summary>
     ///  Byte length of the payload
     /// </summary>
-    public PayloadLengthField PayloadLength { get; set; } = new();
+    public ushort PayloadLength => this.payloadLength;
+
+    internal ushort messageCount;
 
     /// <summary>
     ///  Number of messages in the payload
     /// </summary>
-    public MessageCountField MessageCount { get; set; } = new();
+    public ushort MessageCount => this.messageCount;
+
+    internal ulong streamOffset;
 
     /// <summary>
     ///  Byte offset of the data stream
     /// </summary>
-    public StreamOffsetField StreamOffset { get; set; } = new();
+    public ulong StreamOffset
+    {
+        get => this.streamOffset;
+        set
+        {
+            this.streamOffset = value;
+            Touch();
+        }
+    }
+
+    internal ulong firstMessageSequenceNumber;
 
     /// <summary>
     ///  Sequence of the first message in the segment
     /// </summary>
-    public FirstMessageSequenceNumberField FirstMessageSequenceNumber { get; set; } = new();
+    public ulong FirstMessageSequenceNumber
+    {
+        get => this.firstMessageSequenceNumber;
+        set
+        {
+            this.firstMessageSequenceNumber = value;
+            Touch();
+        }
+    }
+
+    internal ulong sendTime;
 
     /// <summary>
     ///  Send time of segment
     /// </summary>
-    public SendTimeField SendTime { get; set; } = new();
+    /// <remarks>
+    ///  This property has a precision of 100 nanoseconds, and <see cref="SendTimeRaw"/> holds the exact value. Setting a local time converts it to UTC, and a time of unspecified kind is treated as UTC. A time outside the range of the field is set to the nearest limit of the range.
+    /// </remarks>
+    public DateTime SendTime
+    {
+        get => Instant.ToDateTime(this.sendTime, SendTimeNanosecondsPerUnit);
+        set
+        {
+            this.sendTime = Instant.ToRaw<ulong>(value, SendTimeNanosecondsPerUnit, ulong.MinValue, ulong.MaxValue);
+            Touch();
+        }
+    }
 
     /// <summary>
-    ///  The total fixed byte length of this header (40 bytes).
+    ///  Gets or sets the wire value of <see cref="SendTime"/>, as the unscaled integer that the field holds.
+    /// </summary>
+    public ulong SendTimeRaw
+    {
+        get => this.sendTime;
+        set
+        {
+            this.sendTime = value;
+            Touch();
+        }
+    }
+
+    /// <summary>
+    ///  Gets the encoded length in bytes, not counting variable-length content or fields that a message can omit.
     /// </summary>
     public int ByteLength => HeaderByteLength;
 
-    public ReadOnlyMemory<byte>? Raw { get; private set; }
-    public bool IsDecoded { get; private set; }
+    /// <summary>
+    ///  Gets the result of the most recent parse.
+    /// </summary>
+    public ParseStatus Status => this.status;
 
     /// <summary>
-    ///  The first field that failed structural parsing (insufficient bytes), or null if the last parse succeeded or no parse has been attempted.
+    ///  Gets the field where the most recent parse stopped, or <see langword="null"/> if it did not stop at a field.
     /// </summary>
-    public Field? FailedAt
+    public FieldView? FailedField => this.failed is { } entry ? new FieldView(this, (int)entry) : null;
+
+    /// <summary>
+    ///  Gets the byte offset, relative to the start of the parsed bytes, where the most recent parse stopped.
+    /// </summary>
+    public int FailedOffset => this.failedOffset;
+
+    /// <summary>
+    ///  Gets a value indicating whether every message type and every enumerated value is one that the protocol defines.
+    /// </summary>
+    public bool IsRecognized => true;
+
+    /// <summary>
+    ///  Gets the bytes that were parsed, or no bytes if the instance was not parsed.
+    /// </summary>
+    public ReadOnlyMemory<byte> Raw => this.raw;
+
+    /// <summary>
+    ///  Gets a value indicating whether any value has changed since the most recent parse or clear.
+    /// </summary>
+    public bool IsModified => this.modified;
+
+    private ParseStatus status;
+    private FieldName? failed;
+    private int failedOffset;
+    private byte[] raw = [];
+    private byte[]? cache;
+    private bool modified;
+    private IFieldOwner? owner;
+
+    private void Touch()
     {
-        get
-        {
-            if (Raw is null || IsDecoded) return null;
-            foreach (var f in Fields)
-                if (!f.IsDecoded) return f;
-            return null;
-        }
+        this.modified = true;
+        this.cache = null;
+        this.owner?.Touch();
     }
 
     /// <summary>
-    ///  True if every field's IsRecognized is true and every counted-group container is valid. Non-enum fields inherit IsRecognized =&gt; IsDecoded, so they are false until parsed. Enum fields additionally require the value to be a declared enum member.
+    ///  Identifies each field, in wire order.
     /// </summary>
-    public bool IsRecognized
-    {
-        get
-        {
-            foreach (var f in Fields)
-                if (!f.IsRecognized) return false;
-            return true;
-        }
-    }
-
-    /// <summary>
-    ///  Convenience: true if IsDecoded and IsRecognized are both true.
-    /// </summary>
-    public bool IsValid => IsDecoded && IsRecognized;
-
-    /// <summary>Identifies each field in this message for compile-time-safe lookup via GetField.</summary>
     public enum FieldName
     {
+        /// <summary>
+        ///  Version of transport specification
+        /// </summary>
         Version,
+        /// <summary>
+        ///  Reserved byte
+        /// </summary>
+        Reserved,
+        /// <summary>
+        ///  Unique identifier of the higher layer protocol
+        /// </summary>
         MessageProtocolId,
+        /// <summary>
+        ///  Identifies the stream of bytes sequenced messages
+        /// </summary>
         ChannelId,
+        /// <summary>
+        ///  Identifies the session
+        /// </summary>
         SessionId,
+        /// <summary>
+        ///  Byte length of the payload
+        /// </summary>
         PayloadLength,
+        /// <summary>
+        ///  Number of messages in the payload
+        /// </summary>
         MessageCount,
+        /// <summary>
+        ///  Byte offset of the data stream
+        /// </summary>
         StreamOffset,
+        /// <summary>
+        ///  Sequence of the first message in the segment
+        /// </summary>
         FirstMessageSequenceNumber,
+        /// <summary>
+        ///  Send time of segment
+        /// </summary>
         SendTime,
     }
 
     /// <summary>
-    ///  Initializes a new <see cref="IextpHeader"/> with all fields at their default values.
+    ///  Provides access to the fields of one instance, each with its name, offset, length, bytes, text, and protocol attributes.
     /// </summary>
-    public IextpHeader() { }
-
-    /// <summary>
-    ///  Initializes a new <see cref="IextpHeader"/> from an existing instance, copying all field values.
-    /// </summary>
-    /// <param name="other">The source instance to copy from.</param>
-    public IextpHeader(IextpHeader other) : this()
+    public readonly struct FieldSet : IEnumerable<FieldView>
     {
-        ArgumentNullException.ThrowIfNull(other);
-        if (other.Raw is { } raw) Raw = raw.ToArray();
-        IsDecoded = other.IsDecoded;
-        Version.CopyFrom(other.Version);
-        MessageProtocolId.CopyFrom(other.MessageProtocolId);
-        ChannelId.CopyFrom(other.ChannelId);
-        SessionId.CopyFrom(other.SessionId);
-        PayloadLength.CopyFrom(other.PayloadLength);
-        MessageCount.CopyFrom(other.MessageCount);
-        StreamOffset.CopyFrom(other.StreamOffset);
-        FirstMessageSequenceNumber.CopyFrom(other.FirstMessageSequenceNumber);
-        SendTime.CopyFrom(other.SendTime);
-    }
+        private readonly IextpHeader owner;
 
-    /// <summary>
-    ///  Parses a <see cref="IextpHeader"/> from a binary data span at the given offset.
-    ///  On return, offset has been advanced past the bytes consumed by this message.
-    ///  If any field fails to parse (insufficient bytes), parsing stops and IsDecoded remains false.
-    /// </summary>
-    /// <param name="data">The raw message bytes.</param>
-    /// <param name="offset">The starting offset into data; advanced on return.</param>
-    public IextpHeader(ReadOnlySpan<byte> data, ref int offset)
-    {
-        var start = offset;
-        var decoded = true;
-        do
+        internal FieldSet(IextpHeader owner)
         {
-            if (!Version.Parse(data, ref offset))
-            {
-                decoded = false;
-                break;
-            }
-            if (data.Length - offset < ReservedBytes)
-            {
-                decoded = false;
-                break;
-            }
-            offset += ReservedBytes; // Reserved (padding)
-            if (!MessageProtocolId.Parse(data, ref offset))
-            {
-                decoded = false;
-                break;
-            }
-            if (!ChannelId.Parse(data, ref offset))
-            {
-                decoded = false;
-                break;
-            }
-            if (!SessionId.Parse(data, ref offset))
-            {
-                decoded = false;
-                break;
-            }
-            if (!PayloadLength.Parse(data, ref offset))
-            {
-                decoded = false;
-                break;
-            }
-            if (!MessageCount.Parse(data, ref offset))
-            {
-                decoded = false;
-                break;
-            }
-            if (!StreamOffset.Parse(data, ref offset))
-            {
-                decoded = false;
-                break;
-            }
-            if (!FirstMessageSequenceNumber.Parse(data, ref offset))
-            {
-                decoded = false;
-                break;
-            }
-            if (!SendTime.Parse(data, ref offset))
-            {
-                decoded = false;
-                break;
-            }
+            this.owner = owner;
         }
-        while (false);
-        Raw = data[start..offset].ToArray();
-        IsDecoded = decoded;
+
+        /// <summary>
+        ///  Version of transport specification
+        /// </summary>
+        public FieldView Version => this[FieldName.Version];
+
+        /// <summary>
+        ///  Reserved byte
+        /// </summary>
+        public FieldView Reserved => this[FieldName.Reserved];
+
+        /// <summary>
+        ///  Unique identifier of the higher layer protocol
+        /// </summary>
+        public FieldView MessageProtocolId => this[FieldName.MessageProtocolId];
+
+        /// <summary>
+        ///  Identifies the stream of bytes sequenced messages
+        /// </summary>
+        public FieldView ChannelId => this[FieldName.ChannelId];
+
+        /// <summary>
+        ///  Identifies the session
+        /// </summary>
+        public FieldView SessionId => this[FieldName.SessionId];
+
+        /// <summary>
+        ///  Byte length of the payload
+        /// </summary>
+        public FieldView PayloadLength => this[FieldName.PayloadLength];
+
+        /// <summary>
+        ///  Number of messages in the payload
+        /// </summary>
+        public FieldView MessageCount => this[FieldName.MessageCount];
+
+        /// <summary>
+        ///  Byte offset of the data stream
+        /// </summary>
+        public FieldView StreamOffset => this[FieldName.StreamOffset];
+
+        /// <summary>
+        ///  Sequence of the first message in the segment
+        /// </summary>
+        public FieldView FirstMessageSequenceNumber => this[FieldName.FirstMessageSequenceNumber];
+
+        /// <summary>
+        ///  Send time of segment
+        /// </summary>
+        public FieldView SendTime => this[FieldName.SendTime];
+
+        /// <summary>
+        ///  Gets the specified field.
+        /// </summary>
+        public FieldView this[FieldName field] => new(this.owner, (int)field);
+
+        /// <summary>
+        ///  Returns an enumerator that iterates through the fields in wire order.
+        /// </summary>
+        public FieldEnumerator GetEnumerator() => new(this.owner);
+
+        IEnumerator<FieldView> IEnumerable<FieldView>.GetEnumerator() => GetEnumerator();
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
-    /// <summary>
-    ///  Parses a <see cref="IextpHeader"/> from a binary data span.
-    /// </summary>
-    /// <param name="data">The raw message bytes. Must contain at least 40 bytes.</param>
-    /// <returns>A new <see cref="IextpHeader"/> with all fields populated from the binary data.</returns>
-    public static IextpHeader Parse(ReadOnlySpan<byte> data)
-    {
-        var offset = 0;
-        return new IextpHeader(data, ref offset);
-    }
+    private static readonly FieldDescriptor[] Descriptors =
+    [
+        new(nameof(FieldName.Version), FieldKind.UnsignedInteger, VersionLength) { ByteOrder = "Little", IsSigned = false },
+        new(nameof(FieldName.Reserved), FieldKind.Padding, ReservedLength),
+        new(nameof(FieldName.MessageProtocolId), FieldKind.UnsignedInteger, MessageProtocolIdLength) { ByteOrder = "Little", IsSigned = false },
+        new(nameof(FieldName.ChannelId), FieldKind.UnsignedInteger, ChannelIdLength) { ByteOrder = "Little", IsSigned = false },
+        new(nameof(FieldName.SessionId), FieldKind.UnsignedInteger, SessionIdLength) { ByteOrder = "Little", IsSigned = false },
+        new(nameof(FieldName.PayloadLength), FieldKind.UnsignedInteger, PayloadLengthLength) { ByteOrder = "Little", IsSigned = false },
+        new(nameof(FieldName.MessageCount), FieldKind.UnsignedInteger, MessageCountLength) { ByteOrder = "Little", IsSigned = false },
+        new(nameof(FieldName.StreamOffset), FieldKind.UnsignedInteger, StreamOffsetLength) { ByteOrder = "Little", IsSigned = false },
+        new(nameof(FieldName.FirstMessageSequenceNumber), FieldKind.UnsignedInteger, FirstMessageSequenceNumberLength) { ByteOrder = "Little", IsSigned = false },
+        new(nameof(FieldName.SendTime), FieldKind.DateTime, SendTimeLength) { Unit = "Nanoseconds", Epoch = "Unix", ByteOrder = "Little", IsSigned = false },
+    ];
 
     /// <summary>
-    ///  Parses binary data into this <see cref="IextpHeader"/> instance in place, reusing existing field objects.
+    ///  Gets the fields in wire order, each with its name, offset, length, bytes, text, and protocol attributes.
     /// </summary>
-    /// <param name="data">The raw message bytes. Must contain at least 40 bytes.</param>
-    public void ParseFrom(ReadOnlySpan<byte> data)
+    public FieldSet Fields => new(this);
+
+    IEnumerable<FieldView> IHeader.Fields => new FieldSet(this);
+
+    /// <summary>
+    ///  Initializes a new instance of the <see cref="IextpHeader"/> class with default values.
+    /// </summary>
+    public IextpHeader()
     {
         Clear();
-        var offset = 0;
-        var decoded = true;
-        do
-        {
-            if (!Version.Parse(data, ref offset))
-            {
-                decoded = false;
-                break;
-            }
-            if (data.Length - offset < ReservedBytes)
-            {
-                decoded = false;
-                break;
-            }
-            offset += ReservedBytes; // Reserved (padding)
-            if (!MessageProtocolId.Parse(data, ref offset))
-            {
-                decoded = false;
-                break;
-            }
-            if (!ChannelId.Parse(data, ref offset))
-            {
-                decoded = false;
-                break;
-            }
-            if (!SessionId.Parse(data, ref offset))
-            {
-                decoded = false;
-                break;
-            }
-            if (!PayloadLength.Parse(data, ref offset))
-            {
-                decoded = false;
-                break;
-            }
-            if (!MessageCount.Parse(data, ref offset))
-            {
-                decoded = false;
-                break;
-            }
-            if (!StreamOffset.Parse(data, ref offset))
-            {
-                decoded = false;
-                break;
-            }
-            if (!FirstMessageSequenceNumber.Parse(data, ref offset))
-            {
-                decoded = false;
-                break;
-            }
-            if (!SendTime.Parse(data, ref offset))
-            {
-                decoded = false;
-                break;
-            }
-        }
-        while (false);
-        Raw = data[..offset].ToArray();
-        IsDecoded = decoded;
     }
 
     /// <summary>
-    ///  Encodes this <see cref="IextpHeader"/> into a binary data span starting at the given offset.
+    ///  Initializes a new instance of the <see cref="IextpHeader"/> class with the values, bytes, and parse result of another instance.
     /// </summary>
-    /// <param name="data">The destination span. Must be at least offset + 40 bytes.</param>
-    /// <param name="offset">The byte offset in data at which to start writing.</param>
-    /// <returns>The offset after the last written byte.</returns>
-    public int Encode(Span<byte> data, int offset)
+    /// <exception cref="ArgumentNullException">The other instance is <see langword="null"/>.</exception>
+    public IextpHeader(IextpHeader other) : this()
     {
-        offset = Version.Encode(data, offset);
-        data.Slice(offset, ReservedBytes).Clear();
-        offset += ReservedBytes;
-        offset = MessageProtocolId.Encode(data, offset);
-        offset = ChannelId.Encode(data, offset);
-        offset = SessionId.Encode(data, offset);
-        offset = PayloadLength.Encode(data, offset);
-        offset = MessageCount.Encode(data, offset);
-        offset = StreamOffset.Encode(data, offset);
-        offset = FirstMessageSequenceNumber.Encode(data, offset);
-        offset = SendTime.Encode(data, offset);
-        return offset;
+        CopyFrom(other);
     }
 
     /// <summary>
-    ///  Encodes this <see cref="IextpHeader"/> into a binary data span starting at offset 0.
+    ///  Copies the values, bytes, and parse result from another instance.
     /// </summary>
-    /// <param name="data">The destination span. Must be at least 40 bytes.</param>
-    /// <returns>The offset after the last written byte.</returns>
-    public int Encode(Span<byte> data) => Encode(data, 0);
-
-    /// <summary>
-    ///  Returns a <see cref="IextpHeader"/> with deterministic sample values in every field,
-    ///  suitable for round-trip encoding tests.
-    /// </summary>
-    public static IextpHeader Sample()
+    /// <exception cref="ArgumentNullException">The other instance is <see langword="null"/>.</exception>
+    public void CopyFrom(IextpHeader other)
     {
-        var msg = new IextpHeader();
-        msg.Version = VersionField.Sample(seed: 0);
-        msg.MessageProtocolId = MessageProtocolIdField.Sample(seed: 1);
-        msg.ChannelId = ChannelIdField.Sample(seed: 2);
-        msg.SessionId = SessionIdField.Sample(seed: 3);
-        msg.PayloadLength = PayloadLengthField.Sample(seed: 4);
-        msg.MessageCount = MessageCountField.Sample(seed: 5);
-        msg.StreamOffset = StreamOffsetField.Sample(seed: 6);
-        msg.FirstMessageSequenceNumber = FirstMessageSequenceNumberField.Sample(seed: 7);
-        msg.SendTime = SendTimeField.Sample(seed: 8);
-        return msg;
+        ArgumentNullException.ThrowIfNull(other);
+        this.version = other.version;
+        this.messageProtocolId = other.messageProtocolId;
+        this.channelId = other.channelId;
+        this.sessionId = other.sessionId;
+        this.payloadLength = other.payloadLength;
+        this.messageCount = other.messageCount;
+        this.streamOffset = other.streamOffset;
+        this.firstMessageSequenceNumber = other.firstMessageSequenceNumber;
+        this.sendTime = other.sendTime;
+        this.status = other.status;
+        this.failed = other.failed;
+        this.failedOffset = other.failedOffset;
+        this.raw = other.raw;
+        this.cache = other.cache;
+        this.modified = other.modified;
+        this.owner?.Touch();
     }
 
     /// <summary>
-    ///  Encodes this message to a new byte array.
+    ///  Resets all values, the bytes, and the parse result to their defaults.
     /// </summary>
-    public byte[] ToBytes()
-    {
-        var buf = new byte[HeaderByteLength];
-        Encode(buf);
-        return buf;
-    }
-
-    /// <summary>
-    ///  Resets all fields of this <see cref="IextpHeader"/> to their default values and clears the raw backing store.
-    /// </summary>
+    /// <remarks>
+    ///  A field with one fixed value is reset to that value.
+    /// </remarks>
     public void Clear()
     {
-        Raw = null;
-        IsDecoded = false;
-        foreach (var field in Fields) field.Reset();
+        this.version = VersionStaticValue;
+        this.messageProtocolId = MessageProtocolIdStaticValue;
+        this.channelId = default;
+        this.sessionId = default;
+        this.payloadLength = default;
+        this.messageCount = default;
+        this.streamOffset = default;
+        this.firstMessageSequenceNumber = default;
+        this.sendTime = default;
+        this.status = default;
+        this.failed = null;
+        this.failedOffset = default;
+        this.raw = [];
+        this.cache = null;
+        this.modified = false;
+        this.owner?.Touch();
     }
 
     /// <summary>
-    ///  Compares this <see cref="IextpHeader"/> to another using field-by-field comparison.
+    ///  Parses a new instance from the start of the bytes.
     /// </summary>
-    public bool Equals(IextpHeader? other)
+    /// <returns>The new instance. Check Status to determine whether the parse succeeded.</returns>
+    public static IextpHeader Parse(ReadOnlySpan<byte> data)
     {
-        if (other is null) return false;
-        if (!Version.Equals(other.Version)) return false;
-        if (!MessageProtocolId.Equals(other.MessageProtocolId)) return false;
-        if (!ChannelId.Equals(other.ChannelId)) return false;
-        if (!SessionId.Equals(other.SessionId)) return false;
-        if (!PayloadLength.Equals(other.PayloadLength)) return false;
-        if (!MessageCount.Equals(other.MessageCount)) return false;
-        if (!StreamOffset.Equals(other.StreamOffset)) return false;
-        if (!FirstMessageSequenceNumber.Equals(other.FirstMessageSequenceNumber)) return false;
-        if (!SendTime.Equals(other.SendTime)) return false;
+        var instance = new IextpHeader();
+        instance.ParseFrom(data);
+        return instance;
+    }
+
+    /// <summary>
+    ///  Parses a new instance starting at the specified offset.
+    /// </summary>
+    /// <param name="data">The bytes to parse.</param>
+    /// <param name="offset">The offset at which to start. A successful parse advances it past the parsed bytes, and a failed parse does not change it.</param>
+    /// <returns>The new instance. Check Status to determine whether the parse succeeded.</returns>
+    public static IextpHeader Parse(ReadOnlySpan<byte> data, ref int offset)
+    {
+        var instance = new IextpHeader();
+        instance.ParseFrom(data, ref offset);
+        return instance;
+    }
+
+    /// <summary>
+    ///  Parses the bytes into this instance, starting at the first byte.
+    /// </summary>
+    public void ParseFrom(ReadOnlySpan<byte> data)
+    {
+        var offset = 0;
+        ParseFrom(data, ref offset);
+    }
+
+    /// <summary>
+    ///  Parses the bytes into this instance, starting at the specified offset.
+    /// </summary>
+    /// <param name="data">The bytes to parse.</param>
+    /// <param name="offset">The offset at which to start. A successful parse advances it past the parsed bytes, and a failed parse does not change it.</param>
+    public void ParseFrom(ReadOnlySpan<byte> data, ref int offset)
+    {
+        Clear();
+        if ((uint)offset > (uint)data.Length)
+        {
+            this.status = ParseStatus.InvalidOffset;
+            return;
+        }
+        var start = offset;
+        var cursor = start;
+        if (Truncated(data, start, cursor, VersionLength, FieldName.Version)) return;
+        this.version = data.Slice(cursor, VersionLength)[0];
+        cursor += VersionLength;
+        if (Truncated(data, start, cursor, ReservedLength, FieldName.Reserved)) return;
+        cursor += ReservedLength;
+        if (Truncated(data, start, cursor, MessageProtocolIdLength, FieldName.MessageProtocolId)) return;
+        this.messageProtocolId = BinaryPrimitives.ReadUInt16LittleEndian(data.Slice(cursor, MessageProtocolIdLength));
+        cursor += MessageProtocolIdLength;
+        if (Truncated(data, start, cursor, ChannelIdLength, FieldName.ChannelId)) return;
+        this.channelId = BinaryPrimitives.ReadUInt32LittleEndian(data.Slice(cursor, ChannelIdLength));
+        cursor += ChannelIdLength;
+        if (Truncated(data, start, cursor, SessionIdLength, FieldName.SessionId)) return;
+        this.sessionId = BinaryPrimitives.ReadUInt32LittleEndian(data.Slice(cursor, SessionIdLength));
+        cursor += SessionIdLength;
+        if (Truncated(data, start, cursor, PayloadLengthLength, FieldName.PayloadLength)) return;
+        this.payloadLength = BinaryPrimitives.ReadUInt16LittleEndian(data.Slice(cursor, PayloadLengthLength));
+        cursor += PayloadLengthLength;
+        if (Truncated(data, start, cursor, MessageCountLength, FieldName.MessageCount)) return;
+        this.messageCount = BinaryPrimitives.ReadUInt16LittleEndian(data.Slice(cursor, MessageCountLength));
+        cursor += MessageCountLength;
+        if (Truncated(data, start, cursor, StreamOffsetLength, FieldName.StreamOffset)) return;
+        this.streamOffset = BinaryPrimitives.ReadUInt64LittleEndian(data.Slice(cursor, StreamOffsetLength));
+        cursor += StreamOffsetLength;
+        if (Truncated(data, start, cursor, FirstMessageSequenceNumberLength, FieldName.FirstMessageSequenceNumber)) return;
+        this.firstMessageSequenceNumber = BinaryPrimitives.ReadUInt64LittleEndian(data.Slice(cursor, FirstMessageSequenceNumberLength));
+        cursor += FirstMessageSequenceNumberLength;
+        if (Truncated(data, start, cursor, SendTimeLength, FieldName.SendTime)) return;
+        this.sendTime = BinaryPrimitives.ReadUInt64LittleEndian(data.Slice(cursor, SendTimeLength));
+        cursor += SendTimeLength;
+        this.raw = data[start..cursor].ToArray();
+        this.status = ParseStatus.Ok;
+        offset = cursor;
+    }
+
+    private void Fail(ParseStatus status, FieldName field, int offset, ReadOnlySpan<byte> available)
+    {
+        this.status = status;
+        this.failed = field;
+        this.failedOffset = offset;
+        this.raw = available.ToArray();
+    }
+
+    private bool Truncated(ReadOnlySpan<byte> data, int start, int cursor, int length, FieldName field)
+    {
+        if (data.Length - cursor >= length) return false;
+        Fail(ParseStatus.Truncated, field, cursor - start, data[start..]);
         return true;
     }
 
     /// <summary>
-    ///  Compares two <see cref="IextpHeader"/> instances field by field.
+    ///  Encodes this instance into the span, starting at the specified offset.
     /// </summary>
-    public override bool Equals(object? obj)
+    /// <param name="data">The span that receives the bytes.</param>
+    /// <param name="offset">The offset in the span of the first byte to write.</param>
+    /// <returns>The offset immediately after the last byte written.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">The value of offset is negative or greater than the length of the span.</exception>
+    /// <exception cref="ArgumentException">The span is too small for the encoded bytes.</exception>
+    public int Encode(Span<byte> data, int offset)
     {
-        return obj is IextpHeader other && Equals(other);
+        ArgumentOutOfRangeException.ThrowIfNegative(offset);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, data.Length);
+        if (data.Length - offset < HeaderByteLength)
+        {
+            throw new ArgumentException("The span is too small for the encoded bytes.", nameof(data));
+        }
+        if (!((IHeader)this).Write(data, offset, out var cursor, out var failure))
+        {
+            throw new EncodeException(failure);
+        }
+        return cursor;
     }
 
     /// <summary>
-    ///  Returns true if the message was fully decoded and its raw bytes are equal to data.
+    ///  Encodes this instance into the start of the span.
     /// </summary>
-    public bool Equals(ReadOnlySpan<byte> data)
+    /// <param name="data">The span that receives the bytes from its first byte.</param>
+    /// <returns>The number of bytes written.</returns>
+    /// <exception cref="ArgumentException">The span is too small for the encoded bytes.</exception>
+    public int Encode(Span<byte> data) => Encode(data, 0);
+
+    /// <summary>
+    ///  Encodes this instance into a new array.
+    /// </summary>
+    public byte[] ToBytes()
     {
-        if (!IsDecoded || Raw is not { } raw) return false;
-        return raw.Span.SequenceEqual(data);
+        var buffer = new byte[HeaderByteLength];
+        Encode(buffer);
+        return buffer;
     }
 
     /// <summary>
-    ///  Returns a hash code for this <see cref="IextpHeader"/> by combining the hash of each field and counted-group container.
+    ///  Tries to encode the header into the span.
+    /// </summary>
+    /// <param name="data">The span that receives the bytes from its first byte.</param>
+    /// <param name="written">When this method returns, contains the number of bytes written, or 0 if encoding failed.</param>
+    /// <param name="failure">When this method returns <see langword="false"/>, contains the first field whose value cannot be encoded and the reason. It contains <see cref="EncodeStatus.BufferTooSmall"/> if the span is shorter than the encoded bytes. For a field in a group entry or nested message, it also identifies the group or field that holds it.</param>
+    /// <returns><see langword="true"/> if the header was written, or <see langword="false"/> if a value cannot be encoded or the span is too small.</returns>
+    /// <remarks>
+    ///  If a nested message has a trailer, the reason is <see cref="EncodeStatus.NestedTrailer"/>, and the field is the one holding the message.
+    /// </remarks>
+    public bool TryEncode(Span<byte> data, out int written, out EncodeFailure failure)
+    {
+        written = 0;
+        if (data.Length < HeaderByteLength)
+        {
+            failure = new EncodeFailure(EncodeStatus.BufferTooSmall);
+            return false;
+        }
+        if (!((IHeader)this).Write(data, 0, out var cursor, out failure))
+        {
+            return false;
+        }
+        written = cursor;
+        return true;
+    }
+
+    bool IHeader.Write(Span<byte> data, int offset, out int cursor, out EncodeFailure failure)
+    {
+        cursor = offset;
+        data.Slice(cursor, VersionLength)[0] = unchecked((byte)(this.version));
+        cursor += VersionLength;
+        {
+            if (this.raw.Length >= ReservedOffset + ReservedLength)
+            {
+                this.raw.AsSpan(ReservedOffset, ReservedLength).CopyTo(data.Slice(cursor, ReservedLength));
+            }
+            else
+            {
+                data.Slice(cursor, ReservedLength).Clear();
+            }
+            cursor += ReservedLength;
+        }
+        BinaryPrimitives.WriteUInt16LittleEndian(data.Slice(cursor, MessageProtocolIdLength), this.messageProtocolId);
+        cursor += MessageProtocolIdLength;
+        BinaryPrimitives.WriteUInt32LittleEndian(data.Slice(cursor, ChannelIdLength), this.channelId);
+        cursor += ChannelIdLength;
+        BinaryPrimitives.WriteUInt32LittleEndian(data.Slice(cursor, SessionIdLength), this.sessionId);
+        cursor += SessionIdLength;
+        BinaryPrimitives.WriteUInt16LittleEndian(data.Slice(cursor, PayloadLengthLength), this.payloadLength);
+        cursor += PayloadLengthLength;
+        BinaryPrimitives.WriteUInt16LittleEndian(data.Slice(cursor, MessageCountLength), this.messageCount);
+        cursor += MessageCountLength;
+        BinaryPrimitives.WriteUInt64LittleEndian(data.Slice(cursor, StreamOffsetLength), this.streamOffset);
+        cursor += StreamOffsetLength;
+        BinaryPrimitives.WriteUInt64LittleEndian(data.Slice(cursor, FirstMessageSequenceNumberLength), this.firstMessageSequenceNumber);
+        cursor += FirstMessageSequenceNumberLength;
+        BinaryPrimitives.WriteUInt64LittleEndian(data.Slice(cursor, SendTimeLength), this.sendTime);
+        cursor += SendTimeLength;
+        failure = default;
+        return true;
+    }
+
+    bool IFieldOwner.TryRaw(out ReadOnlyMemory<byte> raw)
+    {
+        if (this.status == ParseStatus.None || this.modified)
+        {
+            if (this.cache is null)
+            {
+                var buffer = new byte[HeaderByteLength];
+                if (!((IHeader)this).Write(buffer, 0, out _, out _))
+                {
+                    raw = ReadOnlyMemory<byte>.Empty;
+                    return false;
+                }
+                this.cache = buffer;
+            }
+            raw = this.cache;
+            return true;
+        }
+        raw = this.raw;
+        return true;
+    }
+
+    /// <summary>
+    ///  Checks every field against the values that the protocol specification allows.
+    /// </summary>
+    /// <returns>The fields whose values are not allowed, each with the reason, or an empty list if every value is allowed.</returns>
+    /// <remarks>
+    ///  Validate checks the current values. After a parse, check Status first, because a field that the parse did not reach holds its cleared value.
+    /// </remarks>
+    public List<ValidationFailure> Validate()
+    {
+        var failures = new List<ValidationFailure>();
+        if (this.version is not VersionStaticValue)
+        {
+            failures.Add(new ValidationFailure(new FieldView(this, (int)FieldName.Version), ValidationStatus.NotStaticValue));
+        }
+        if (this.messageProtocolId is not MessageProtocolIdStaticValue)
+        {
+            failures.Add(new ValidationFailure(new FieldView(this, (int)FieldName.MessageProtocolId), ValidationStatus.NotStaticValue));
+        }
+        return failures;
+    }
+
+    /// <summary>
+    ///  Determines whether another instance has the same values.
+    /// </summary>
+    public bool Equals(IextpHeader? other)
+    {
+        if (other is null)
+        {
+            return false;
+        }
+        if (this.version != other.version) return false;
+        if (this.messageProtocolId != other.messageProtocolId) return false;
+        if (this.channelId != other.channelId) return false;
+        if (this.sessionId != other.sessionId) return false;
+        if (this.payloadLength != other.payloadLength) return false;
+        if (this.messageCount != other.messageCount) return false;
+        if (this.streamOffset != other.streamOffset) return false;
+        if (this.firstMessageSequenceNumber != other.firstMessageSequenceNumber) return false;
+        if (this.sendTime != other.sendTime) return false;
+        return true;
+    }
+
+    /// <summary>
+    ///  Determines whether the specified object is an instance of the same type with the same values.
+    /// </summary>
+    public override bool Equals(object? obj) => obj is IextpHeader other && Equals(other);
+
+    /// <summary>
+    ///  Returns a hash code computed from the values.
     /// </summary>
     public override int GetHashCode()
     {
         var hash = new HashCode();
-        hash.Add(Version);
-        hash.Add(MessageProtocolId);
-        hash.Add(ChannelId);
-        hash.Add(SessionId);
-        hash.Add(PayloadLength);
-        hash.Add(MessageCount);
-        hash.Add(StreamOffset);
-        hash.Add(FirstMessageSequenceNumber);
-        hash.Add(SendTime);
+        hash.Add(this.version);
+        hash.Add(this.messageProtocolId);
+        hash.Add(this.channelId);
+        hash.Add(this.sessionId);
+        hash.Add(this.payloadLength);
+        hash.Add(this.messageCount);
+        hash.Add(this.streamOffset);
+        hash.Add(this.firstMessageSequenceNumber);
+        hash.Add(this.sendTime);
         return hash.ToHashCode();
     }
 
-    public static bool operator ==(IextpHeader? a, IextpHeader? b) => ReferenceEquals(a, b) || (a is not null && a.Equals(b));
-    public static bool operator !=(IextpHeader? a, IextpHeader? b) => !(a == b);
+    /// <summary>
+    ///  Determines whether the specified bytes equal the result of <see cref="ToBytes"/>.
+    /// </summary>
+    public bool BytesEqual(ReadOnlySpan<byte> data) => ToBytes().AsSpan().SequenceEqual(data);
 
-    /// <summary>Identifies which fields differ between two messages of the same type. Scalar field bit positions match FieldName enum order; counted-group container bits follow after the last field bit.</summary>
-    public readonly struct Changes : IEquatable<Changes>
+    /// <summary>
+    ///  Identifies the fields that differ between two instances.
+    /// </summary>
+    public readonly struct Changes : IEquatable<Changes>, IEnumerable<FieldName>
     {
-        private readonly ulong w0;
+        internal const int WordShift = 6;
+        internal const int WordBitMask = 63;
+        private const int WordCount = 1;
+        private const int FieldCount = 10;
 
-        private Changes(ulong w0)
+        [global::System.Runtime.CompilerServices.InlineArray(WordCount)]
+        private struct Words
         {
-            this.w0 = w0;
+            private ulong word;
         }
 
+        private readonly Words words;
+
+        private Changes(Words words)
+        {
+            this.words = words;
+        }
+
+        /// <summary>
+        ///  Gets a value with no fields marked.
+        /// </summary>
         public static Changes None => default;
 
-        public bool IsNone => (w0) == 0;
+        /// <summary>
+        ///  Gets a value indicating whether no fields are marked.
+        /// </summary>
+        public bool IsNone => ((ReadOnlySpan<ulong>)this.words).IndexOfAnyExcept(0UL) < 0;
 
-        internal ulong Word(int i) => i switch
-        {
-            0 => w0,
-            _ => 0UL,
-        };
+        internal ulong[] ToWords() => ((ReadOnlySpan<ulong>)this.words).ToArray();
 
         internal Changes With(int bit)
         {
-            var word = bit >> 6;
-            var offset = bit & 63;
-            var mask = 1UL << offset;
-            return word switch
-            {
-                0 => new Changes(w0 | mask),
-                _ => this,
-            };
+            var word = bit >> WordShift;
+            if ((uint)word >= WordCount) return this;
+            var words = this.words;
+            words[word] |= 1UL << (bit & WordBitMask);
+            return new(words);
         }
+
+        internal Changes With(FieldName field) => With((int)field);
 
         internal bool Has(int bit)
         {
-            var word = bit >> 6;
-            var offset = bit & 63;
-            var mask = 1UL << offset;
-            return (Word(word) & mask) != 0;
+            var word = bit >> WordShift;
+            return (uint)word < WordCount && (this.words[word] & (1UL << (bit & WordBitMask))) != 0;
         }
 
+        /// <summary>
+        ///  Determines whether the specified field is marked.
+        /// </summary>
         public bool Has(FieldName field) => Has((int)field);
 
-        public bool Equals(Changes other) => w0 == other.w0;
+        /// <summary>
+        ///  Determines whether another value marks the same fields.
+        /// </summary>
+        public bool Equals(Changes other) => ((ReadOnlySpan<ulong>)this.words).SequenceEqual((ReadOnlySpan<ulong>)other.words);
+
+        /// <summary>
+        ///  Determines whether the specified object is a value that marks the same fields.
+        /// </summary>
         public override bool Equals(object? obj) => obj is Changes other && Equals(other);
 
+        /// <summary>
+        ///  Returns a hash code computed from the marked fields.
+        /// </summary>
         public override int GetHashCode()
         {
             var hc = new HashCode();
-            hc.Add(w0);
+            foreach (var word in this.words)
+            {
+                hc.Add(word);
+            }
             return hc.ToHashCode();
         }
 
+        /// <summary>
+        ///  Determines whether two values mark the same fields.
+        /// </summary>
         public static bool operator ==(Changes a, Changes b) => a.Equals(b);
+
+        /// <summary>
+        ///  Determines whether two values mark different fields.
+        /// </summary>
         public static bool operator !=(Changes a, Changes b) => !a.Equals(b);
 
+        /// <summary>
+        ///  Returns an enumerator that iterates through the marked fields in field order.
+        /// </summary>
+        public Enumerator GetEnumerator() => new(this);
+
+        IEnumerator<FieldName> IEnumerable<FieldName>.GetEnumerator() => GetEnumerator();
+
+        global::System.Collections.IEnumerator global::System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
+
+        /// <summary>
+        ///  Enumerates the marked fields of a value.
+        /// </summary>
+        public struct Enumerator : IEnumerator<FieldName>
+        {
+            private const int BeforeFirst = -1;
+            private readonly Changes changes;
+            private int field;
+
+            internal Enumerator(Changes changes)
+            {
+                this.changes = changes;
+                this.field = BeforeFirst;
+            }
+
+            /// <summary>
+            ///  Gets the current marked field.
+            /// </summary>
+            public readonly FieldName Current => (FieldName)this.field;
+
+            readonly object global::System.Collections.IEnumerator.Current => Current;
+
+            /// <summary>
+            ///  Advances the enumerator to the next marked field.
+            /// </summary>
+            public bool MoveNext()
+            {
+                while (++this.field < FieldCount)
+                {
+                    if (this.changes.Has(this.field)) return true;
+                }
+                return false;
+            }
+
+            /// <summary>
+            ///  Sets the enumerator to its initial position, before the first field.
+            /// </summary>
+            public void Reset() => this.field = BeforeFirst;
+
+            /// <summary>
+            ///  Releases the enumerator.
+            /// </summary>
+            public readonly void Dispose() { }
+        }
+
+        /// <summary>
+        ///  Returns the names of the marked fields, or None if no fields are marked.
+        /// </summary>
         public override string ToString()
         {
-            if (IsNone) return "None";
-            var sb = new System.Text.StringBuilder();
-            var first = true;
-            if (Has(0)) { if (!first) sb.Append(", "); sb.Append("Version"); first = false; }
-            if (Has(1)) { if (!first) sb.Append(", "); sb.Append("MessageProtocolId"); first = false; }
-            if (Has(2)) { if (!first) sb.Append(", "); sb.Append("ChannelId"); first = false; }
-            if (Has(3)) { if (!first) sb.Append(", "); sb.Append("SessionId"); first = false; }
-            if (Has(4)) { if (!first) sb.Append(", "); sb.Append("PayloadLength"); first = false; }
-            if (Has(5)) { if (!first) sb.Append(", "); sb.Append("MessageCount"); first = false; }
-            if (Has(6)) { if (!first) sb.Append(", "); sb.Append("StreamOffset"); first = false; }
-            if (Has(7)) { if (!first) sb.Append(", "); sb.Append("FirstMessageSequenceNumber"); first = false; }
-            if (Has(8)) { if (!first) sb.Append(", "); sb.Append("SendTime"); first = false; }
-            return sb.ToString();
+            var names = new List<string>();
+            if (Has(FieldName.Version)) names.Add(nameof(FieldName.Version));
+            if (Has(FieldName.Reserved)) names.Add(nameof(FieldName.Reserved));
+            if (Has(FieldName.MessageProtocolId)) names.Add(nameof(FieldName.MessageProtocolId));
+            if (Has(FieldName.ChannelId)) names.Add(nameof(FieldName.ChannelId));
+            if (Has(FieldName.SessionId)) names.Add(nameof(FieldName.SessionId));
+            if (Has(FieldName.PayloadLength)) names.Add(nameof(FieldName.PayloadLength));
+            if (Has(FieldName.MessageCount)) names.Add(nameof(FieldName.MessageCount));
+            if (Has(FieldName.StreamOffset)) names.Add(nameof(FieldName.StreamOffset));
+            if (Has(FieldName.FirstMessageSequenceNumber)) names.Add(nameof(FieldName.FirstMessageSequenceNumber));
+            if (Has(FieldName.SendTime)) names.Add(nameof(FieldName.SendTime));
+            return names.Count == 0 ? "None" : string.Join(", ", names);
         }
     }
 
-    /// <summary>Compares two messages field by field and returns a <c>Changes</c> value identifying which fields and counted-group containers differ.</summary>
+    /// <summary>
+    ///  Compares this instance with another and identifies the fields that differ.
+    /// </summary>
+    /// <returns>The fields that differ, or None if there are no differences.</returns>
+    /// <exception cref="ArgumentNullException">The other instance is <see langword="null"/>.</exception>
     public Changes Diff(IextpHeader other)
     {
         ArgumentNullException.ThrowIfNull(other);
         var diff = Changes.None;
-        if (!Version.Equals(other.Version)) diff = diff.With(0);
-        if (!MessageProtocolId.Equals(other.MessageProtocolId)) diff = diff.With(1);
-        if (!ChannelId.Equals(other.ChannelId)) diff = diff.With(2);
-        if (!SessionId.Equals(other.SessionId)) diff = diff.With(3);
-        if (!PayloadLength.Equals(other.PayloadLength)) diff = diff.With(4);
-        if (!MessageCount.Equals(other.MessageCount)) diff = diff.With(5);
-        if (!StreamOffset.Equals(other.StreamOffset)) diff = diff.With(6);
-        if (!FirstMessageSequenceNumber.Equals(other.FirstMessageSequenceNumber)) diff = diff.With(7);
-        if (!SendTime.Equals(other.SendTime)) diff = diff.With(8);
+        if (this.version != other.version) diff = diff.With(FieldName.Version);
+        if (this.messageProtocolId != other.messageProtocolId) diff = diff.With(FieldName.MessageProtocolId);
+        if (this.channelId != other.channelId) diff = diff.With(FieldName.ChannelId);
+        if (this.sessionId != other.sessionId) diff = diff.With(FieldName.SessionId);
+        if (this.payloadLength != other.payloadLength) diff = diff.With(FieldName.PayloadLength);
+        if (this.messageCount != other.messageCount) diff = diff.With(FieldName.MessageCount);
+        if (this.streamOffset != other.streamOffset) diff = diff.With(FieldName.StreamOffset);
+        if (this.firstMessageSequenceNumber != other.firstMessageSequenceNumber) diff = diff.With(FieldName.FirstMessageSequenceNumber);
+        if (this.sendTime != other.sendTime) diff = diff.With(FieldName.SendTime);
         return diff;
     }
 
-    /// <summary>Enumerates scalar fields that differ between this header and another. The other header must be the same type. Counted-group container changes are visible via Diff() and DiffReport() but not enumerated here.</summary>
-    public IEnumerable<Field> DiffFields(IHeader other)
+    private void CopyField(FieldName field, IextpHeader from)
     {
-        ArgumentNullException.ThrowIfNull(other);
-        if (other is not IextpHeader typed) throw new ArgumentException("DiffFields requires same header type", nameof(other));
-        var changes = Diff(typed);
-        const ulong FieldMaskW0 = 0x00000000000001FFUL;
-        var word0 = changes.Word(0) & FieldMaskW0;
-        while (word0 != 0)
+        switch (field)
         {
-            var bit = (0 * 64) + System.Numerics.BitOperations.TrailingZeroCount(word0);
-            yield return GetField((FieldName)bit);
-            word0 &= word0 - 1;
+            case FieldName.Version:
+                this.version = from.version;
+                break;
+            case FieldName.MessageProtocolId:
+                this.messageProtocolId = from.messageProtocolId;
+                break;
+            case FieldName.ChannelId:
+                this.channelId = from.channelId;
+                break;
+            case FieldName.SessionId:
+                this.sessionId = from.sessionId;
+                break;
+            case FieldName.PayloadLength:
+                this.payloadLength = from.payloadLength;
+                break;
+            case FieldName.MessageCount:
+                this.messageCount = from.messageCount;
+                break;
+            case FieldName.StreamOffset:
+                this.streamOffset = from.streamOffset;
+                break;
+            case FieldName.FirstMessageSequenceNumber:
+                this.firstMessageSequenceNumber = from.firstMessageSequenceNumber;
+                break;
+            case FieldName.SendTime:
+                this.sendTime = from.sendTime;
+                break;
+            default:
+                return;
         }
+        Touch();
     }
 
-    /// <summary>Enumerates changed fields and counted-group containers as (Name, Before, After) tuples. The other message must be the same message type.</summary>
-    public IEnumerable<(string Name, string Before, string After)> DiffReport(IextpHeader other)
+    /// <summary>
+    ///  Returns the values formatted on a single line.
+    /// </summary>
+    public override string ToString() => $"IextpHeader {{ Version: {(Text.Of(this.version))}, MessageProtocolId: {(Text.Of(this.messageProtocolId))}, ChannelId: {(Text.Of(this.channelId))}, SessionId: {(Text.Of(this.sessionId))}, PayloadLength: {(Text.Of(this.payloadLength))}, MessageCount: {(Text.Of(this.messageCount))}, StreamOffset: {(Text.Of(this.streamOffset))}, FirstMessageSequenceNumber: {(Text.Of(this.firstMessageSequenceNumber))}, SendTime: {(Text.Instant(this.sendTime, SendTimeNanosecondsPerUnit))} }}";
+
+    private string DebuggerDisplay => $"[{(Text.Of(this.version))}] [{(Text.Of(this.messageProtocolId))}] [{(Text.Of(this.channelId))}]";
+
+    IFieldOwner? IFieldOwner.Owner
     {
-        ArgumentNullException.ThrowIfNull(other);
-        var changes = Diff(other);
-        if (changes.IsNone) yield break;
-        if (changes.Has(0)) yield return (Version.Name, Version.ToFormattedString(), other.Version.ToFormattedString());
-        if (changes.Has(1)) yield return (MessageProtocolId.Name, MessageProtocolId.ToFormattedString(), other.MessageProtocolId.ToFormattedString());
-        if (changes.Has(2)) yield return (ChannelId.Name, ChannelId.ToFormattedString(), other.ChannelId.ToFormattedString());
-        if (changes.Has(3)) yield return (SessionId.Name, SessionId.ToFormattedString(), other.SessionId.ToFormattedString());
-        if (changes.Has(4)) yield return (PayloadLength.Name, PayloadLength.ToFormattedString(), other.PayloadLength.ToFormattedString());
-        if (changes.Has(5)) yield return (MessageCount.Name, MessageCount.ToFormattedString(), other.MessageCount.ToFormattedString());
-        if (changes.Has(6)) yield return (StreamOffset.Name, StreamOffset.ToFormattedString(), other.StreamOffset.ToFormattedString());
-        if (changes.Has(7)) yield return (FirstMessageSequenceNumber.Name, FirstMessageSequenceNumber.ToFormattedString(), other.FirstMessageSequenceNumber.ToFormattedString());
-        if (changes.Has(8)) yield return (SendTime.Name, SendTime.ToFormattedString(), other.SendTime.ToFormattedString());
+        get => this.owner;
+        set => this.owner = value;
     }
 
-    /// <summary>Enumerates all fields in declaration order.</summary>
-    public IEnumerable<Field> Fields
-    {
-        get
-        {
-            yield return Version;
-            yield return MessageProtocolId;
-            yield return ChannelId;
-            yield return SessionId;
-            yield return PayloadLength;
-            yield return MessageCount;
-            yield return StreamOffset;
-            yield return FirstMessageSequenceNumber;
-            yield return SendTime;
-        }
-    }
+    FieldDescriptor[] IFieldOwner.Descriptors => Descriptors;
 
-    /// <summary>Looks up a field by its declared PascalCase name. Returns false if the name is not found.</summary>
-    public bool TryGetField(string name, out Field field)
-    {
-        foreach (var f in Fields)
-            if (f.Name == name) { field = f; return true; }
-        field = null!;
-        return false;
-    }
+    void IFieldOwner.Touch() => Touch();
 
-    /// <summary>Returns the field identified by <paramref name="field"/>.</summary>
-    public Field GetField(FieldName field) => field switch
+    string IFieldOwner.TextOf(int field) => (FieldName)field switch
     {
-        FieldName.Version => Version,
-        FieldName.MessageProtocolId => MessageProtocolId,
-        FieldName.ChannelId => ChannelId,
-        FieldName.SessionId => SessionId,
-        FieldName.PayloadLength => PayloadLength,
-        FieldName.MessageCount => MessageCount,
-        FieldName.StreamOffset => StreamOffset,
-        FieldName.FirstMessageSequenceNumber => FirstMessageSequenceNumber,
-        FieldName.SendTime => SendTime,
+        FieldName.Version => Text.Of(this.version),
+        FieldName.MessageProtocolId => Text.Of(this.messageProtocolId),
+        FieldName.ChannelId => Text.Of(this.channelId),
+        FieldName.SessionId => Text.Of(this.sessionId),
+        FieldName.PayloadLength => Text.Of(this.payloadLength),
+        FieldName.MessageCount => Text.Of(this.messageCount),
+        FieldName.StreamOffset => Text.Of(this.streamOffset),
+        FieldName.FirstMessageSequenceNumber => Text.Of(this.firstMessageSequenceNumber),
+        FieldName.SendTime => Text.Instant(this.sendTime, SendTimeNanosecondsPerUnit),
+        _ => string.Empty,
+    };
+
+    bool IFieldOwner.IsRecognized(int field) => true;
+
+    bool IFieldOwner.IsPresent(int field) => true;
+
+    bool IFieldOwner.IsParsed(int field) => this.status == ParseStatus.Ok || field < (int?)this.failed;
+
+    bool IFieldOwner.IsReached(int field) => this.modified || this.status is ParseStatus.None or ParseStatus.Ok || field <= (int?)this.failed;
+
+    bool IFieldOwner.HasParseLayout(int field) => false;
+
+    int IFieldOwner.OffsetOf(int field) => (FieldName)field switch
+    {
+        FieldName.Version => VersionOffset,
+        FieldName.Reserved => ReservedOffset,
+        FieldName.MessageProtocolId => MessageProtocolIdOffset,
+        FieldName.ChannelId => ChannelIdOffset,
+        FieldName.SessionId => SessionIdOffset,
+        FieldName.PayloadLength => PayloadLengthOffset,
+        FieldName.MessageCount => MessageCountOffset,
+        FieldName.StreamOffset => StreamOffsetOffset,
+        FieldName.FirstMessageSequenceNumber => FirstMessageSequenceNumberOffset,
+        FieldName.SendTime => SendTimeOffset,
         _ => throw new ArgumentOutOfRangeException(nameof(field)),
     };
 
-    /// <summary>
-    ///  Appends a human-readable representation of all fields in this <see cref="IextpHeader"/> to <paramref name="builder"/>,
-    ///  indented according to <paramref name="options"/>.
-    /// </summary>
-    public void ToFormattedString(StringBuilder builder, PrintOptions options = default)
+    int IFieldOwner.LengthOf(int field) => (FieldName)field switch
     {
-        var indent = options.Prefix;
-        builder.Append(indent).AppendLine("IextpHeader:");
-        foreach (var f in Fields)
-        {
-            builder.Append(indent).Append("  ").Append(f.Name).Append(": ");
-            f.ToFormattedString(builder, options);
-            builder.AppendLine();
-        }
-    }
+        FieldName.Version => VersionLength,
+        FieldName.Reserved => ReservedLength,
+        FieldName.MessageProtocolId => MessageProtocolIdLength,
+        FieldName.ChannelId => ChannelIdLength,
+        FieldName.SessionId => SessionIdLength,
+        FieldName.PayloadLength => PayloadLengthLength,
+        FieldName.MessageCount => MessageCountLength,
+        FieldName.StreamOffset => StreamOffsetLength,
+        FieldName.FirstMessageSequenceNumber => FirstMessageSequenceNumberLength,
+        FieldName.SendTime => SendTimeLength,
+        _ => throw new ArgumentOutOfRangeException(nameof(field)),
+    };
 
-    /// <summary>
-    ///  Returns a human-readable representation of all fields in this <see cref="IextpHeader"/>,
-    ///  indented according to <paramref name="options"/>. When <paramref name="options"/> is
-    ///  <see cref="PrintOptions.Identifier"/>, returns a compact one-line summary.
-    ///  When <paramref name="options"/> is <see cref="PrintOptions.Compact"/>, returns a one-line
-    ///  summary with all fields.
-    /// </summary>
-    public string ToFormattedString(PrintOptions options = default)
-    {
-        if (options.IsIdentifier)
-            return $"[{Version.Value}] [{MessageProtocolId.Value}] [{ChannelId.Value}]";
-        if (options.IsCompact)
-        {
-            var sb = new StringBuilder();
-            sb.Append("IextpHeader { ");
-            bool first = true;
-            foreach (var f in Fields)
-            {
-                if (!first) sb.Append(", ");
-                sb.Append(f.Name).Append(": ");
-                f.ToFormattedString(sb, options);
-                first = false;
-            }
-            sb.Append(" }");
-            return sb.ToString();
-        }
-        var builder = new StringBuilder();
-        ToFormattedString(builder, options);
-        return builder.ToString();
-    }
+    IReadOnlyList<IGroupEntry>? IFieldOwner.EntriesOf(int field) => null;
 
-    /// <summary>
-    ///  Returns a compact one-line representation of all fields in this <see cref="IextpHeader"/>.
-    /// </summary>
-    public string ToCompact() => ToFormattedString(PrintOptions.Compact);
+    IMessage? IFieldOwner.MessageOf(int field) => null;
 
-    /// <summary>
-    ///  Returns a human-readable representation of this <see cref="IextpHeader"/>.
-    /// </summary>
-    public override string ToString() => ToFormattedString();
+    ulong[] IFieldOwner.ChangedAgainst(IFieldOwner other) => other is IextpHeader typed ? Diff(typed).ToWords() : throw new ArgumentException("The other instance is not of the same type.", nameof(other));
+
+    void IFieldOwner.CopyField(int field, IFieldOwner from) => CopyField((FieldName)field, from as IextpHeader ?? throw new ArgumentException("The other instance is not of the same type.", nameof(from)));
 }

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+<PropertyGroup>
+<OutputType>Exe</OutputType>
+<TargetFramework>net10.0</TargetFramework>
+<ImplicitUsings>enable</ImplicitUsings>
+<Nullable>enable</Nullable>
+</PropertyGroup>
+
+<ItemGroup>
+<Using Include="Nasdaq.NsmEquities.TotalView.Itch.v5_0_2026" />
+<Using Include="Nasdaq.NsmEquities.TotalView.Itch.v5_0_2026.ClientManager" />
+<Using Include="Omi.Pcap" />
+</ItemGroup>
+
+<ItemGroup>
+<ProjectReference Include="../../../../../Omi.Pcap/Omi.Pcap.csproj" />
+<ProjectReference Include="../../Nasdaq.NsmEquities.TotalView.Itch.v5.0.2026/Nasdaq.NsmEquities.TotalView.Itch.v5.0.2026.csproj" />
+</ItemGroup>
+
+</Project>

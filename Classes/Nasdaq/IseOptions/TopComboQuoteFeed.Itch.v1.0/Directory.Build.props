@@ -1,0 +1,20 @@
+<Project>
+  <PropertyGroup>
+    <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Description>Generated C# parser for Nasdaq ISE Ise Top Combo Quote Feed Itch v1.0.</Description>
+    <Version>1.0.0</Version>
+    <IsPackable Condition="'$(MSBuildProjectName)' != 'Nasdaq.IseOptions.TopComboQuoteFeed.Itch.v1.0'">false</IsPackable>
+    <PackageId Condition="'$(MSBuildProjectName)' == 'Nasdaq.IseOptions.TopComboQuoteFeed.Itch.v1.0'">Nasdaq.IseOptions.TopComboQuoteFeed.Itch.v1.0.Classes</PackageId>
+    <AssemblyName Condition="'$(MSBuildProjectName)' == 'Nasdaq.IseOptions.TopComboQuoteFeed.Itch.v1.0'">Nasdaq.IseOptions.TopComboQuoteFeed.Itch.v1.0.Classes</AssemblyName>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile Condition="'$(MSBuildProjectName)' == 'Nasdaq.IseOptions.TopComboQuoteFeed.Itch.v1.0'">ReadMe.md</PackageReadmeFile>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(MSBuildProjectName)' == 'Nasdaq.IseOptions.TopComboQuoteFeed.Itch.v1.0'">
+    <None Include="$(MSBuildThisFileDirectory)ReadMe.md" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+  <PropertyGroup>
+    <RepositoryUrl>https://github.com/Open-Markets-Initiative/omi-csharp-protocols</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Open-Markets-Initiative/omi-csharp-protocols</PackageProjectUrl>
+  </PropertyGroup>
+</Project>

@@ -1,46 +1,45 @@
 using System.Runtime.CompilerServices;
 
-namespace Iex.IexEquities.Tops.IexTp;
+namespace Iex.IexEquities.Tops.IexTp.v1_56;
 
 /// <summary>
-///  Represents the FirstMessageSequenceNumber field as 8-byte little-endian unsigned integer.
+///  Sequence of the first message in the segment
 /// </summary>
-
 public struct FirstMessageSequenceNumber
 {
     /// <summary>
-    ///  Size of FirstMessageSequenceNumber in bytes
+    ///  The size of the First Message Sequence Number field in bytes.
     /// </summary>
     public const int Size = 8;
 
     /// <summary>
-    ///  Gets the decoded First Message Sequence Number value.
+    ///  Sequence of the first message in the segment
     /// </summary>
-    public readonly ulong Value
-        => Decode();
+    public ulong Value
+    {
+        readonly get => Decode();
+        set => Encode(value);
+    }
 
     /// <summary>
-    ///  Decodes the raw bytes into the First Message Sequence Number value.
+    ///  Returns the wire value of the First Message Sequence Number field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly ulong Decode()
-        => Underlying;
+        => global::System.Buffers.Binary.BinaryPrimitives.ReadUInt64LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.ReadOnlySpan<ulong>(in Underlying)));
 
     /// <summary>
-    ///  Encodes a value into the underlying First Message Sequence Number bytes.
+    ///  Writes an unscaled wire value into the First Message Sequence Number field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Encode(ulong value)
-        => Underlying = value;
+        => global::System.Buffers.Binary.BinaryPrimitives.WriteUInt64LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.Span<ulong>(ref Underlying)), value);
 
     /// <summary>
-    ///  Returns the string representation of the First Message Sequence Number value.
+    ///  Returns the value of the field as text.
     /// </summary>
     public readonly override string ToString()
-        => $"{Value}";
+        => string.Create(global::System.Globalization.CultureInfo.InvariantCulture, $"{Value}");
 
-    /// <summary>
-    ///  Underlying bytes
-    /// </summary>
     internal ulong Underlying;
 }

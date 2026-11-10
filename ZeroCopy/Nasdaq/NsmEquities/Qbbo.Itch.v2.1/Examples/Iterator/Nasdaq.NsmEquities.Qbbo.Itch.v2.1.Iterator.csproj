@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Authors>Omi Developers</Authors>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../../../../Omi.Pcap/Omi.Pcap.csproj" />
+    <ProjectReference Include="../../Nasdaq.NsmEquities.Qbbo.Itch.v2.1/Nasdaq.NsmEquities.Qbbo.Itch.v2.1.csproj" />
+  </ItemGroup>
+
+</Project>

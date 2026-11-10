@@ -1,46 +1,57 @@
 using System.Runtime.CompilerServices;
 
-namespace Iex.IexEquities.Deep.IexTp;
+namespace Iex.IexEquities.Deep.IexTp.v1_08;
 
 /// <summary>
-///  Represents the ExtensionNumber field as a single ASCII character.
+///  Number of extensions an auction received
 /// </summary>
-
 public struct ExtensionNumber
 {
     /// <summary>
-    ///  Size of ExtensionNumber in bytes
+    ///  The size of the Extension Number field in bytes.
     /// </summary>
     public const int Size = 1;
 
     /// <summary>
-    ///  Gets the decoded Extension Number value.
+    ///  Number of extensions an auction received
     /// </summary>
-    public readonly char Value
-        => (char)Byte;
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///  The value does not fit its field.
+    /// </exception>
+    public char Value
+    {
+        readonly get => (char)Byte;
+        set => Encode(value);
+    }
 
     /// <summary>
-    ///  Decodes the raw bytes into the Extension Number value.
+    ///  Returns the wire value of the Extension Number field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly char Decode()
-        => (char)Byte;
+    public readonly byte Decode()
+        => Byte;
 
     /// <summary>
-    ///  Encodes a value into the underlying Extension Number bytes.
+    ///  Writes a value into the Extension Number field.
     /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///  The value does not fit its field.
+    /// </exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Encode(char value)
-        => Byte = (byte)value;
+    {
+        if (value > byte.MaxValue)
+        {
+            throw new ArgumentOutOfRangeException(nameof(value), global::Iex.IexEquities.Deep.IexTp.v1_08.Parser.WriterValueDoesNotFit);
+        }
+        Byte = (byte)value;
+    }
 
     /// <summary>
-    ///  Returns the string representation of the Extension Number value.
+    ///  Returns the value of the field as text.
     /// </summary>
     public readonly override string ToString()
         => $"{Value}";
 
-    /// <summary>
-    ///  Underlying byte
-    /// </summary>
     internal byte Byte;
 }

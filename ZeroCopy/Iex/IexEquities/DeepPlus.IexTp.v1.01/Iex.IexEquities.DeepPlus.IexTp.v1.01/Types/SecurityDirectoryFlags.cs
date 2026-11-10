@@ -1,65 +1,77 @@
 using System.Runtime.CompilerServices;
 
-namespace Iex.IexEquities.DeepPlus.IexTp;
+namespace Iex.IexEquities.DeepPlus.IexTp.v1_01;
 
 /// <summary>
-///  Security Directory Flags: Bitfield
+///  Security Directory Flags
 /// </summary>
-
 public struct SecurityDirectoryFlags
 {
     /// <summary>
-    ///  Applies to the container's normalized Value, not the raw underlying bytes.
+    ///  The bits of the Etp flag in <see cref="Value"/>.
     /// </summary>
     public const byte EtpMask = unchecked((byte)0x20UL);
     /// <summary>
-    ///  Etp
+    ///  Symbol is an ETP
     /// </summary>
-    public readonly bool Etp => (Value & EtpMask) != 0;
+    public bool Etp
+    {
+        readonly get => (Value & EtpMask) != 0;
+        set => Value = value ? (byte)(Value | EtpMask) : (byte)(Value & ~EtpMask);
+    }
 
     /// <summary>
-    ///  Applies to the container's normalized Value, not the raw underlying bytes.
+    ///  The bits of the When Issued flag in <see cref="Value"/>.
     /// </summary>
     public const byte WhenIssuedMask = unchecked((byte)0x40UL);
     /// <summary>
-    ///  When Issued
+    ///  Symbol is a when issued security
     /// </summary>
-    public readonly bool WhenIssued => (Value & WhenIssuedMask) != 0;
+    public bool WhenIssued
+    {
+        readonly get => (Value & WhenIssuedMask) != 0;
+        set => Value = value ? (byte)(Value | WhenIssuedMask) : (byte)(Value & ~WhenIssuedMask);
+    }
 
     /// <summary>
-    ///  Applies to the container's normalized Value, not the raw underlying bytes.
+    ///  The bits of the Test Security flag in <see cref="Value"/>.
     /// </summary>
     public const byte TestSecurityMask = unchecked((byte)0x80UL);
     /// <summary>
-    ///  Test Security
+    ///  Symbol is a test security
     /// </summary>
-    public readonly bool TestSecurity => (Value & TestSecurityMask) != 0;
+    public bool TestSecurity
+    {
+        readonly get => (Value & TestSecurityMask) != 0;
+        set => Value = value ? (byte)(Value | TestSecurityMask) : (byte)(Value & ~TestSecurityMask);
+    }
 
     /// <summary>
-    ///  Size of SecurityDirectoryFlags in bytes
+    ///  The size of the Security Directory Flags field in bytes.
     /// </summary>
     public const int Size = 1;
 
     /// <summary>
-    ///  Security Directory Flags value
+    ///  Security Directory Flags
     /// </summary>
-    public readonly byte Value
-        => Underlying;
+    public byte Value
+    {
+        readonly get => Underlying;
+        set => Encode(value);
+    }
 
     /// <summary>
-    ///  Security Directory Flags as string
+    ///  Returns the value of the field as text.
     /// </summary>
     public readonly override string ToString()
         => $"0x{Value:X}";
 
     /// <summary>
-    ///  Encodes a Security Directory Flags value into the underlying bytes
+    ///  Writes a value into the Security Directory Flags field.
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Encode(byte value)
         => Underlying = value;
 
-    /// <summary>
-    ///  Underlying bytes
-    /// </summary>
     internal byte Underlying;
 }

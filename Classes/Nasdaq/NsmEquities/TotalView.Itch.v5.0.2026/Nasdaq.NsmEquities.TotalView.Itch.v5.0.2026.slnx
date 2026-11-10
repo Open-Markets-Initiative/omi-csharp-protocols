@@ -1,0 +1,16 @@
+<Solution>
+  <Project Path="Nasdaq.NsmEquities.TotalView.Itch.v5.0.2026/Nasdaq.NsmEquities.TotalView.Itch.v5.0.2026.csproj" />
+  <Folder Name="/Examples/">
+    <Project Path="Examples/ClientManager/Nasdaq.NsmEquities.TotalView.Itch.v5.0.2026.ClientManager.csproj" />
+    <Project Path="Examples/Iterator/Nasdaq.NsmEquities.TotalView.Itch.v5.0.2026.Iterator.csproj" />
+    <Project Path="Examples/PacketManager/Nasdaq.NsmEquities.TotalView.Itch.v5.0.2026.PacketManager.csproj" />
+    <Project Path="Examples/ServerManager/Nasdaq.NsmEquities.TotalView.Itch.v5.0.2026.ServerManager.csproj" />
+    <Project Path="Examples/Viewer/Nasdaq.NsmEquities.TotalView.Itch.v5.0.2026.Viewer.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/Test/Nasdaq.NsmEquities.TotalView.Itch.v5.0.2026.Test.csproj" />
+  </Folder>
+  <Folder Name="/Omi.Pcap/">
+    <Project Path="../../../Omi.Pcap/Omi.Pcap.csproj" />
+  </Folder>
+</Solution>

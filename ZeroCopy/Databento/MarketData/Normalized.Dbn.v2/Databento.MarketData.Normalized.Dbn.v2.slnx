@@ -1,0 +1,15 @@
+<Solution>
+  <Project Path="Databento.MarketData.Normalized.Dbn.v2/Databento.MarketData.Normalized.Dbn.v2.csproj" />
+  <Folder Name="/Examples/">
+    <Project Path="Examples/Counter/Databento.MarketData.Normalized.Dbn.v2.Counter.csproj" />
+    <Project Path="Examples/Iterator/Databento.MarketData.Normalized.Dbn.v2.Iterator.csproj" />
+    <Project Path="Examples/Manager/Databento.MarketData.Normalized.Dbn.v2.Manager.csproj" />
+    <Project Path="Examples/Viewer/Databento.MarketData.Normalized.Dbn.v2.Viewer.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/Test/Databento.MarketData.Normalized.Dbn.v2.Test.csproj" />
+  </Folder>
+  <Folder Name="/Omi.Pcap/">
+    <Project Path="../../../Omi.Pcap/Omi.Pcap.csproj" />
+  </Folder>
+</Solution>

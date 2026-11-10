@@ -1,10 +1,10 @@
-namespace Iex.IexEquities.Deep.IexTp;
+namespace Iex.IexEquities.Deep.IexTp.v1_08;
 
 /// <summary>
 ///  Code identifying this message type
 /// </summary>
 /// <remarks>
-///  Each value corresponds to the ASCII byte value used as the wire-format discriminator.
+///  Each value is the ASCII character that represents it on the wire.
 /// </remarks>
 public enum MessageType : byte
 {

@@ -1,35 +1,142 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace Iex.IexEquities.DeepPlus.IexTp;
+namespace Iex.IexEquities.DeepPlus.IexTp.v1_01;
 
 /// <summary>
-///  Represents the RetailLiquidityIndicatorMessage message from the DeepPlus protocol.
+///  broadcasts a real-time Retail Liquidity Indicator Message each time there is an update to IEX's eligible retail liquidity interest during the trading day
 /// </summary>
-
-public partial class RetailLiquidityIndicatorMessage
+public static class RetailLiquidityIndicatorMessage
 {
     /// <summary>
-    ///  Retail Liquidity Indicator identifier
+    ///  The fixed fields in wire order, laid out as they are in the bytes.
     /// </summary>
-    public char RetailLiquidityIndicator => Fields.RetailLiquidityIndicator.Value;
-
-    /// <summary>
-    ///  Time stamp of the system event
-    /// </summary>
-    public DateTime Timestamp => Fields.Timestamp.Value;
-
-    /// <summary>
-    ///  Security identifier
-    /// </summary>
-    public string Symbol => Fields.Symbol.Value;
-
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public unsafe struct Layout
+    public struct Layout
     {
-        public RetailLiquidityIndicator RetailLiquidityIndicator;
-        public Timestamp Timestamp;
-        public Symbol Symbol;
-    };
+        /// <summary>
+        ///  The length of the Retail Liquidity Indicator Message in bytes.
+        /// </summary>
+        public const int Size = global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.SizeRetailLiquidityIndicator + global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.SizeTimestamp + global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.SizeSymbol;
 
-    protected Layout Fields;
-};
+        /// <summary>
+        ///  Gets the Retail Liquidity Indicator Message laid over the start of the bytes.
+        /// </summary>
+        /// <remarks>
+        ///  Checks only that the bytes are long enough.
+        /// </remarks>
+        /// <exception cref="ArgumentException">
+        ///  The bytes are shorter than the Retail Liquidity Indicator Message.
+        /// </exception>
+        public static ref readonly Layout Read(ReadOnlySpan<byte> source)
+        {
+            if (Size > source.Length) throw new global::System.ArgumentException(global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.ReadTooShort, nameof(source));
+            return ref global::System.Runtime.InteropServices.MemoryMarshal.AsRef<Layout>(source);
+        }
+
+        /// <summary>
+        ///  Clears the Retail Liquidity Indicator Message at the start of the buffer, writes its fixed values, and gets the Retail Liquidity Indicator Message laid over them.
+        /// </summary>
+        /// <exception cref="ArgumentException">
+        ///  The buffer has no room for the Retail Liquidity Indicator Message.
+        /// </exception>
+        public static ref Layout Initialize(global::System.Span<byte> destination)
+        {
+            if (Size > destination.Length) throw new global::System.ArgumentException(global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.WriterNoRoom, nameof(destination));
+            destination[..Size].Clear();
+            return ref global::System.Runtime.InteropServices.MemoryMarshal.AsRef<Layout>(destination);
+        }
+
+        /// <summary>
+        ///  Gets the fixed fields over the start of the bytes without clearing or writing them, for changes in place.
+        /// </summary>
+        /// <remarks>
+        ///  Checks only that the bytes are long enough.
+        /// </remarks>
+        /// <exception cref="ArgumentException">
+        ///  The bytes are shorter than the fixed fields.
+        /// </exception>
+        public static ref Layout Over(global::System.Span<byte> bytes)
+        {
+            if (Size > bytes.Length) throw new global::System.ArgumentException(global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.ReadTooShort, nameof(bytes));
+            return ref global::System.Runtime.InteropServices.MemoryMarshal.AsRef<Layout>(bytes);
+        }
+
+        /// <summary>
+        ///  Retail Liquidity Indicator identifier
+        /// </summary>
+        public global::Iex.IexEquities.DeepPlus.IexTp.v1_01.RetailLiquidityIndicatorField RetailLiquidityIndicator;
+        /// <summary>
+        ///  Time stamp of the system event
+        /// </summary>
+        public global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Timestamp Timestamp;
+        /// <summary>
+        ///  Security identifier
+        /// </summary>
+        public global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Symbol Symbol;
+    }
+
+    /// <summary>
+    ///  The Retail Liquidity Indicator Message fields to write.
+    /// </summary>
+    public readonly struct Value
+    {
+        /// <summary>
+        ///  Retail Liquidity Indicator identifier
+        /// </summary>
+        public required global::Iex.IexEquities.DeepPlus.IexTp.v1_01.RetailLiquidityIndicatorField RetailLiquidityIndicator { get; init; }
+
+        /// <summary>
+        ///  Time stamp of the system event
+        /// </summary>
+        public required global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Timestamp Timestamp { get; init; }
+
+        /// <summary>
+        ///  Security identifier
+        /// </summary>
+        public required global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Symbol Symbol { get; init; }
+
+        /// <summary>
+        ///  Creates the value of the Retail Liquidity Indicator Message, with each field that it leaves out absent.
+        /// </summary>
+        public Value() { }
+    }
+
+    internal const int LayoutSize = global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.SizeRetailLiquidityIndicator + global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.SizeTimestamp + global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.SizeSymbol;
+
+    /// <summary>
+    ///  Writes the Retail Liquidity Indicator Message to the start of destination and fills in each length, count and message type in it.
+    /// </summary>
+    /// <param name="destination">
+    ///  The buffer that receives the bytes.
+    /// </param>
+    /// <param name="value">
+    ///  The fields to write.
+    /// </param>
+    /// <returns>
+    ///  The bytes of the Retail Liquidity Indicator Message.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    ///  The destination is too short, a value selects no message, or two values disagree.
+    /// </exception>
+    /// <exception cref="OverflowException">
+    ///  A length or a count does not fit its field.
+    /// </exception>
+    public static global::System.Span<byte> Write(global::System.Span<byte> destination, scoped in Value value)
+    {
+        var cursor = new global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.WriterCursor();
+        return Write(destination, ref cursor, global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.Position.Minimum, in value);
+    }
+
+    internal static global::System.Span<byte> Write(global::System.Span<byte> bytes, scoped ref global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.WriterCursor cursor, int start, scoped in Value value)
+    {
+        if (LayoutSize > bytes.Length - cursor.Index) throw new global::System.ArgumentException(global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.WriterNoRoom, global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.WriterDestination);
+        ref Layout retailLiquidityIndicatorWriterLayout = ref global::System.Runtime.InteropServices.MemoryMarshal.AsRef<Layout>(bytes[cursor.Index..]);
+        retailLiquidityIndicatorWriterLayout.RetailLiquidityIndicator = value.RetailLiquidityIndicator;
+        retailLiquidityIndicatorWriterLayout.Timestamp = value.Timestamp;
+        retailLiquidityIndicatorWriterLayout.Symbol = value.Symbol;
+        cursor.Index += LayoutSize;
+        return bytes[start..cursor.Index];
+    }
+}

@@ -1,46 +1,55 @@
 using System.Runtime.CompilerServices;
 
-namespace Iex.IexEquities.Deep.IexTp;
+namespace Iex.IexEquities.Deep.IexTp.v1_06;
 
 /// <summary>
-///  Represents the SendTime field as a Unix nanosecond timestamp (8-byte little-endian).
+///  Send time of segment
 /// </summary>
-
 public struct SendTime
 {
     /// <summary>
-    ///  Size of SendTime in bytes
+    ///  The size of the Send Time field in bytes.
     /// </summary>
     public const int Size = 8;
 
     /// <summary>
-    ///  Gets the decoded Send Time value.
+    ///  Send time of segment
     /// </summary>
-    public readonly DateTime Value
-        => Decode();
+    /// <remarks>
+    ///  The time is truncated to a multiple of 100 nanoseconds. <see cref="Decode"/> returns the exact nanosecond count.
+    /// </remarks>
+    public DateTime Value
+    {
+        readonly get => DateTime.UnixEpoch.AddTicks((long)(Decode() / TimeSpan.NanosecondsPerTick));
+        set => Encode(value);
+    }
 
     /// <summary>
-    ///  Decodes the raw bytes into the Send Time value.
+    ///  Returns the wire value of the Send Time field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly DateTime Decode()
-        => DateTime.UnixEpoch.AddTicks(Underlying / TimeSpan.NanosecondsPerTick);
+    public readonly ulong Decode()
+        => global::System.Buffers.Binary.BinaryPrimitives.ReadUInt64LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.ReadOnlySpan<ulong>(in Underlying)));
 
     /// <summary>
-    ///  Encodes a value into the underlying Send Time bytes.
+    ///  Writes an unscaled wire value into the Send Time field.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Encode(ulong value)
+        => global::System.Buffers.Binary.BinaryPrimitives.WriteUInt64LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.Span<ulong>(ref Underlying)), value);
+
+    /// <summary>
+    ///  Writes a value into the Send Time field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Encode(DateTime timestamp)
-        => Underlying = (timestamp - DateTime.UnixEpoch).Ticks * TimeSpan.NanosecondsPerTick;
+        => Encode((ulong)(timestamp - DateTime.UnixEpoch).Ticks * TimeSpan.NanosecondsPerTick);
 
     /// <summary>
-    ///  Returns the string representation of the Send Time value.
+    ///  Returns the value of the field as text.
     /// </summary>
     public readonly override string ToString()
-        => $"{Value}";
+        => Value.ToString("O", global::System.Globalization.CultureInfo.InvariantCulture);
 
-    /// <summary>
-    ///  Underlying bytes
-    /// </summary>
-    internal long Underlying;
+    internal ulong Underlying;
 }

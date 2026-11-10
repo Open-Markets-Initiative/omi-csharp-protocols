@@ -1,46 +1,55 @@
 using System.Runtime.CompilerServices;
 
-namespace Iex.IexEquities.Tops.IexTp;
+namespace Iex.IexEquities.Tops.IexTp.v1_56;
 
 /// <summary>
-///  Represents the Timestamp field as a Unix nanosecond timestamp (8-byte little-endian).
+///  Time stamp of the system event
 /// </summary>
-
 public struct Timestamp
 {
     /// <summary>
-    ///  Size of Timestamp in bytes
+    ///  The size of the Timestamp field in bytes.
     /// </summary>
     public const int Size = 8;
 
     /// <summary>
-    ///  Gets the decoded Timestamp value.
+    ///  Time stamp of the system event
     /// </summary>
-    public readonly DateTime Value
-        => Decode();
+    /// <remarks>
+    ///  The time is truncated to a multiple of 100 nanoseconds. <see cref="Decode"/> returns the exact nanosecond count.
+    /// </remarks>
+    public DateTime Value
+    {
+        readonly get => DateTime.UnixEpoch.AddTicks(Decode() / TimeSpan.NanosecondsPerTick);
+        set => Encode(value);
+    }
 
     /// <summary>
-    ///  Decodes the raw bytes into the Timestamp value.
+    ///  Returns the wire value of the Timestamp field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly DateTime Decode()
-        => DateTime.UnixEpoch.AddTicks(Underlying / TimeSpan.NanosecondsPerTick);
+    public readonly long Decode()
+        => global::System.Buffers.Binary.BinaryPrimitives.ReadInt64LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.ReadOnlySpan<long>(in Underlying)));
 
     /// <summary>
-    ///  Encodes a value into the underlying Timestamp bytes.
+    ///  Writes an unscaled wire value into the Timestamp field.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Encode(long value)
+        => global::System.Buffers.Binary.BinaryPrimitives.WriteInt64LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.Span<long>(ref Underlying)), value);
+
+    /// <summary>
+    ///  Writes a value into the Timestamp field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Encode(DateTime timestamp)
-        => Underlying = (timestamp - DateTime.UnixEpoch).Ticks * TimeSpan.NanosecondsPerTick;
+        => Encode((timestamp - DateTime.UnixEpoch).Ticks * TimeSpan.NanosecondsPerTick);
 
     /// <summary>
-    ///  Returns the string representation of the Timestamp value.
+    ///  Returns the value of the field as text.
     /// </summary>
     public readonly override string ToString()
-        => $"{Value}";
+        => Value.ToString("O", global::System.Globalization.CultureInfo.InvariantCulture);
 
-    /// <summary>
-    ///  Underlying bytes
-    /// </summary>
     internal long Underlying;
 }

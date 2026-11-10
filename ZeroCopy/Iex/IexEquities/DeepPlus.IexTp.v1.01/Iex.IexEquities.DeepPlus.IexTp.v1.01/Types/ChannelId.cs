@@ -1,46 +1,45 @@
 using System.Runtime.CompilerServices;
 
-namespace Iex.IexEquities.DeepPlus.IexTp;
+namespace Iex.IexEquities.DeepPlus.IexTp.v1_01;
 
 /// <summary>
-///  Represents the ChannelId field as 4-byte little-endian unsigned integer.
+///  Identifies the stream of bytes sequenced messages
 /// </summary>
-
 public struct ChannelId
 {
     /// <summary>
-    ///  Size of ChannelId in bytes
+    ///  The size of the Channel Id field in bytes.
     /// </summary>
     public const int Size = 4;
 
     /// <summary>
-    ///  Gets the decoded Channel Id value.
+    ///  Identifies the stream of bytes sequenced messages
     /// </summary>
-    public readonly uint Value
-        => Decode();
+    public uint Value
+    {
+        readonly get => Decode();
+        set => Encode(value);
+    }
 
     /// <summary>
-    ///  Decodes the raw bytes into the Channel Id value.
+    ///  Returns the wire value of the Channel Id field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly uint Decode()
-        => Underlying;
+        => global::System.Buffers.Binary.BinaryPrimitives.ReadUInt32LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.ReadOnlySpan<uint>(in Underlying)));
 
     /// <summary>
-    ///  Encodes a value into the underlying Channel Id bytes.
+    ///  Writes an unscaled wire value into the Channel Id field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Encode(uint value)
-        => Underlying = value;
+        => global::System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.Span<uint>(ref Underlying)), value);
 
     /// <summary>
-    ///  Returns the string representation of the Channel Id value.
+    ///  Returns the value of the field as text.
     /// </summary>
     public readonly override string ToString()
-        => $"{Value}";
+        => string.Create(global::System.Globalization.CultureInfo.InvariantCulture, $"{Value}");
 
-    /// <summary>
-    ///  Underlying bytes
-    /// </summary>
     internal uint Underlying;
 }

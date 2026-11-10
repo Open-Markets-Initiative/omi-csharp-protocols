@@ -1,0 +1,123 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+namespace Nasdaq.NsmEquities.Orders.Ouch.v5_0;
+
+/// <summary>
+///  Packet header of a packet sent by the server
+/// </summary>
+public static class ServerPacketHeader
+{
+    /// <summary>
+    ///  The fixed fields in wire order, laid out as they are in the bytes.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct Layout
+    {
+        /// <summary>
+        ///  The length of the Server Packet Header in bytes.
+        /// </summary>
+        public const int Size = global::Nasdaq.NsmEquities.Orders.Ouch.v5_0.Parser.SizePacketLength + global::Nasdaq.NsmEquities.Orders.Ouch.v5_0.Parser.SizeServerPacketType;
+
+        /// <summary>
+        ///  Gets the Server Packet Header laid over the start of the bytes.
+        /// </summary>
+        /// <remarks>
+        ///  Checks only that the bytes are long enough.
+        /// </remarks>
+        /// <exception cref="ArgumentException">
+        ///  The bytes are shorter than the Server Packet Header.
+        /// </exception>
+        public static ref readonly Layout Read(ReadOnlySpan<byte> source)
+        {
+            if (Size > source.Length) throw new global::System.ArgumentException(global::Nasdaq.NsmEquities.Orders.Ouch.v5_0.Parser.ReadTooShort, nameof(source));
+            return ref global::System.Runtime.InteropServices.MemoryMarshal.AsRef<Layout>(source);
+        }
+
+        /// <summary>
+        ///  Clears the Server Packet Header at the start of the buffer, writes its fixed values, and gets the Server Packet Header laid over them.
+        /// </summary>
+        /// <exception cref="ArgumentException">
+        ///  The buffer has no room for the Server Packet Header.
+        /// </exception>
+        public static ref Layout Initialize(global::System.Span<byte> destination)
+        {
+            if (Size > destination.Length) throw new global::System.ArgumentException(global::Nasdaq.NsmEquities.Orders.Ouch.v5_0.Parser.WriterNoRoom, nameof(destination));
+            destination[..Size].Clear();
+            return ref global::System.Runtime.InteropServices.MemoryMarshal.AsRef<Layout>(destination);
+        }
+
+        /// <summary>
+        ///  Gets the fixed fields over the start of the bytes without clearing or writing them, for changes in place.
+        /// </summary>
+        /// <remarks>
+        ///  Checks only that the bytes are long enough.
+        /// </remarks>
+        /// <exception cref="ArgumentException">
+        ///  The bytes are shorter than the fixed fields.
+        /// </exception>
+        public static ref Layout Over(global::System.Span<byte> bytes)
+        {
+            if (Size > bytes.Length) throw new global::System.ArgumentException(global::Nasdaq.NsmEquities.Orders.Ouch.v5_0.Parser.ReadTooShort, nameof(bytes));
+            return ref global::System.Runtime.InteropServices.MemoryMarshal.AsRef<Layout>(bytes);
+        }
+
+        /// <summary>
+        ///  Length of data message not including this field
+        /// </summary>
+        public global::Nasdaq.NsmEquities.Orders.Ouch.v5_0.PacketLength PacketLength;
+        /// <summary>
+        ///  Code identifying this packet type sent by the server
+        /// </summary>
+        public global::Nasdaq.NsmEquities.Orders.Ouch.v5_0.ServerPacketTypeField ServerPacketType;
+    }
+
+    /// <summary>
+    ///  The Server Packet Header fields to write.
+    /// </summary>
+    public readonly struct Value
+    {
+        /// <summary>
+        ///  Creates the value of the Server Packet Header, with each field that it leaves out absent.
+        /// </summary>
+        public Value() { }
+    }
+
+    internal const int LayoutSize = global::Nasdaq.NsmEquities.Orders.Ouch.v5_0.Parser.SizePacketLength + global::Nasdaq.NsmEquities.Orders.Ouch.v5_0.Parser.SizeServerPacketType;
+
+    /// <summary>
+    ///  Writes the Server Packet Header to the start of destination and fills in each length, count and message type in it.
+    /// </summary>
+    /// <param name="destination">
+    ///  The buffer that receives the bytes.
+    /// </param>
+    /// <param name="value">
+    ///  The fields to write.
+    /// </param>
+    /// <returns>
+    ///  The bytes of the Server Packet Header.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    ///  The destination is too short, a value selects no message, or two values disagree.
+    /// </exception>
+    /// <exception cref="OverflowException">
+    ///  A length or a count does not fit its field.
+    /// </exception>
+    public static global::System.Span<byte> Write(global::System.Span<byte> destination, scoped in Value value)
+    {
+        var cursor = new global::Nasdaq.NsmEquities.Orders.Ouch.v5_0.Parser.WriterCursor();
+        return Write(destination, ref cursor, global::Nasdaq.NsmEquities.Orders.Ouch.v5_0.Parser.Position.Minimum, ref global::System.Runtime.CompilerServices.Unsafe.NullRef<bool>(), ref global::System.Runtime.CompilerServices.Unsafe.NullRef<bool>(), in value);
+    }
+
+    internal static global::System.Span<byte> Write(global::System.Span<byte> bytes, scoped ref global::Nasdaq.NsmEquities.Orders.Ouch.v5_0.Parser.WriterCursor cursor, int start, scoped ref bool packetLengthDependencyWriteUsed, scoped ref bool serverPacketTypeDependencyWriteUsed, scoped in Value value)
+    {
+        ref bool packetLengthDependencyParentUsed = ref global::System.Runtime.CompilerServices.Unsafe.IsNullRef(ref packetLengthDependencyWriteUsed) ? ref cursor.ServerPacketHeader_PacketLength_Used : ref packetLengthDependencyWriteUsed;
+        ref bool serverPacketTypeDependencyParentUsed = ref global::System.Runtime.CompilerServices.Unsafe.IsNullRef(ref serverPacketTypeDependencyWriteUsed) ? ref cursor.ServerPacketHeader_ServerPacketType_Used : ref serverPacketTypeDependencyWriteUsed;
+        if (LayoutSize > bytes.Length - cursor.Index) throw new global::System.ArgumentException(global::Nasdaq.NsmEquities.Orders.Ouch.v5_0.Parser.WriterNoRoom, global::Nasdaq.NsmEquities.Orders.Ouch.v5_0.Parser.WriterDestination);
+        cursor.ServerPacketHeader_PacketLength_Used = false;
+        cursor.ServerPacketHeader_ServerPacketType_Used = false;
+        cursor.Index += LayoutSize;
+        return bytes[start..cursor.Index];
+    }
+}

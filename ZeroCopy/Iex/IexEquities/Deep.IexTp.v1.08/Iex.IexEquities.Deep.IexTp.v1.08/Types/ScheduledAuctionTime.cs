@@ -1,46 +1,52 @@
 using System.Runtime.CompilerServices;
 
-namespace Iex.IexEquities.Deep.IexTp;
+namespace Iex.IexEquities.Deep.IexTp.v1_08;
 
 /// <summary>
-///  Represents the ScheduledAuctionTime field as a Unix second timestamp (4-byte little-endian).
+///  Projected time of the auction match
 /// </summary>
-
 public struct ScheduledAuctionTime
 {
     /// <summary>
-    ///  Size of ScheduledAuctionTime in bytes
+    ///  The size of the Scheduled Auction Time field in bytes.
     /// </summary>
     public const int Size = 4;
 
     /// <summary>
-    ///  Gets the decoded Scheduled Auction Time value.
+    ///  Projected time of the auction match
     /// </summary>
-    public readonly DateTime Value
-        => Decode();
+    public DateTime Value
+    {
+        readonly get => DateTime.UnixEpoch.AddSeconds(Decode());
+        set => Encode(value);
+    }
 
     /// <summary>
-    ///  Decodes the raw bytes into the Scheduled Auction Time value.
+    ///  Returns the wire value of the Scheduled Auction Time field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly DateTime Decode()
-        => DateTime.UnixEpoch.AddSeconds(Underlying);
+    public readonly uint Decode()
+        => global::System.Buffers.Binary.BinaryPrimitives.ReadUInt32LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.ReadOnlySpan<uint>(in Underlying)));
 
     /// <summary>
-    ///  Encodes a value into the underlying Scheduled Auction Time bytes.
+    ///  Writes an unscaled wire value into the Scheduled Auction Time field.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Encode(uint value)
+        => global::System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.Span<uint>(ref Underlying)), value);
+
+    /// <summary>
+    ///  Writes a value into the Scheduled Auction Time field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Encode(DateTime timestamp)
-        => Underlying = (uint)(timestamp - DateTime.UnixEpoch).TotalSeconds;
+        => Encode((uint)((timestamp - DateTime.UnixEpoch).Ticks / TimeSpan.TicksPerSecond));
 
     /// <summary>
-    ///  Returns the string representation of the Scheduled Auction Time value.
+    ///  Returns the value of the field as text.
     /// </summary>
     public readonly override string ToString()
-        => $"{Value}";
+        => Value.ToString("O", global::System.Globalization.CultureInfo.InvariantCulture);
 
-    /// <summary>
-    ///  Underlying bytes
-    /// </summary>
     internal uint Underlying;
 }

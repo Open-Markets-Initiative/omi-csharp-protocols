@@ -1,46 +1,45 @@
 using System.Runtime.CompilerServices;
 
-namespace Iex.IexEquities.Tops.IexTp;
+namespace Iex.IexEquities.Tops.IexTp.v1_64;
 
 /// <summary>
-///  Represents the SessionId field as 4-byte little-endian unsigned integer.
+///  Identifies the session
 /// </summary>
-
 public struct SessionId
 {
     /// <summary>
-    ///  Size of SessionId in bytes
+    ///  The size of the Session Id field in bytes.
     /// </summary>
     public const int Size = 4;
 
     /// <summary>
-    ///  Gets the decoded Session Id value.
+    ///  Identifies the session
     /// </summary>
-    public readonly uint Value
-        => Decode();
+    public uint Value
+    {
+        readonly get => Decode();
+        set => Encode(value);
+    }
 
     /// <summary>
-    ///  Decodes the raw bytes into the Session Id value.
+    ///  Returns the wire value of the Session Id field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly uint Decode()
-        => Underlying;
+        => global::System.Buffers.Binary.BinaryPrimitives.ReadUInt32LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.ReadOnlySpan<uint>(in Underlying)));
 
     /// <summary>
-    ///  Encodes a value into the underlying Session Id bytes.
+    ///  Writes an unscaled wire value into the Session Id field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Encode(uint value)
-        => Underlying = value;
+        => global::System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.Span<uint>(ref Underlying)), value);
 
     /// <summary>
-    ///  Returns the string representation of the Session Id value.
+    ///  Returns the value of the field as text.
     /// </summary>
     public readonly override string ToString()
-        => $"{Value}";
+        => string.Create(global::System.Globalization.CultureInfo.InvariantCulture, $"{Value}");
 
-    /// <summary>
-    ///  Underlying bytes
-    /// </summary>
     internal uint Underlying;
 }

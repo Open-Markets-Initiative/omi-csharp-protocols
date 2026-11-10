@@ -1,51 +1,69 @@
 using System.Runtime.CompilerServices;
 
-namespace Iex.IexEquities.Deep.IexTp;
+namespace Iex.IexEquities.Deep.IexTp.v1_06;
 
 /// <summary>
-///  Represents the LowerAuctionCollar field as a fixed-point decimal (8-byte little-endian integer divided by 10000).
+///  Lower threshold price of the auction collar, if any
 /// </summary>
-
 public struct LowerAuctionCollar
 {
     /// <summary>
-    ///  Decimal place factor for Lower Auction Collar
+    ///  The number by which the wire value of Lower Auction Collar is divided to give its value.
     /// </summary>
-    public const long Factor = 10000;
+    public const decimal Factor = 10000m;
+
+    private const string NotMultiple = "The value is not a multiple of 0.0001.";
 
     /// <summary>
-    ///  Size of LowerAuctionCollar in bytes
+    ///  The size of the Lower Auction Collar field in bytes.
     /// </summary>
     public const int Size = 8;
 
     /// <summary>
-    ///  Gets the decoded Lower Auction Collar value.
+    ///  Lower threshold price of the auction collar, if any
     /// </summary>
-    public readonly decimal Value
-        => (decimal)Decode() / Factor;
+    /// <remarks>
+    ///  The value is <see cref="Decode"/> divided by <see cref="Factor"/>.
+    /// </remarks>
+    /// <exception cref="ArgumentException">
+    ///  The value is not a multiple of 0.0001.
+    /// </exception>
+    /// <exception cref="OverflowException">
+    ///  The value does not fit its field.
+    /// </exception>
+    public decimal Value
+    {
+        readonly get => (decimal)Decode() / Factor;
+        set
+        {
+            var units = value * Factor;
+            if (units != decimal.Truncate(units) || units / Factor != value)
+            {
+                throw new ArgumentException(NotMultiple, nameof(value));
+            }
+            Encode(checked((long)units));
+        }
+    }
 
     /// <summary>
-    ///  Decodes the raw bytes into the Lower Auction Collar value.
+    ///  Returns the wire value of the Lower Auction Collar field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly long Decode()
-        => Underlying;
+        => global::System.Buffers.Binary.BinaryPrimitives.ReadInt64LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.ReadOnlySpan<long>(in Underlying)));
 
     /// <summary>
-    ///  Encodes a value into the underlying Lower Auction Collar bytes.
+    ///  Writes an unscaled wire value into the Lower Auction Collar field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Encode(long value)
-        => Underlying = value;
+        => global::System.Buffers.Binary.BinaryPrimitives.WriteInt64LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.Span<long>(ref Underlying)), value);
 
     /// <summary>
-    ///  Returns the string representation of the Lower Auction Collar value.
+    ///  Returns the value of the field as text.
     /// </summary>
     public readonly override string ToString()
-        => $"{Value}";
+        => string.Create(global::System.Globalization.CultureInfo.InvariantCulture, $"{Value}");
 
-    /// <summary>
-    ///  Underlying bytes
-    /// </summary>
     internal long Underlying;
 }

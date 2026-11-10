@@ -1,10 +1,10 @@
-namespace Iex.IexEquities.Deep.IexTp;
+namespace Iex.IexEquities.Deep.IexTp.v1_06;
 
 /// <summary>
 ///  Identifies event processing by the System
 /// </summary>
 /// <remarks>
-///  Backed by byte. Values correspond to the wire-format integer encoding.
+///  Each value is the number that represents it on the wire.
 /// </remarks>
 public enum EventFlags : byte
 {

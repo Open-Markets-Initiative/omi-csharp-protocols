@@ -1,47 +1,162 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace Iex.IexEquities.Deep.IexTp;
+namespace Iex.IexEquities.Deep.IexTp.v1_08;
 
 /// <summary>
-///  Represents the PriceLevelBuyUpdateMessage message from the Deep protocol.
+///  Deep broadcasts a real-time Price Level Update Message each time a displayed price level on IEX is updated during the trading day
 /// </summary>
-
-public partial class PriceLevelBuyUpdateMessage
+public static class PriceLevelBuyUpdateMessage
 {
     /// <summary>
-    ///  Identifies event processing by the System
+    ///  The fixed fields in wire order, laid out as they are in the bytes.
     /// </summary>
-    public EventFlags EventFlags => Fields.EventFlags;
-
-    /// <summary>
-    ///  Time stamp of the system event
-    /// </summary>
-    public DateTime Timestamp => Fields.Timestamp.Value;
-
-    /// <summary>
-    ///  Security identifier
-    /// </summary>
-    public string Symbol => Fields.Symbol.Value;
-
-    /// <summary>
-    ///  Aggregate quoted size
-    /// </summary>
-    public uint Size => Fields.Size.Value;
-
-    /// <summary>
-    ///  Price level to add/update in the IEX Order Book
-    /// </summary>
-    public decimal Price => Fields.Price.Value;
-
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public unsafe struct Layout
+    public struct Layout
     {
-        public EventFlags EventFlags;
-        public Timestamp Timestamp;
-        public Symbol Symbol;
-        public Size Size;
-        public Price Price;
-    };
+        /// <summary>
+        ///  The length of the Price Level Buy Update Message in bytes.
+        /// </summary>
+        public const int LayoutSize = global::Iex.IexEquities.Deep.IexTp.v1_08.Parser.SizeEventFlags + global::Iex.IexEquities.Deep.IexTp.v1_08.Parser.SizeTimestamp + global::Iex.IexEquities.Deep.IexTp.v1_08.Parser.SizeSymbol + global::Iex.IexEquities.Deep.IexTp.v1_08.Parser.SizeSize + global::Iex.IexEquities.Deep.IexTp.v1_08.Parser.SizePrice;
 
-    protected Layout Fields;
-};
+        /// <summary>
+        ///  Gets the Price Level Buy Update Message laid over the start of the bytes.
+        /// </summary>
+        /// <remarks>
+        ///  Checks only that the bytes are long enough.
+        /// </remarks>
+        /// <exception cref="ArgumentException">
+        ///  The bytes are shorter than the Price Level Buy Update Message.
+        /// </exception>
+        public static ref readonly Layout Read(ReadOnlySpan<byte> source)
+        {
+            if (LayoutSize > source.Length) throw new global::System.ArgumentException(global::Iex.IexEquities.Deep.IexTp.v1_08.Parser.ReadTooShort, nameof(source));
+            return ref global::System.Runtime.InteropServices.MemoryMarshal.AsRef<Layout>(source);
+        }
+
+        /// <summary>
+        ///  Clears the Price Level Buy Update Message at the start of the buffer, writes its fixed values, and gets the Price Level Buy Update Message laid over them.
+        /// </summary>
+        /// <exception cref="ArgumentException">
+        ///  The buffer has no room for the Price Level Buy Update Message.
+        /// </exception>
+        public static ref Layout Initialize(global::System.Span<byte> destination)
+        {
+            if (LayoutSize > destination.Length) throw new global::System.ArgumentException(global::Iex.IexEquities.Deep.IexTp.v1_08.Parser.WriterNoRoom, nameof(destination));
+            destination[..LayoutSize].Clear();
+            return ref global::System.Runtime.InteropServices.MemoryMarshal.AsRef<Layout>(destination);
+        }
+
+        /// <summary>
+        ///  Gets the fixed fields over the start of the bytes without clearing or writing them, for changes in place.
+        /// </summary>
+        /// <remarks>
+        ///  Checks only that the bytes are long enough.
+        /// </remarks>
+        /// <exception cref="ArgumentException">
+        ///  The bytes are shorter than the fixed fields.
+        /// </exception>
+        public static ref Layout Over(global::System.Span<byte> bytes)
+        {
+            if (LayoutSize > bytes.Length) throw new global::System.ArgumentException(global::Iex.IexEquities.Deep.IexTp.v1_08.Parser.ReadTooShort, nameof(bytes));
+            return ref global::System.Runtime.InteropServices.MemoryMarshal.AsRef<Layout>(bytes);
+        }
+
+        /// <summary>
+        ///  Identifies event processing by the System
+        /// </summary>
+        public global::Iex.IexEquities.Deep.IexTp.v1_08.EventFlagsField EventFlags;
+        /// <summary>
+        ///  Time stamp of the system event
+        /// </summary>
+        public global::Iex.IexEquities.Deep.IexTp.v1_08.Timestamp Timestamp;
+        /// <summary>
+        ///  Security identifier
+        /// </summary>
+        public global::Iex.IexEquities.Deep.IexTp.v1_08.Symbol Symbol;
+        /// <summary>
+        ///  Aggregate quoted size
+        /// </summary>
+        public global::Iex.IexEquities.Deep.IexTp.v1_08.Size Size;
+        /// <summary>
+        ///  Price level to add/update in the IEX Order Book
+        /// </summary>
+        public global::Iex.IexEquities.Deep.IexTp.v1_08.Price Price;
+    }
+
+    /// <summary>
+    ///  The Price Level Buy Update Message fields to write.
+    /// </summary>
+    public readonly struct Value
+    {
+        /// <summary>
+        ///  Identifies event processing by the System
+        /// </summary>
+        public required global::Iex.IexEquities.Deep.IexTp.v1_08.EventFlagsField EventFlags { get; init; }
+
+        /// <summary>
+        ///  Time stamp of the system event
+        /// </summary>
+        public required global::Iex.IexEquities.Deep.IexTp.v1_08.Timestamp Timestamp { get; init; }
+
+        /// <summary>
+        ///  Security identifier
+        /// </summary>
+        public required global::Iex.IexEquities.Deep.IexTp.v1_08.Symbol Symbol { get; init; }
+
+        /// <summary>
+        ///  Aggregate quoted size
+        /// </summary>
+        public required global::Iex.IexEquities.Deep.IexTp.v1_08.Size Size { get; init; }
+
+        /// <summary>
+        ///  Price level to add/update in the IEX Order Book
+        /// </summary>
+        public required global::Iex.IexEquities.Deep.IexTp.v1_08.Price Price { get; init; }
+
+        /// <summary>
+        ///  Creates the value of the Price Level Buy Update Message, with each field that it leaves out absent.
+        /// </summary>
+        public Value() { }
+    }
+
+    internal const int LayoutSize = global::Iex.IexEquities.Deep.IexTp.v1_08.Parser.SizeEventFlags + global::Iex.IexEquities.Deep.IexTp.v1_08.Parser.SizeTimestamp + global::Iex.IexEquities.Deep.IexTp.v1_08.Parser.SizeSymbol + global::Iex.IexEquities.Deep.IexTp.v1_08.Parser.SizeSize + global::Iex.IexEquities.Deep.IexTp.v1_08.Parser.SizePrice;
+
+    /// <summary>
+    ///  Writes the Price Level Buy Update Message to the start of destination and fills in each length, count and message type in it.
+    /// </summary>
+    /// <param name="destination">
+    ///  The buffer that receives the bytes.
+    /// </param>
+    /// <param name="value">
+    ///  The fields to write.
+    /// </param>
+    /// <returns>
+    ///  The bytes of the Price Level Buy Update Message.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    ///  The destination is too short, a value selects no message, or two values disagree.
+    /// </exception>
+    /// <exception cref="OverflowException">
+    ///  A length or a count does not fit its field.
+    /// </exception>
+    public static global::System.Span<byte> Write(global::System.Span<byte> destination, scoped in Value value)
+    {
+        var cursor = new global::Iex.IexEquities.Deep.IexTp.v1_08.Parser.WriterCursor();
+        return Write(destination, ref cursor, global::Iex.IexEquities.Deep.IexTp.v1_08.Parser.Position.Minimum, in value);
+    }
+
+    internal static global::System.Span<byte> Write(global::System.Span<byte> bytes, scoped ref global::Iex.IexEquities.Deep.IexTp.v1_08.Parser.WriterCursor cursor, int start, scoped in Value value)
+    {
+        if (LayoutSize > bytes.Length - cursor.Index) throw new global::System.ArgumentException(global::Iex.IexEquities.Deep.IexTp.v1_08.Parser.WriterNoRoom, global::Iex.IexEquities.Deep.IexTp.v1_08.Parser.WriterDestination);
+        ref Layout priceLevelBuyUpdateMessageEventFlagsWriterLayout = ref global::System.Runtime.InteropServices.MemoryMarshal.AsRef<Layout>(bytes[cursor.Index..]);
+        priceLevelBuyUpdateMessageEventFlagsWriterLayout.EventFlags = value.EventFlags;
+        priceLevelBuyUpdateMessageEventFlagsWriterLayout.Timestamp = value.Timestamp;
+        priceLevelBuyUpdateMessageEventFlagsWriterLayout.Symbol = value.Symbol;
+        priceLevelBuyUpdateMessageEventFlagsWriterLayout.Size = value.Size;
+        priceLevelBuyUpdateMessageEventFlagsWriterLayout.Price = value.Price;
+        cursor.Index += LayoutSize;
+        return bytes[start..cursor.Index];
+    }
+}

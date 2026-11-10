@@ -1,46 +1,45 @@
 using System.Runtime.CompilerServices;
 
-namespace Iex.IexEquities.Deep.IexTp;
+namespace Iex.IexEquities.Deep.IexTp.v1_08;
 
 /// <summary>
-///  Represents the PayloadLength field as 2-byte little-endian unsigned integer.
+///  Byte length of the payload
 /// </summary>
-
 public struct PayloadLength
 {
     /// <summary>
-    ///  Size of PayloadLength in bytes
+    ///  The size of the Payload Length field in bytes.
     /// </summary>
     public const int Size = 2;
 
     /// <summary>
-    ///  Gets the decoded Payload Length value.
+    ///  Byte length of the payload
     /// </summary>
-    public readonly ushort Value
-        => Decode();
+    public ushort Value
+    {
+        readonly get => Decode();
+        set => Encode(value);
+    }
 
     /// <summary>
-    ///  Decodes the raw bytes into the Payload Length value.
+    ///  Returns the wire value of the Payload Length field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly ushort Decode()
-        => Underlying;
+        => global::System.Buffers.Binary.BinaryPrimitives.ReadUInt16LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.ReadOnlySpan<ushort>(in Underlying)));
 
     /// <summary>
-    ///  Encodes a value into the underlying Payload Length bytes.
+    ///  Writes an unscaled wire value into the Payload Length field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Encode(ushort value)
-        => Underlying = value;
+        => global::System.Buffers.Binary.BinaryPrimitives.WriteUInt16LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.Span<ushort>(ref Underlying)), value);
 
     /// <summary>
-    ///  Returns the string representation of the Payload Length value.
+    ///  Returns the value of the field as text.
     /// </summary>
     public readonly override string ToString()
-        => $"{Value}";
+        => string.Create(global::System.Globalization.CultureInfo.InvariantCulture, $"{Value}");
 
-    /// <summary>
-    ///  Underlying bytes
-    /// </summary>
     internal ushort Underlying;
 }

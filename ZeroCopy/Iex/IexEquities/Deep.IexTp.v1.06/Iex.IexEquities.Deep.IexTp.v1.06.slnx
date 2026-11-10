@@ -1,8 +1,15 @@
 <Solution>
-  <Folder Name="/ZeroCopy/">
-    <Project Path="Iex.IexEquities.Deep.IexTp.v1.06/ConsoleDumpManager/Iex.IexEquities.Deep.IexTp.v1.06.ConsoleDumpManager.csproj" />
-    <Project Path="Iex.IexEquities.Deep.IexTp.v1.06/Iex.IexEquities.Deep.IexTp.v1.06.csproj" />
-    <Project Path="Iex.IexEquities.Deep.IexTp.v1.06/Manager/Iex.IexEquities.Deep.IexTp.v1.06.Manager.csproj" />
-    <Project Path="Iex.IexEquities.Deep.IexTp.v1.06/Test/Iex.IexEquities.Deep.IexTp.v1.06.Test.csproj" />
+  <Project Path="Iex.IexEquities.Deep.IexTp.v1.06/Iex.IexEquities.Deep.IexTp.v1.06.csproj" />
+  <Folder Name="/Examples/">
+    <Project Path="Examples/Counter/Iex.IexEquities.Deep.IexTp.v1.06.Counter.csproj" />
+    <Project Path="Examples/Iterator/Iex.IexEquities.Deep.IexTp.v1.06.Iterator.csproj" />
+    <Project Path="Examples/Manager/Iex.IexEquities.Deep.IexTp.v1.06.Manager.csproj" />
+    <Project Path="Examples/Viewer/Iex.IexEquities.Deep.IexTp.v1.06.Viewer.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/Test/Iex.IexEquities.Deep.IexTp.v1.06.Test.csproj" />
+  </Folder>
+  <Folder Name="/Omi.Pcap/">
+    <Project Path="../../../Omi.Pcap/Omi.Pcap.csproj" />
   </Folder>
 </Solution>

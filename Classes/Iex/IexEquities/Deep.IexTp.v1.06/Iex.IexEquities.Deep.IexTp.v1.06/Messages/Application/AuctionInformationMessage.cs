@@ -1,631 +1,1555 @@
+using System.Buffers.Binary;
 using System.Diagnostics;
-using System.Text;
 
-namespace Iex.IexEquities.Deep.IexTp;
+namespace Iex.IexEquities.Deep.IexTp.v1_06;
 
 /// <summary>
-///  Represents the AuctionInformationMessage from the Deep protocol.
-/// </summary>
-/// <remarks>
 ///  Broadcasts an Auction Information Message every one second between the Lock-in Time and the auction match for Opening and Closing Auctions, and during the Display Only Period for IPO, Halt, and Volatility Auctions.
-/// </remarks>
-[DebuggerDisplay("{ToFormattedString(PrintOptions.Identifier),nq}")]
-public sealed class AuctionInformationMessage : IMessage, IEquatable<AuctionInformationMessage>
+/// </summary>
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
+public sealed class AuctionInformationMessage : IPacketMessage, IEquatable<AuctionInformationMessage>, IFieldOwner
 {
-    /// <summary>
-    ///  Message type identifier.
-    /// </summary>
-    public const char MessageType = 'A';
+    internal const int AuctionTypeOffset = 0;
+
+    internal const int AuctionTypeLength = 1;
+
+    internal const int TimestampOffset = AuctionTypeOffset + AuctionTypeLength;
+
+    internal const int TimestampLength = 8;
 
     /// <summary>
-    ///  Total fixed byte length of this message.
+    ///  The number of nanoseconds in one unit of the wire value of <see cref="Timestamp"/>.
     /// </summary>
-    private const int MessageByteLength = 79;
+    public const long TimestampNanosecondsPerUnit = 1;
+
+    internal const int SymbolOffset = TimestampOffset + TimestampLength;
+
+    internal const int SymbolLength = 8;
+
+    /// <summary>
+    ///  The byte that fills the unused bytes of Symbol.
+    /// </summary>
+    public const byte SymbolFill = (byte)' ';
+
+    internal const int PairedSharesOffset = SymbolOffset + SymbolLength;
+
+    internal const int PairedSharesLength = 4;
+
+    internal const int ReferencePriceOffset = PairedSharesOffset + PairedSharesLength;
+
+    internal const int ReferencePriceLength = 8;
+
+    /// <summary>
+    ///  The number of decimal places in Reference Price.
+    /// </summary>
+    public const byte ReferencePriceScale = 4;
+
+    /// <summary>
+    ///  The factor by which <see cref="ReferencePrice"/> is multiplied to give its wire value.
+    /// </summary>
+    public const decimal ReferencePriceFactor = 10000m;
+
+    internal const int IndicativeClearingPriceOffset = ReferencePriceOffset + ReferencePriceLength;
+
+    internal const int IndicativeClearingPriceLength = 8;
+
+    /// <summary>
+    ///  The number of decimal places in Indicative Clearing Price.
+    /// </summary>
+    public const byte IndicativeClearingPriceScale = 4;
+
+    /// <summary>
+    ///  The factor by which <see cref="IndicativeClearingPrice"/> is multiplied to give its wire value.
+    /// </summary>
+    public const decimal IndicativeClearingPriceFactor = 10000m;
+
+    internal const int ImbalanceSharesOffset = IndicativeClearingPriceOffset + IndicativeClearingPriceLength;
+
+    internal const int ImbalanceSharesLength = 4;
+
+    internal const int ImbalanceSideOffset = ImbalanceSharesOffset + ImbalanceSharesLength;
+
+    internal const int ImbalanceSideLength = 1;
+
+    internal const int ExtensionNumberOffset = ImbalanceSideOffset + ImbalanceSideLength;
+
+    internal const int ExtensionNumberLength = 1;
+
+    internal const int ScheduledAuctionTimeOffset = ExtensionNumberOffset + ExtensionNumberLength;
+
+    internal const int ScheduledAuctionTimeLength = 4;
+
+    /// <summary>
+    ///  The number of nanoseconds in one unit of the wire value of <see cref="ScheduledAuctionTime"/>.
+    /// </summary>
+    public const long ScheduledAuctionTimeNanosecondsPerUnit = TimeSpan.TicksPerSecond * TimeSpan.NanosecondsPerTick;
+
+    internal const int AuctionBookClearingPriceOffset = ScheduledAuctionTimeOffset + ScheduledAuctionTimeLength;
+
+    internal const int AuctionBookClearingPriceLength = 8;
+
+    /// <summary>
+    ///  The number of decimal places in Auction Book Clearing Price.
+    /// </summary>
+    public const byte AuctionBookClearingPriceScale = 4;
+
+    /// <summary>
+    ///  The factor by which <see cref="AuctionBookClearingPrice"/> is multiplied to give its wire value.
+    /// </summary>
+    public const decimal AuctionBookClearingPriceFactor = 10000m;
+
+    internal const int CollarReferencePriceOffset = AuctionBookClearingPriceOffset + AuctionBookClearingPriceLength;
+
+    internal const int CollarReferencePriceLength = 8;
+
+    /// <summary>
+    ///  The number of decimal places in Collar Reference Price.
+    /// </summary>
+    public const byte CollarReferencePriceScale = 4;
+
+    /// <summary>
+    ///  The factor by which <see cref="CollarReferencePrice"/> is multiplied to give its wire value.
+    /// </summary>
+    public const decimal CollarReferencePriceFactor = 10000m;
+
+    internal const int LowerAuctionCollarOffset = CollarReferencePriceOffset + CollarReferencePriceLength;
+
+    internal const int LowerAuctionCollarLength = 8;
+
+    /// <summary>
+    ///  The number of decimal places in Lower Auction Collar.
+    /// </summary>
+    public const byte LowerAuctionCollarScale = 4;
+
+    /// <summary>
+    ///  The factor by which <see cref="LowerAuctionCollar"/> is multiplied to give its wire value.
+    /// </summary>
+    public const decimal LowerAuctionCollarFactor = 10000m;
+
+    internal const int UpperAuctionCollarOffset = LowerAuctionCollarOffset + LowerAuctionCollarLength;
+
+    internal const int UpperAuctionCollarLength = 8;
+
+    /// <summary>
+    ///  The number of decimal places in Upper Auction Collar.
+    /// </summary>
+    public const byte UpperAuctionCollarScale = 4;
+
+    /// <summary>
+    ///  The factor by which <see cref="UpperAuctionCollar"/> is multiplied to give its wire value.
+    /// </summary>
+    public const decimal UpperAuctionCollarFactor = 10000m;
+
+    /// <summary>
+    ///  The encoded length in bytes, not counting variable-length content or fields that a message can omit.
+    /// </summary>
+    public const int MessageByteLength = AuctionTypeLength + TimestampLength + SymbolLength + PairedSharesLength + ReferencePriceLength + IndicativeClearingPriceLength + ImbalanceSharesLength + ImbalanceSideLength + ExtensionNumberLength + ScheduledAuctionTimeLength + AuctionBookClearingPriceLength + CollarReferencePriceLength + LowerAuctionCollarLength + UpperAuctionCollarLength;
+
+    internal AuctionType auctionType;
 
     /// <summary>
     ///  Auction type identifier
     /// </summary>
-    public AuctionTypeField AuctionType { get; set; } = new();
+    public AuctionType AuctionType
+    {
+        get => this.auctionType;
+        set
+        {
+            this.auctionType = value;
+            Touch();
+        }
+    }
+
+    internal long timestamp;
 
     /// <summary>
     ///  Time stamp of the system event
     /// </summary>
-    public TimestampField Timestamp { get; set; } = new();
+    /// <remarks>
+    ///  This property has a precision of 100 nanoseconds, and <see cref="TimestampRaw"/> holds the exact value. Setting a local time converts it to UTC, and a time of unspecified kind is treated as UTC. A time outside the range of the field is set to the nearest limit of the range.
+    /// </remarks>
+    public DateTime Timestamp
+    {
+        get => Instant.ToDateTime(this.timestamp, TimestampNanosecondsPerUnit);
+        set
+        {
+            this.timestamp = Instant.ToRaw<long>(value, TimestampNanosecondsPerUnit, long.MinValue, long.MaxValue);
+            Touch();
+        }
+    }
+
+    /// <summary>
+    ///  Gets or sets the wire value of <see cref="Timestamp"/>, as the unscaled integer that the field holds.
+    /// </summary>
+    public long TimestampRaw
+    {
+        get => this.timestamp;
+        set
+        {
+            this.timestamp = value;
+            Touch();
+        }
+    }
+
+    internal string symbol = string.Empty;
 
     /// <summary>
     ///  Security identifier
     /// </summary>
-    public SymbolField Symbol { get; set; } = new();
+    /// <remarks>
+    ///  The field is 8 bytes long. The field holds ASCII text. Text that is shorter than the field is padded with spaces at the end. Text longer than the field is cut to fit when the message is encoded. A character that the field cannot hold is replaced with a question mark when the message is encoded.
+    /// </remarks>
+    public string Symbol
+    {
+        get => this.symbol;
+        set
+        {
+            this.symbol = value ?? string.Empty;
+            Touch();
+        }
+    }
+
+    internal uint pairedShares;
 
     /// <summary>
     ///  Number of shares paired at the Reference Price using orders on the Auction Book
     /// </summary>
-    public PairedSharesField PairedShares { get; set; } = new();
+    public uint PairedShares
+    {
+        get => this.pairedShares;
+        set
+        {
+            this.pairedShares = value;
+            Touch();
+        }
+    }
+
+    internal long referencePrice;
 
     /// <summary>
     ///  Clearing price at or within the Reference Price Range using orders on the Auction Book
     /// </summary>
-    public ReferencePriceField ReferencePrice { get; set; } = new();
+    /// <remarks>
+    ///  A value is rounded to the decimal places of the field, with a midpoint away from zero. A value outside the range of the field is set to the nearest limit of the range.
+    /// </remarks>
+    public decimal ReferencePrice
+    {
+        get => FixedPoint.ToDecimal(this.referencePrice, ReferencePriceScale);
+        set
+        {
+            this.referencePrice = FixedPoint.ToRaw<long>(value, ReferencePriceFactor, long.MinValue, long.MaxValue);
+            Touch();
+        }
+    }
+
+    /// <summary>
+    ///  Gets or sets the wire value of <see cref="ReferencePrice"/>, as the unscaled integer that the field holds.
+    /// </summary>
+    public long ReferencePriceRaw
+    {
+        get => this.referencePrice;
+        set
+        {
+            this.referencePrice = value;
+            Touch();
+        }
+    }
+
+    internal long indicativeClearingPrice;
 
     /// <summary>
     ///  Clearing price using Eligible Auction Orders
     /// </summary>
-    public IndicativeClearingPriceField IndicativeClearingPrice { get; set; } = new();
+    /// <remarks>
+    ///  A value is rounded to the decimal places of the field, with a midpoint away from zero. A value outside the range of the field is set to the nearest limit of the range.
+    /// </remarks>
+    public decimal IndicativeClearingPrice
+    {
+        get => FixedPoint.ToDecimal(this.indicativeClearingPrice, IndicativeClearingPriceScale);
+        set
+        {
+            this.indicativeClearingPrice = FixedPoint.ToRaw<long>(value, IndicativeClearingPriceFactor, long.MinValue, long.MaxValue);
+            Touch();
+        }
+    }
+
+    /// <summary>
+    ///  Gets or sets the wire value of <see cref="IndicativeClearingPrice"/>, as the unscaled integer that the field holds.
+    /// </summary>
+    public long IndicativeClearingPriceRaw
+    {
+        get => this.indicativeClearingPrice;
+        set
+        {
+            this.indicativeClearingPrice = value;
+            Touch();
+        }
+    }
+
+    internal uint imbalanceShares;
 
     /// <summary>
     ///  Number of unpaired shares at the Reference Price using orders on the Auction Book
     /// </summary>
-    public ImbalanceSharesField ImbalanceShares { get; set; } = new();
+    public uint ImbalanceShares
+    {
+        get => this.imbalanceShares;
+        set
+        {
+            this.imbalanceShares = value;
+            Touch();
+        }
+    }
+
+    internal ImbalanceSide imbalanceSide;
 
     /// <summary>
     ///  Side of the unpaired shares at the Reference Price using orders on the Auction Book
     /// </summary>
-    public ImbalanceSideField ImbalanceSide { get; set; } = new();
+    public ImbalanceSide ImbalanceSide
+    {
+        get => this.imbalanceSide;
+        set
+        {
+            this.imbalanceSide = value;
+            Touch();
+        }
+    }
+
+    internal char extensionNumber;
 
     /// <summary>
     ///  Number of extensions an auction received
     /// </summary>
-    public ExtensionNumberField ExtensionNumber { get; set; } = new();
+    public char ExtensionNumber
+    {
+        get => this.extensionNumber;
+        set
+        {
+            this.extensionNumber = value;
+            Touch();
+        }
+    }
+
+    internal uint scheduledAuctionTime;
 
     /// <summary>
     ///  Projected time of the auction match
     /// </summary>
-    public ScheduledAuctionTimeField ScheduledAuctionTime { get; set; } = new();
+    /// <remarks>
+    ///  Setting a local time converts it to UTC, and a time of unspecified kind is treated as UTC. A time is rounded to the wire unit of the field, with a midpoint away from zero. A time outside the range of the field is set to the nearest limit of the range.
+    /// </remarks>
+    public DateTime ScheduledAuctionTime
+    {
+        get => Instant.ToDateTime(this.scheduledAuctionTime, ScheduledAuctionTimeNanosecondsPerUnit);
+        set
+        {
+            this.scheduledAuctionTime = Instant.ToRaw<uint>(value, ScheduledAuctionTimeNanosecondsPerUnit, uint.MinValue, uint.MaxValue);
+            Touch();
+        }
+    }
+
+    /// <summary>
+    ///  Gets or sets the wire value of <see cref="ScheduledAuctionTime"/>, as the unscaled integer that the field holds.
+    /// </summary>
+    public uint ScheduledAuctionTimeRaw
+    {
+        get => this.scheduledAuctionTime;
+        set
+        {
+            this.scheduledAuctionTime = value;
+            Touch();
+        }
+    }
+
+    internal long auctionBookClearingPrice;
 
     /// <summary>
     ///  Clearing price using orders on the Auction Book
     /// </summary>
-    public AuctionBookClearingPriceField AuctionBookClearingPrice { get; set; } = new();
+    /// <remarks>
+    ///  A value is rounded to the decimal places of the field, with a midpoint away from zero. A value outside the range of the field is set to the nearest limit of the range.
+    /// </remarks>
+    public decimal AuctionBookClearingPrice
+    {
+        get => FixedPoint.ToDecimal(this.auctionBookClearingPrice, AuctionBookClearingPriceScale);
+        set
+        {
+            this.auctionBookClearingPrice = FixedPoint.ToRaw<long>(value, AuctionBookClearingPriceFactor, long.MinValue, long.MaxValue);
+            Touch();
+        }
+    }
+
+    /// <summary>
+    ///  Gets or sets the wire value of <see cref="AuctionBookClearingPrice"/>, as the unscaled integer that the field holds.
+    /// </summary>
+    public long AuctionBookClearingPriceRaw
+    {
+        get => this.auctionBookClearingPrice;
+        set
+        {
+            this.auctionBookClearingPrice = value;
+            Touch();
+        }
+    }
+
+    internal long collarReferencePrice;
 
     /// <summary>
     ///  Reference priced used for the auction collar, if any
     /// </summary>
-    public CollarReferencePriceField CollarReferencePrice { get; set; } = new();
+    /// <remarks>
+    ///  A value is rounded to the decimal places of the field, with a midpoint away from zero. A value outside the range of the field is set to the nearest limit of the range.
+    /// </remarks>
+    public decimal CollarReferencePrice
+    {
+        get => FixedPoint.ToDecimal(this.collarReferencePrice, CollarReferencePriceScale);
+        set
+        {
+            this.collarReferencePrice = FixedPoint.ToRaw<long>(value, CollarReferencePriceFactor, long.MinValue, long.MaxValue);
+            Touch();
+        }
+    }
+
+    /// <summary>
+    ///  Gets or sets the wire value of <see cref="CollarReferencePrice"/>, as the unscaled integer that the field holds.
+    /// </summary>
+    public long CollarReferencePriceRaw
+    {
+        get => this.collarReferencePrice;
+        set
+        {
+            this.collarReferencePrice = value;
+            Touch();
+        }
+    }
+
+    internal long lowerAuctionCollar;
 
     /// <summary>
     ///  Lower threshold price of the auction collar, if any
     /// </summary>
-    public LowerAuctionCollarField LowerAuctionCollar { get; set; } = new();
+    /// <remarks>
+    ///  A value is rounded to the decimal places of the field, with a midpoint away from zero. A value outside the range of the field is set to the nearest limit of the range.
+    /// </remarks>
+    public decimal LowerAuctionCollar
+    {
+        get => FixedPoint.ToDecimal(this.lowerAuctionCollar, LowerAuctionCollarScale);
+        set
+        {
+            this.lowerAuctionCollar = FixedPoint.ToRaw<long>(value, LowerAuctionCollarFactor, long.MinValue, long.MaxValue);
+            Touch();
+        }
+    }
+
+    /// <summary>
+    ///  Gets or sets the wire value of <see cref="LowerAuctionCollar"/>, as the unscaled integer that the field holds.
+    /// </summary>
+    public long LowerAuctionCollarRaw
+    {
+        get => this.lowerAuctionCollar;
+        set
+        {
+            this.lowerAuctionCollar = value;
+            Touch();
+        }
+    }
+
+    internal long upperAuctionCollar;
 
     /// <summary>
     ///  Upper threshold price of the auction collar, if any
     /// </summary>
-    public UpperAuctionCollarField UpperAuctionCollar { get; set; } = new();
+    /// <remarks>
+    ///  A value is rounded to the decimal places of the field, with a midpoint away from zero. A value outside the range of the field is set to the nearest limit of the range.
+    /// </remarks>
+    public decimal UpperAuctionCollar
+    {
+        get => FixedPoint.ToDecimal(this.upperAuctionCollar, UpperAuctionCollarScale);
+        set
+        {
+            this.upperAuctionCollar = FixedPoint.ToRaw<long>(value, UpperAuctionCollarFactor, long.MinValue, long.MaxValue);
+            Touch();
+        }
+    }
 
     /// <summary>
-    ///  The message type character constant, or '\0' if no constant is defined.
+    ///  Gets or sets the wire value of <see cref="UpperAuctionCollar"/>, as the unscaled integer that the field holds.
     /// </summary>
-    public char Type => MessageType;
+    public long UpperAuctionCollarRaw
+    {
+        get => this.upperAuctionCollar;
+        set
+        {
+            this.upperAuctionCollar = value;
+            Touch();
+        }
+    }
 
     /// <summary>
-    ///  The total fixed byte length of this message (79 bytes).
+    ///  Gets the message type.
+    /// </summary>
+    public PacketMessageCode DataValue => PacketMessageCode.AuctionInformationMessage;
+
+    /// <summary>
+    ///  Gets the encoded length in bytes, not counting variable-length content or fields that a message can omit.
     /// </summary>
     public int ByteLength => MessageByteLength;
 
-    public ReadOnlyMemory<byte>? Raw { get; private set; }
-    public bool IsDecoded { get; private set; }
-
-    /// <summary>The packet this message was parsed from, or null if not parsed via Packet.Parse.</summary>
-    public Packet? Packet { get; private set; }
-
-    /// <summary>Sets the back-pointer to the containing packet. Called by Packet.Parse only.</summary>
-    public void SetPacket(Packet packet) => Packet = packet;
+    /// <summary>
+    ///  Gets the result of the most recent parse.
+    /// </summary>
+    public ParseStatus Status => this.status;
 
     /// <summary>
-    ///  The first field that failed structural parsing (insufficient bytes), or null if the last parse succeeded or no parse has been attempted.
+    ///  Gets the field where the most recent parse stopped, or <see langword="null"/> if it did not stop at a field.
     /// </summary>
-    public Field? FailedAt
+    public FieldView? FailedField => this.failed is { } entry ? new FieldView(this, (int)entry) : null;
+
+    /// <summary>
+    ///  Gets the byte offset, relative to the start of the parsed bytes, where the most recent parse stopped.
+    /// </summary>
+    public int FailedOffset => this.failedOffset;
+
+    /// <summary>
+    ///  Gets a value indicating whether every message type and every enumerated value is one that the protocol defines.
+    /// </summary>
+    public bool IsRecognized => global::System.Enum.IsDefined(this.auctionType) && global::System.Enum.IsDefined(this.imbalanceSide);
+
+    /// <summary>
+    ///  Gets the bytes that were parsed, or no bytes if the instance was not parsed.
+    /// </summary>
+    public ReadOnlyMemory<byte> Raw => this.raw;
+
+    /// <summary>
+    ///  Gets a value indicating whether any value has changed since the most recent parse or clear.
+    /// </summary>
+    public bool IsModified => this.modified;
+
+    private ParseStatus status;
+    private FieldName? failed;
+    private int failedOffset;
+    private byte[] raw = [];
+    private byte[]? cache;
+    private bool modified;
+    private IFieldOwner? owner;
+
+    private void Touch()
     {
-        get
+        this.modified = true;
+        this.cache = null;
+        this.owner?.Touch();
+    }
+
+    IMessage IMessage.Copy() => new AuctionInformationMessage(this);
+
+    void IMessage.SetOwner(IFieldOwner? owner) => this.owner = owner;
+
+    int IMessage.EncodedByteLength => MessageByteLength;
+
+    private byte[] trailer = [];
+
+    /// <summary>
+    ///  Gets or sets any extra bytes that follow the message within its declared length.
+    /// </summary>
+    /// <remarks>
+    ///  These bytes are written only when the message is encoded in a packet that declares each message length. Setting this property marks the message as modified.
+    /// </remarks>
+    public ReadOnlyMemory<byte> Trailer
+    {
+        get => this.trailer;
+        set
         {
-            if (Raw is null || IsDecoded) return null;
-            foreach (var f in Fields)
-                if (!f.IsDecoded) return f;
-            return null;
+            this.trailer = value.ToArray();
+            Touch();
         }
     }
 
-    /// <summary>
-    ///  True if every field's IsRecognized is true and every counted-group container is valid. Non-enum fields inherit IsRecognized =&gt; IsDecoded, so they are false until parsed. Enum fields additionally require the value to be a declared enum member.
-    /// </summary>
-    public bool IsRecognized
-    {
-        get
-        {
-            foreach (var f in Fields)
-                if (!f.IsRecognized) return false;
-            return true;
-        }
-    }
+    void IMessage.SetTrailer(ReadOnlySpan<byte> bytes) => this.trailer = bytes.ToArray();
+
+    private const int DataValueLength = 1;
 
     /// <summary>
-    ///  Convenience: true if IsDecoded and IsRecognized are both true.
+    ///  Identifies each field, in wire order.
     /// </summary>
-    public bool IsValid => IsDecoded && IsRecognized;
-
-    /// <summary>
-    ///  The timestamp field value parsed from this message.
-    /// </summary>
-    DateTime? IMessage.Timestamp => Timestamp.Value;
-
-    /// <summary>Identifies each field in this message for compile-time-safe lookup via GetField.</summary>
     public enum FieldName
     {
+        /// <summary>
+        ///  The message type.
+        /// </summary>
+        DataValue,
+        /// <summary>
+        ///  Auction type identifier
+        /// </summary>
         AuctionType,
+        /// <summary>
+        ///  Time stamp of the system event
+        /// </summary>
         Timestamp,
+        /// <summary>
+        ///  Security identifier
+        /// </summary>
         Symbol,
+        /// <summary>
+        ///  Number of shares paired at the Reference Price using orders on the Auction Book
+        /// </summary>
         PairedShares,
+        /// <summary>
+        ///  Clearing price at or within the Reference Price Range using orders on the Auction Book
+        /// </summary>
         ReferencePrice,
+        /// <summary>
+        ///  Clearing price using Eligible Auction Orders
+        /// </summary>
         IndicativeClearingPrice,
+        /// <summary>
+        ///  Number of unpaired shares at the Reference Price using orders on the Auction Book
+        /// </summary>
         ImbalanceShares,
+        /// <summary>
+        ///  Side of the unpaired shares at the Reference Price using orders on the Auction Book
+        /// </summary>
         ImbalanceSide,
+        /// <summary>
+        ///  Number of extensions an auction received
+        /// </summary>
         ExtensionNumber,
+        /// <summary>
+        ///  Projected time of the auction match
+        /// </summary>
         ScheduledAuctionTime,
+        /// <summary>
+        ///  Clearing price using orders on the Auction Book
+        /// </summary>
         AuctionBookClearingPrice,
+        /// <summary>
+        ///  Reference priced used for the auction collar, if any
+        /// </summary>
         CollarReferencePrice,
+        /// <summary>
+        ///  Lower threshold price of the auction collar, if any
+        /// </summary>
         LowerAuctionCollar,
+        /// <summary>
+        ///  Upper threshold price of the auction collar, if any
+        /// </summary>
         UpperAuctionCollar,
     }
 
     /// <summary>
-    ///  Initializes a new <see cref="AuctionInformationMessage"/> with all fields at their default values.
+    ///  Provides access to the fields of one instance, each with its name, offset, length, bytes, text, and protocol attributes.
     /// </summary>
-    public AuctionInformationMessage() { }
-
-    /// <summary>
-    ///  Initializes a new <see cref="AuctionInformationMessage"/> from an existing instance, copying all field values.
-    /// </summary>
-    /// <param name="other">The source instance to copy from.</param>
-    public AuctionInformationMessage(AuctionInformationMessage other) : this()
+    public readonly struct FieldSet : IEnumerable<FieldView>
     {
-        ArgumentNullException.ThrowIfNull(other);
-        if (other.Raw is { } raw) Raw = raw.ToArray();
-        IsDecoded = other.IsDecoded;
-        AuctionType.CopyFrom(other.AuctionType);
-        Timestamp.CopyFrom(other.Timestamp);
-        Symbol.CopyFrom(other.Symbol);
-        PairedShares.CopyFrom(other.PairedShares);
-        ReferencePrice.CopyFrom(other.ReferencePrice);
-        IndicativeClearingPrice.CopyFrom(other.IndicativeClearingPrice);
-        ImbalanceShares.CopyFrom(other.ImbalanceShares);
-        ImbalanceSide.CopyFrom(other.ImbalanceSide);
-        ExtensionNumber.CopyFrom(other.ExtensionNumber);
-        ScheduledAuctionTime.CopyFrom(other.ScheduledAuctionTime);
-        AuctionBookClearingPrice.CopyFrom(other.AuctionBookClearingPrice);
-        CollarReferencePrice.CopyFrom(other.CollarReferencePrice);
-        LowerAuctionCollar.CopyFrom(other.LowerAuctionCollar);
-        UpperAuctionCollar.CopyFrom(other.UpperAuctionCollar);
+        private readonly AuctionInformationMessage owner;
+
+        internal FieldSet(AuctionInformationMessage owner)
+        {
+            this.owner = owner;
+        }
+
+        /// <summary>
+        ///  The message type.
+        /// </summary>
+        public FieldView DataValue => this[FieldName.DataValue];
+
+        /// <summary>
+        ///  Auction type identifier
+        /// </summary>
+        public FieldView AuctionType => this[FieldName.AuctionType];
+
+        /// <summary>
+        ///  Time stamp of the system event
+        /// </summary>
+        public FieldView Timestamp => this[FieldName.Timestamp];
+
+        /// <summary>
+        ///  Security identifier
+        /// </summary>
+        public FieldView Symbol => this[FieldName.Symbol];
+
+        /// <summary>
+        ///  Number of shares paired at the Reference Price using orders on the Auction Book
+        /// </summary>
+        public FieldView PairedShares => this[FieldName.PairedShares];
+
+        /// <summary>
+        ///  Clearing price at or within the Reference Price Range using orders on the Auction Book
+        /// </summary>
+        public FieldView ReferencePrice => this[FieldName.ReferencePrice];
+
+        /// <summary>
+        ///  Clearing price using Eligible Auction Orders
+        /// </summary>
+        public FieldView IndicativeClearingPrice => this[FieldName.IndicativeClearingPrice];
+
+        /// <summary>
+        ///  Number of unpaired shares at the Reference Price using orders on the Auction Book
+        /// </summary>
+        public FieldView ImbalanceShares => this[FieldName.ImbalanceShares];
+
+        /// <summary>
+        ///  Side of the unpaired shares at the Reference Price using orders on the Auction Book
+        /// </summary>
+        public FieldView ImbalanceSide => this[FieldName.ImbalanceSide];
+
+        /// <summary>
+        ///  Number of extensions an auction received
+        /// </summary>
+        public FieldView ExtensionNumber => this[FieldName.ExtensionNumber];
+
+        /// <summary>
+        ///  Projected time of the auction match
+        /// </summary>
+        public FieldView ScheduledAuctionTime => this[FieldName.ScheduledAuctionTime];
+
+        /// <summary>
+        ///  Clearing price using orders on the Auction Book
+        /// </summary>
+        public FieldView AuctionBookClearingPrice => this[FieldName.AuctionBookClearingPrice];
+
+        /// <summary>
+        ///  Reference priced used for the auction collar, if any
+        /// </summary>
+        public FieldView CollarReferencePrice => this[FieldName.CollarReferencePrice];
+
+        /// <summary>
+        ///  Lower threshold price of the auction collar, if any
+        /// </summary>
+        public FieldView LowerAuctionCollar => this[FieldName.LowerAuctionCollar];
+
+        /// <summary>
+        ///  Upper threshold price of the auction collar, if any
+        /// </summary>
+        public FieldView UpperAuctionCollar => this[FieldName.UpperAuctionCollar];
+
+        /// <summary>
+        ///  Gets the specified field.
+        /// </summary>
+        public FieldView this[FieldName field] => new(this.owner, (int)field);
+
+        /// <summary>
+        ///  Returns an enumerator that iterates through the fields in wire order.
+        /// </summary>
+        public FieldEnumerator GetEnumerator() => new(this.owner);
+
+        IEnumerator<FieldView> IEnumerable<FieldView>.GetEnumerator() => GetEnumerator();
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
-    /// <summary>
-    ///  Parses a <see cref="AuctionInformationMessage"/> from a binary data span at the given offset.
-    ///  On return, offset has been advanced past the bytes consumed by this message.
-    ///  If any field fails to parse (insufficient bytes), parsing stops and IsDecoded remains false.
-    /// </summary>
-    /// <param name="data">The raw message bytes.</param>
-    /// <param name="offset">The starting offset into data; advanced on return.</param>
-    public AuctionInformationMessage(ReadOnlySpan<byte> data, ref int offset)
-    {
-        var start = offset;
-        var decoded = true;
-        foreach (var field in Fields)
-            if (!field.Parse(data, ref offset)) { decoded = false; break; }
-        Raw = data[start..offset].ToArray();
-        IsDecoded = decoded;
-    }
+    private static readonly FieldDescriptor[] Descriptors =
+    [
+        new(nameof(FieldName.DataValue), FieldKind.Enum, DataValueLength),
+        new(nameof(FieldName.AuctionType), FieldKind.Enum, AuctionTypeLength),
+        new(nameof(FieldName.Timestamp), FieldKind.DateTime, TimestampLength) { Unit = "Nanoseconds", Epoch = "Unix", ByteOrder = "Little", IsSigned = true },
+        new(nameof(FieldName.Symbol), FieldKind.String, SymbolLength) { Fill = "Spaces", Justification = "Left" },
+        new(nameof(FieldName.PairedShares), FieldKind.UnsignedInteger, PairedSharesLength) { ByteOrder = "Little", IsSigned = false },
+        new(nameof(FieldName.ReferencePrice), FieldKind.Decimal, ReferencePriceLength) { Scale = ReferencePriceScale, ByteOrder = "Little", IsSigned = true },
+        new(nameof(FieldName.IndicativeClearingPrice), FieldKind.Decimal, IndicativeClearingPriceLength) { Scale = IndicativeClearingPriceScale, ByteOrder = "Little", IsSigned = true },
+        new(nameof(FieldName.ImbalanceShares), FieldKind.UnsignedInteger, ImbalanceSharesLength) { ByteOrder = "Little", IsSigned = false },
+        new(nameof(FieldName.ImbalanceSide), FieldKind.Enum, ImbalanceSideLength),
+        new(nameof(FieldName.ExtensionNumber), FieldKind.Char, ExtensionNumberLength),
+        new(nameof(FieldName.ScheduledAuctionTime), FieldKind.DateTime, ScheduledAuctionTimeLength) { Unit = "Seconds", Epoch = "Unix", ByteOrder = "Little", IsSigned = false },
+        new(nameof(FieldName.AuctionBookClearingPrice), FieldKind.Decimal, AuctionBookClearingPriceLength) { Scale = AuctionBookClearingPriceScale, ByteOrder = "Little", IsSigned = true },
+        new(nameof(FieldName.CollarReferencePrice), FieldKind.Decimal, CollarReferencePriceLength) { Scale = CollarReferencePriceScale, ByteOrder = "Little", IsSigned = true },
+        new(nameof(FieldName.LowerAuctionCollar), FieldKind.Decimal, LowerAuctionCollarLength) { Scale = LowerAuctionCollarScale, ByteOrder = "Little", IsSigned = true },
+        new(nameof(FieldName.UpperAuctionCollar), FieldKind.Decimal, UpperAuctionCollarLength) { Scale = UpperAuctionCollarScale, ByteOrder = "Little", IsSigned = true },
+    ];
 
     /// <summary>
-    ///  Parses a <see cref="AuctionInformationMessage"/> from a binary data span.
+    ///  Gets the fields in wire order, each with its name, offset, length, bytes, text, and protocol attributes.
     /// </summary>
-    /// <param name="data">The raw message bytes. Must contain at least 79 bytes.</param>
-    /// <returns>A new <see cref="AuctionInformationMessage"/> with all fields populated from the binary data.</returns>
-    public static AuctionInformationMessage Parse(ReadOnlySpan<byte> data)
-    {
-        var offset = 0;
-        return new AuctionInformationMessage(data, ref offset);
-    }
+    public FieldSet Fields => new(this);
+
+    IEnumerable<FieldView> IMessage.Fields => new FieldSet(this);
 
     /// <summary>
-    ///  Parses binary data into this <see cref="AuctionInformationMessage"/> instance in place, reusing existing field objects.
+    ///  Initializes a new instance of the <see cref="AuctionInformationMessage"/> class with default values.
     /// </summary>
-    /// <param name="data">The raw message bytes. Must contain at least 79 bytes.</param>
-    public void ParseFrom(ReadOnlySpan<byte> data)
+    public AuctionInformationMessage()
     {
         Clear();
-        var offset = 0;
-        var decoded = true;
-        foreach (var field in Fields)
-            if (!field.Parse(data, ref offset)) { decoded = false; break; }
-        Raw = data[..offset].ToArray();
-        IsDecoded = decoded;
     }
 
     /// <summary>
-    ///  Encodes this <see cref="AuctionInformationMessage"/> into a binary data span starting at the given offset.
+    ///  Initializes a new instance of the <see cref="AuctionInformationMessage"/> class with the values, bytes, and parse result of another instance.
     /// </summary>
-    /// <param name="data">The destination span. Must be at least offset + 79 bytes.</param>
-    /// <param name="offset">The byte offset in data at which to start writing.</param>
-    /// <returns>The offset after the last written byte.</returns>
-    public int Encode(Span<byte> data, int offset)
+    /// <exception cref="ArgumentNullException">The other instance is <see langword="null"/>.</exception>
+    public AuctionInformationMessage(AuctionInformationMessage other) : this()
     {
-        offset = AuctionType.Encode(data, offset);
-        offset = Timestamp.Encode(data, offset);
-        offset = Symbol.Encode(data, offset);
-        offset = PairedShares.Encode(data, offset);
-        offset = ReferencePrice.Encode(data, offset);
-        offset = IndicativeClearingPrice.Encode(data, offset);
-        offset = ImbalanceShares.Encode(data, offset);
-        offset = ImbalanceSide.Encode(data, offset);
-        offset = ExtensionNumber.Encode(data, offset);
-        offset = ScheduledAuctionTime.Encode(data, offset);
-        offset = AuctionBookClearingPrice.Encode(data, offset);
-        offset = CollarReferencePrice.Encode(data, offset);
-        offset = LowerAuctionCollar.Encode(data, offset);
-        offset = UpperAuctionCollar.Encode(data, offset);
-        return offset;
+        CopyFrom(other);
     }
 
     /// <summary>
-    ///  Encodes this <see cref="AuctionInformationMessage"/> into a binary data span starting at offset 0.
+    ///  Copies the values, bytes, and parse result from another instance.
     /// </summary>
-    /// <param name="data">The destination span. Must be at least 79 bytes.</param>
-    /// <returns>The offset after the last written byte.</returns>
-    public int Encode(Span<byte> data) => Encode(data, 0);
-
-    /// <summary>
-    ///  Returns a <see cref="AuctionInformationMessage"/> with deterministic sample values in every field,
-    ///  suitable for round-trip encoding tests.
-    /// </summary>
-    public static AuctionInformationMessage Sample()
+    /// <exception cref="ArgumentNullException">The other instance is <see langword="null"/>.</exception>
+    public void CopyFrom(AuctionInformationMessage other)
     {
-        var msg = new AuctionInformationMessage();
-        msg.AuctionType = AuctionTypeField.Sample(seed: 0);
-        msg.Timestamp = TimestampField.Sample(seed: 1);
-        msg.Symbol = SymbolField.Sample(seed: 2);
-        msg.PairedShares = PairedSharesField.Sample(seed: 3);
-        msg.ReferencePrice = ReferencePriceField.Sample(seed: 4);
-        msg.IndicativeClearingPrice = IndicativeClearingPriceField.Sample(seed: 5);
-        msg.ImbalanceShares = ImbalanceSharesField.Sample(seed: 6);
-        msg.ImbalanceSide = ImbalanceSideField.Sample(seed: 7);
-        msg.ExtensionNumber = ExtensionNumberField.Sample(seed: 8);
-        msg.ScheduledAuctionTime = ScheduledAuctionTimeField.Sample(seed: 9);
-        msg.AuctionBookClearingPrice = AuctionBookClearingPriceField.Sample(seed: 10);
-        msg.CollarReferencePrice = CollarReferencePriceField.Sample(seed: 11);
-        msg.LowerAuctionCollar = LowerAuctionCollarField.Sample(seed: 12);
-        msg.UpperAuctionCollar = UpperAuctionCollarField.Sample(seed: 13);
-        return msg;
+        ArgumentNullException.ThrowIfNull(other);
+        this.auctionType = other.auctionType;
+        this.timestamp = other.timestamp;
+        this.symbol = other.symbol;
+        this.pairedShares = other.pairedShares;
+        this.referencePrice = other.referencePrice;
+        this.indicativeClearingPrice = other.indicativeClearingPrice;
+        this.imbalanceShares = other.imbalanceShares;
+        this.imbalanceSide = other.imbalanceSide;
+        this.extensionNumber = other.extensionNumber;
+        this.scheduledAuctionTime = other.scheduledAuctionTime;
+        this.auctionBookClearingPrice = other.auctionBookClearingPrice;
+        this.collarReferencePrice = other.collarReferencePrice;
+        this.lowerAuctionCollar = other.lowerAuctionCollar;
+        this.upperAuctionCollar = other.upperAuctionCollar;
+        this.trailer = other.trailer;
+        this.status = other.status;
+        this.failed = other.failed;
+        this.failedOffset = other.failedOffset;
+        this.raw = other.raw;
+        this.cache = other.cache;
+        this.modified = other.modified;
+        this.owner?.Touch();
     }
 
     /// <summary>
-    ///  Encodes this message to a new byte array.
+    ///  Resets all values, the bytes, and the parse result to their defaults.
     /// </summary>
-    public byte[] ToBytes()
-    {
-        var buf = new byte[MessageByteLength];
-        Encode(buf);
-        return buf;
-    }
-
-    /// <summary>
-    ///  Resets all fields of this <see cref="AuctionInformationMessage"/> to their default values and clears the raw backing store.
-    /// </summary>
+    /// <remarks>
+    ///  A field with one fixed value is reset to that value.
+    /// </remarks>
     public void Clear()
     {
-        Raw = null;
-        IsDecoded = false;
-        foreach (var field in Fields) field.Reset();
-        Packet = null;
+        this.auctionType = default;
+        this.timestamp = default;
+        this.symbol = string.Empty;
+        this.pairedShares = default;
+        this.referencePrice = default;
+        this.indicativeClearingPrice = default;
+        this.imbalanceShares = default;
+        this.imbalanceSide = default;
+        this.extensionNumber = default;
+        this.scheduledAuctionTime = default;
+        this.auctionBookClearingPrice = default;
+        this.collarReferencePrice = default;
+        this.lowerAuctionCollar = default;
+        this.upperAuctionCollar = default;
+        this.trailer = [];
+        this.status = default;
+        this.failed = null;
+        this.failedOffset = default;
+        this.raw = [];
+        this.cache = null;
+        this.modified = false;
+        this.owner?.Touch();
     }
 
     /// <summary>
-    ///  Compares this <see cref="AuctionInformationMessage"/> to another using field-by-field comparison.
+    ///  Parses a new instance from the start of the bytes.
     /// </summary>
-    public bool Equals(AuctionInformationMessage? other)
+    /// <returns>The new instance. Check Status to determine whether the parse succeeded.</returns>
+    /// <remarks>
+    ///  The bytes are those of the fields of the message, from its first field to its last.
+    /// </remarks>
+    public static AuctionInformationMessage Parse(ReadOnlySpan<byte> data)
     {
-        if (other is null) return false;
-        if (!AuctionType.Equals(other.AuctionType)) return false;
-        if (!Timestamp.Equals(other.Timestamp)) return false;
-        if (!Symbol.Equals(other.Symbol)) return false;
-        if (!PairedShares.Equals(other.PairedShares)) return false;
-        if (!ReferencePrice.Equals(other.ReferencePrice)) return false;
-        if (!IndicativeClearingPrice.Equals(other.IndicativeClearingPrice)) return false;
-        if (!ImbalanceShares.Equals(other.ImbalanceShares)) return false;
-        if (!ImbalanceSide.Equals(other.ImbalanceSide)) return false;
-        if (!ExtensionNumber.Equals(other.ExtensionNumber)) return false;
-        if (!ScheduledAuctionTime.Equals(other.ScheduledAuctionTime)) return false;
-        if (!AuctionBookClearingPrice.Equals(other.AuctionBookClearingPrice)) return false;
-        if (!CollarReferencePrice.Equals(other.CollarReferencePrice)) return false;
-        if (!LowerAuctionCollar.Equals(other.LowerAuctionCollar)) return false;
-        if (!UpperAuctionCollar.Equals(other.UpperAuctionCollar)) return false;
+        var instance = new AuctionInformationMessage();
+        instance.ParseFrom(data);
+        return instance;
+    }
+
+    /// <summary>
+    ///  Parses a new instance starting at the specified offset.
+    /// </summary>
+    /// <param name="data">The bytes to parse.</param>
+    /// <param name="offset">The offset at which to start. A successful parse advances it past the parsed bytes, and a failed parse does not change it.</param>
+    /// <returns>The new instance. Check Status to determine whether the parse succeeded.</returns>
+    /// <remarks>
+    ///  The bytes are those of the fields of the message, from its first field to its last.
+    /// </remarks>
+    public static AuctionInformationMessage Parse(ReadOnlySpan<byte> data, ref int offset)
+    {
+        var instance = new AuctionInformationMessage();
+        instance.ParseFrom(data, ref offset);
+        return instance;
+    }
+
+    /// <summary>
+    ///  Parses the bytes into this instance, starting at the first byte.
+    /// </summary>
+    /// <remarks>
+    ///  The bytes are those of the fields of the message, from its first field to its last.
+    /// </remarks>
+    public void ParseFrom(ReadOnlySpan<byte> data)
+    {
+        var offset = 0;
+        ParseFrom(data, ref offset);
+    }
+
+    /// <summary>
+    ///  Parses the bytes into this instance, starting at the specified offset.
+    /// </summary>
+    /// <param name="data">The bytes to parse.</param>
+    /// <param name="offset">The offset at which to start. A successful parse advances it past the parsed bytes, and a failed parse does not change it.</param>
+    /// <remarks>
+    ///  The bytes are those of the fields of the message, from its first field to its last.
+    /// </remarks>
+    public void ParseFrom(ReadOnlySpan<byte> data, ref int offset)
+    {
+        Clear();
+        if ((uint)offset > (uint)data.Length)
+        {
+            this.status = ParseStatus.InvalidOffset;
+            return;
+        }
+        var start = offset;
+        var cursor = start;
+        if (Truncated(data, start, cursor, AuctionTypeLength, FieldName.AuctionType)) return;
+        this.auctionType = (AuctionType)data.Slice(cursor, AuctionTypeLength)[0];
+        cursor += AuctionTypeLength;
+        if (Truncated(data, start, cursor, TimestampLength, FieldName.Timestamp)) return;
+        this.timestamp = BinaryPrimitives.ReadInt64LittleEndian(data.Slice(cursor, TimestampLength));
+        cursor += TimestampLength;
+        if (Truncated(data, start, cursor, SymbolLength, FieldName.Symbol)) return;
+        this.symbol = TextEncoding.Ascii.ReadLeftJustified(data.Slice(cursor, SymbolLength), SymbolFill);
+        cursor += SymbolLength;
+        if (Truncated(data, start, cursor, PairedSharesLength, FieldName.PairedShares)) return;
+        this.pairedShares = BinaryPrimitives.ReadUInt32LittleEndian(data.Slice(cursor, PairedSharesLength));
+        cursor += PairedSharesLength;
+        if (Truncated(data, start, cursor, ReferencePriceLength, FieldName.ReferencePrice)) return;
+        this.referencePrice = BinaryPrimitives.ReadInt64LittleEndian(data.Slice(cursor, ReferencePriceLength));
+        cursor += ReferencePriceLength;
+        if (Truncated(data, start, cursor, IndicativeClearingPriceLength, FieldName.IndicativeClearingPrice)) return;
+        this.indicativeClearingPrice = BinaryPrimitives.ReadInt64LittleEndian(data.Slice(cursor, IndicativeClearingPriceLength));
+        cursor += IndicativeClearingPriceLength;
+        if (Truncated(data, start, cursor, ImbalanceSharesLength, FieldName.ImbalanceShares)) return;
+        this.imbalanceShares = BinaryPrimitives.ReadUInt32LittleEndian(data.Slice(cursor, ImbalanceSharesLength));
+        cursor += ImbalanceSharesLength;
+        if (Truncated(data, start, cursor, ImbalanceSideLength, FieldName.ImbalanceSide)) return;
+        this.imbalanceSide = (ImbalanceSide)data.Slice(cursor, ImbalanceSideLength)[0];
+        cursor += ImbalanceSideLength;
+        if (Truncated(data, start, cursor, ExtensionNumberLength, FieldName.ExtensionNumber)) return;
+        this.extensionNumber = TextEncoding.Ascii.ReadChar(data.Slice(cursor, ExtensionNumberLength)[0]);
+        cursor += ExtensionNumberLength;
+        if (Truncated(data, start, cursor, ScheduledAuctionTimeLength, FieldName.ScheduledAuctionTime)) return;
+        this.scheduledAuctionTime = BinaryPrimitives.ReadUInt32LittleEndian(data.Slice(cursor, ScheduledAuctionTimeLength));
+        cursor += ScheduledAuctionTimeLength;
+        if (Truncated(data, start, cursor, AuctionBookClearingPriceLength, FieldName.AuctionBookClearingPrice)) return;
+        this.auctionBookClearingPrice = BinaryPrimitives.ReadInt64LittleEndian(data.Slice(cursor, AuctionBookClearingPriceLength));
+        cursor += AuctionBookClearingPriceLength;
+        if (Truncated(data, start, cursor, CollarReferencePriceLength, FieldName.CollarReferencePrice)) return;
+        this.collarReferencePrice = BinaryPrimitives.ReadInt64LittleEndian(data.Slice(cursor, CollarReferencePriceLength));
+        cursor += CollarReferencePriceLength;
+        if (Truncated(data, start, cursor, LowerAuctionCollarLength, FieldName.LowerAuctionCollar)) return;
+        this.lowerAuctionCollar = BinaryPrimitives.ReadInt64LittleEndian(data.Slice(cursor, LowerAuctionCollarLength));
+        cursor += LowerAuctionCollarLength;
+        if (Truncated(data, start, cursor, UpperAuctionCollarLength, FieldName.UpperAuctionCollar)) return;
+        this.upperAuctionCollar = BinaryPrimitives.ReadInt64LittleEndian(data.Slice(cursor, UpperAuctionCollarLength));
+        cursor += UpperAuctionCollarLength;
+        this.raw = data[start..cursor].ToArray();
+        this.status = ParseStatus.Ok;
+        offset = cursor;
+    }
+
+    private void Fail(ParseStatus status, FieldName field, int offset, ReadOnlySpan<byte> available)
+    {
+        this.status = status;
+        this.failed = field;
+        this.failedOffset = offset;
+        this.raw = available.ToArray();
+    }
+
+    private bool Truncated(ReadOnlySpan<byte> data, int start, int cursor, int length, FieldName field)
+    {
+        if (data.Length - cursor >= length) return false;
+        Fail(ParseStatus.Truncated, field, cursor - start, data[start..]);
         return true;
     }
 
     /// <summary>
-    ///  Compares two <see cref="AuctionInformationMessage"/> instances field by field.
+    ///  Encodes this instance into the span, starting at the specified offset.
     /// </summary>
-    public override bool Equals(object? obj)
+    /// <param name="data">The span that receives the bytes.</param>
+    /// <param name="offset">The offset in the span of the first byte to write.</param>
+    /// <returns>The offset immediately after the last byte written.</returns>
+    /// <exception cref="EncodeException">A value does not fit its field.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">The value of offset is negative or greater than the length of the span.</exception>
+    /// <exception cref="ArgumentException">The span is too small for the encoded bytes.</exception>
+    /// <remarks>
+    ///  The bytes are those of the fields of the message, from its first field to its last.
+    /// </remarks>
+    public int Encode(Span<byte> data, int offset)
     {
-        return obj is AuctionInformationMessage other && Equals(other);
+        ArgumentOutOfRangeException.ThrowIfNegative(offset);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, data.Length);
+        if (data.Length - offset < MessageByteLength)
+        {
+            throw new ArgumentException("The span is too small for the encoded bytes.", nameof(data));
+        }
+        if (!((IMessage)this).Write(data, offset, trailerFollows: false, out var cursor, out var failure))
+        {
+            throw new EncodeException(failure);
+        }
+        return cursor;
     }
 
     /// <summary>
-    ///  Returns true if the message was fully decoded and its raw bytes are equal to data.
+    ///  Encodes this instance into the start of the span.
     /// </summary>
-    public bool Equals(ReadOnlySpan<byte> data)
+    /// <param name="data">The span that receives the bytes from its first byte.</param>
+    /// <returns>The number of bytes written.</returns>
+    /// <exception cref="EncodeException">A value does not fit its field.</exception>
+    /// <exception cref="ArgumentException">The span is too small for the encoded bytes.</exception>
+    /// <remarks>
+    ///  The bytes are those of the fields of the message, from its first field to its last.
+    /// </remarks>
+    public int Encode(Span<byte> data) => Encode(data, 0);
+
+    /// <summary>
+    ///  Encodes this instance into a new array.
+    /// </summary>
+    /// <exception cref="EncodeException">A value does not fit its field.</exception>
+    /// <remarks>
+    ///  The bytes are those of the fields of the message, from its first field to its last.
+    /// </remarks>
+    public byte[] ToBytes()
     {
-        if (!IsDecoded || Raw is not { } raw) return false;
-        return raw.Span.SequenceEqual(data);
+        var buffer = new byte[MessageByteLength];
+        Encode(buffer);
+        return buffer;
     }
 
     /// <summary>
-    ///  Returns a hash code for this <see cref="AuctionInformationMessage"/> by combining the hash of each field and counted-group container.
+    ///  Tries to encode the message into the span.
+    /// </summary>
+    /// <param name="data">The span that receives the bytes from its first byte.</param>
+    /// <param name="written">When this method returns, contains the number of bytes written, or 0 if encoding failed.</param>
+    /// <param name="failure">When this method returns <see langword="false"/>, contains the first field whose value cannot be encoded and the reason. It contains <see cref="EncodeStatus.BufferTooSmall"/> if the span is shorter than the encoded bytes. For a field in a group entry or nested message, it also identifies the group or field that holds it.</param>
+    /// <returns><see langword="true"/> if the message was written, or <see langword="false"/> if a value cannot be encoded or the span is too small.</returns>
+    /// <remarks>
+    ///  The bytes are those of the fields of the message, from its first field to its last. If a nested message has a trailer, the reason is <see cref="EncodeStatus.NestedTrailer"/>, and the field is the one holding the message.
+    /// </remarks>
+    public bool TryEncode(Span<byte> data, out int written, out EncodeFailure failure)
+    {
+        written = 0;
+        if (data.Length < MessageByteLength)
+        {
+            failure = new EncodeFailure(EncodeStatus.BufferTooSmall);
+            return false;
+        }
+        if (!((IMessage)this).Write(data, 0, trailerFollows: false, out var cursor, out failure))
+        {
+            return false;
+        }
+        written = cursor;
+        return true;
+    }
+
+    bool IMessage.Write(Span<byte> data, int offset, bool trailerFollows, out int cursor, out EncodeFailure failure)
+    {
+        cursor = offset;
+        data.Slice(cursor, AuctionTypeLength)[0] = unchecked((byte)(this.auctionType));
+        cursor += AuctionTypeLength;
+        BinaryPrimitives.WriteInt64LittleEndian(data.Slice(cursor, TimestampLength), this.timestamp);
+        cursor += TimestampLength;
+        TextEncoding.Ascii.WriteLeftJustified(data.Slice(cursor, SymbolLength), TextEncoding.Ascii.Fit(this.symbol, SymbolLength), SymbolFill);
+        cursor += SymbolLength;
+        BinaryPrimitives.WriteUInt32LittleEndian(data.Slice(cursor, PairedSharesLength), this.pairedShares);
+        cursor += PairedSharesLength;
+        BinaryPrimitives.WriteInt64LittleEndian(data.Slice(cursor, ReferencePriceLength), this.referencePrice);
+        cursor += ReferencePriceLength;
+        BinaryPrimitives.WriteInt64LittleEndian(data.Slice(cursor, IndicativeClearingPriceLength), this.indicativeClearingPrice);
+        cursor += IndicativeClearingPriceLength;
+        BinaryPrimitives.WriteUInt32LittleEndian(data.Slice(cursor, ImbalanceSharesLength), this.imbalanceShares);
+        cursor += ImbalanceSharesLength;
+        data.Slice(cursor, ImbalanceSideLength)[0] = unchecked((byte)(this.imbalanceSide));
+        cursor += ImbalanceSideLength;
+        if (!TextEncoding.Ascii.CanWrite(this.extensionNumber))
+        {
+            failure = new EncodeFailure(new FieldView(this, (int)FieldName.ExtensionNumber), EncodeStatus.DoesNotFit);
+            return false;
+        }
+        data.Slice(cursor, ExtensionNumberLength)[0] = TextEncoding.Ascii.WriteChar(this.extensionNumber);
+        cursor += ExtensionNumberLength;
+        BinaryPrimitives.WriteUInt32LittleEndian(data.Slice(cursor, ScheduledAuctionTimeLength), this.scheduledAuctionTime);
+        cursor += ScheduledAuctionTimeLength;
+        BinaryPrimitives.WriteInt64LittleEndian(data.Slice(cursor, AuctionBookClearingPriceLength), this.auctionBookClearingPrice);
+        cursor += AuctionBookClearingPriceLength;
+        BinaryPrimitives.WriteInt64LittleEndian(data.Slice(cursor, CollarReferencePriceLength), this.collarReferencePrice);
+        cursor += CollarReferencePriceLength;
+        BinaryPrimitives.WriteInt64LittleEndian(data.Slice(cursor, LowerAuctionCollarLength), this.lowerAuctionCollar);
+        cursor += LowerAuctionCollarLength;
+        BinaryPrimitives.WriteInt64LittleEndian(data.Slice(cursor, UpperAuctionCollarLength), this.upperAuctionCollar);
+        cursor += UpperAuctionCollarLength;
+        failure = default;
+        return true;
+    }
+
+    bool IFieldOwner.TryRaw(out ReadOnlyMemory<byte> raw)
+    {
+        if (this.status == ParseStatus.None || this.modified)
+        {
+            if (this.cache is null)
+            {
+                var buffer = new byte[MessageByteLength];
+                if (!((IMessage)this).Write(buffer, 0, trailerFollows: false, out _, out _))
+                {
+                    raw = ReadOnlyMemory<byte>.Empty;
+                    return false;
+                }
+                this.cache = buffer;
+            }
+            raw = this.cache;
+            return true;
+        }
+        raw = this.raw;
+        return true;
+    }
+
+    /// <summary>
+    ///  Checks every field against the values that the protocol specification allows.
+    /// </summary>
+    /// <returns>The fields whose values are not allowed, each with the reason, or an empty list if every value is allowed.</returns>
+    /// <remarks>
+    ///  Validate checks the current values. After a parse, check Status first, because a field that the parse did not reach holds its cleared value.
+    /// </remarks>
+    public List<ValidationFailure> Validate()
+    {
+        var failures = new List<ValidationFailure>();
+        if (!global::System.Enum.IsDefined(this.auctionType))
+        {
+            failures.Add(new ValidationFailure(new FieldView(this, (int)FieldName.AuctionType), ValidationStatus.UndeclaredValue));
+        }
+        if (!global::System.Text.Ascii.IsValid(this.symbol))
+        {
+            failures.Add(new ValidationFailure(new FieldView(this, (int)FieldName.Symbol), ValidationStatus.NonAsciiText));
+        }
+        if (!global::System.Enum.IsDefined(this.imbalanceSide))
+        {
+            failures.Add(new ValidationFailure(new FieldView(this, (int)FieldName.ImbalanceSide), ValidationStatus.UndeclaredValue));
+        }
+        if (!global::System.Text.Ascii.IsValid(this.extensionNumber))
+        {
+            failures.Add(new ValidationFailure(new FieldView(this, (int)FieldName.ExtensionNumber), ValidationStatus.NonAsciiText));
+        }
+        return failures;
+    }
+
+    /// <summary>
+    ///  Determines whether another instance has the same values.
+    /// </summary>
+    public bool Equals(AuctionInformationMessage? other)
+    {
+        if (other is null)
+        {
+            return false;
+        }
+        if (this.auctionType != other.auctionType) return false;
+        if (this.timestamp != other.timestamp) return false;
+        if (this.symbol != other.symbol) return false;
+        if (this.pairedShares != other.pairedShares) return false;
+        if (this.referencePrice != other.referencePrice) return false;
+        if (this.indicativeClearingPrice != other.indicativeClearingPrice) return false;
+        if (this.imbalanceShares != other.imbalanceShares) return false;
+        if (this.imbalanceSide != other.imbalanceSide) return false;
+        if (this.extensionNumber != other.extensionNumber) return false;
+        if (this.scheduledAuctionTime != other.scheduledAuctionTime) return false;
+        if (this.auctionBookClearingPrice != other.auctionBookClearingPrice) return false;
+        if (this.collarReferencePrice != other.collarReferencePrice) return false;
+        if (this.lowerAuctionCollar != other.lowerAuctionCollar) return false;
+        if (this.upperAuctionCollar != other.upperAuctionCollar) return false;
+        return true;
+    }
+
+    /// <summary>
+    ///  Determines whether the specified object is an instance of the same type with the same values.
+    /// </summary>
+    public override bool Equals(object? obj) => obj is AuctionInformationMessage other && Equals(other);
+
+    /// <summary>
+    ///  Returns a hash code computed from the values.
     /// </summary>
     public override int GetHashCode()
     {
         var hash = new HashCode();
-        hash.Add(AuctionType);
-        hash.Add(Timestamp);
-        hash.Add(Symbol);
-        hash.Add(PairedShares);
-        hash.Add(ReferencePrice);
-        hash.Add(IndicativeClearingPrice);
-        hash.Add(ImbalanceShares);
-        hash.Add(ImbalanceSide);
-        hash.Add(ExtensionNumber);
-        hash.Add(ScheduledAuctionTime);
-        hash.Add(AuctionBookClearingPrice);
-        hash.Add(CollarReferencePrice);
-        hash.Add(LowerAuctionCollar);
-        hash.Add(UpperAuctionCollar);
+        hash.Add(this.auctionType);
+        hash.Add(this.timestamp);
+        hash.Add(this.symbol);
+        hash.Add(this.pairedShares);
+        hash.Add(this.referencePrice);
+        hash.Add(this.indicativeClearingPrice);
+        hash.Add(this.imbalanceShares);
+        hash.Add(this.imbalanceSide);
+        hash.Add(this.extensionNumber);
+        hash.Add(this.scheduledAuctionTime);
+        hash.Add(this.auctionBookClearingPrice);
+        hash.Add(this.collarReferencePrice);
+        hash.Add(this.lowerAuctionCollar);
+        hash.Add(this.upperAuctionCollar);
         return hash.ToHashCode();
     }
 
-    public static bool operator ==(AuctionInformationMessage? a, AuctionInformationMessage? b) => ReferenceEquals(a, b) || (a is not null && a.Equals(b));
-    public static bool operator !=(AuctionInformationMessage? a, AuctionInformationMessage? b) => !(a == b);
+    /// <summary>
+    ///  Determines whether the specified bytes equal the result of <see cref="ToBytes"/>.
+    /// </summary>
+    /// <exception cref="EncodeException">A value does not fit its field.</exception>
+    public bool BytesEqual(ReadOnlySpan<byte> data) => ToBytes().AsSpan().SequenceEqual(data);
 
-    /// <summary>Identifies which fields differ between two messages of the same type. Scalar field bit positions match FieldName enum order; counted-group container bits follow after the last field bit.</summary>
-    public readonly struct Changes : IEquatable<Changes>
+    /// <summary>
+    ///  Identifies the fields that differ between two instances.
+    /// </summary>
+    public readonly struct Changes : IEquatable<Changes>, IEnumerable<FieldName>
     {
-        private readonly ulong w0;
+        internal const int WordShift = 6;
+        internal const int WordBitMask = 63;
+        private const int WordCount = 1;
+        private const int FieldCount = 15;
 
-        private Changes(ulong w0)
+        [global::System.Runtime.CompilerServices.InlineArray(WordCount)]
+        private struct Words
         {
-            this.w0 = w0;
+            private ulong word;
         }
 
+        private readonly Words words;
+
+        private Changes(Words words)
+        {
+            this.words = words;
+        }
+
+        /// <summary>
+        ///  Gets a value with no fields marked.
+        /// </summary>
         public static Changes None => default;
 
-        public bool IsNone => (w0) == 0;
+        /// <summary>
+        ///  Gets a value indicating whether no fields are marked.
+        /// </summary>
+        public bool IsNone => ((ReadOnlySpan<ulong>)this.words).IndexOfAnyExcept(0UL) < 0;
 
-        internal ulong Word(int i) => i switch
-        {
-            0 => w0,
-            _ => 0UL,
-        };
+        internal ulong[] ToWords() => ((ReadOnlySpan<ulong>)this.words).ToArray();
 
         internal Changes With(int bit)
         {
-            var word = bit >> 6;
-            var offset = bit & 63;
-            var mask = 1UL << offset;
-            return word switch
-            {
-                0 => new Changes(w0 | mask),
-                _ => this,
-            };
+            var word = bit >> WordShift;
+            if ((uint)word >= WordCount) return this;
+            var words = this.words;
+            words[word] |= 1UL << (bit & WordBitMask);
+            return new(words);
         }
+
+        internal Changes With(FieldName field) => With((int)field);
 
         internal bool Has(int bit)
         {
-            var word = bit >> 6;
-            var offset = bit & 63;
-            var mask = 1UL << offset;
-            return (Word(word) & mask) != 0;
+            var word = bit >> WordShift;
+            return (uint)word < WordCount && (this.words[word] & (1UL << (bit & WordBitMask))) != 0;
         }
 
+        /// <summary>
+        ///  Determines whether the specified field is marked.
+        /// </summary>
         public bool Has(FieldName field) => Has((int)field);
 
-        public bool Equals(Changes other) => w0 == other.w0;
+        /// <summary>
+        ///  Determines whether another value marks the same fields.
+        /// </summary>
+        public bool Equals(Changes other) => ((ReadOnlySpan<ulong>)this.words).SequenceEqual((ReadOnlySpan<ulong>)other.words);
+
+        /// <summary>
+        ///  Determines whether the specified object is a value that marks the same fields.
+        /// </summary>
         public override bool Equals(object? obj) => obj is Changes other && Equals(other);
 
+        /// <summary>
+        ///  Returns a hash code computed from the marked fields.
+        /// </summary>
         public override int GetHashCode()
         {
             var hc = new HashCode();
-            hc.Add(w0);
+            foreach (var word in this.words)
+            {
+                hc.Add(word);
+            }
             return hc.ToHashCode();
         }
 
+        /// <summary>
+        ///  Determines whether two values mark the same fields.
+        /// </summary>
         public static bool operator ==(Changes a, Changes b) => a.Equals(b);
+
+        /// <summary>
+        ///  Determines whether two values mark different fields.
+        /// </summary>
         public static bool operator !=(Changes a, Changes b) => !a.Equals(b);
 
+        /// <summary>
+        ///  Returns an enumerator that iterates through the marked fields in field order.
+        /// </summary>
+        public Enumerator GetEnumerator() => new(this);
+
+        IEnumerator<FieldName> IEnumerable<FieldName>.GetEnumerator() => GetEnumerator();
+
+        global::System.Collections.IEnumerator global::System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
+
+        /// <summary>
+        ///  Enumerates the marked fields of a value.
+        /// </summary>
+        public struct Enumerator : IEnumerator<FieldName>
+        {
+            private const int BeforeFirst = -1;
+            private readonly Changes changes;
+            private int field;
+
+            internal Enumerator(Changes changes)
+            {
+                this.changes = changes;
+                this.field = BeforeFirst;
+            }
+
+            /// <summary>
+            ///  Gets the current marked field.
+            /// </summary>
+            public readonly FieldName Current => (FieldName)this.field;
+
+            readonly object global::System.Collections.IEnumerator.Current => Current;
+
+            /// <summary>
+            ///  Advances the enumerator to the next marked field.
+            /// </summary>
+            public bool MoveNext()
+            {
+                while (++this.field < FieldCount)
+                {
+                    if (this.changes.Has(this.field)) return true;
+                }
+                return false;
+            }
+
+            /// <summary>
+            ///  Sets the enumerator to its initial position, before the first field.
+            /// </summary>
+            public void Reset() => this.field = BeforeFirst;
+
+            /// <summary>
+            ///  Releases the enumerator.
+            /// </summary>
+            public readonly void Dispose() { }
+        }
+
+        /// <summary>
+        ///  Returns the names of the marked fields, or None if no fields are marked.
+        /// </summary>
         public override string ToString()
         {
-            if (IsNone) return "None";
-            var sb = new System.Text.StringBuilder();
-            var first = true;
-            if (Has(0)) { if (!first) sb.Append(", "); sb.Append("AuctionType"); first = false; }
-            if (Has(1)) { if (!first) sb.Append(", "); sb.Append("Timestamp"); first = false; }
-            if (Has(2)) { if (!first) sb.Append(", "); sb.Append("Symbol"); first = false; }
-            if (Has(3)) { if (!first) sb.Append(", "); sb.Append("PairedShares"); first = false; }
-            if (Has(4)) { if (!first) sb.Append(", "); sb.Append("ReferencePrice"); first = false; }
-            if (Has(5)) { if (!first) sb.Append(", "); sb.Append("IndicativeClearingPrice"); first = false; }
-            if (Has(6)) { if (!first) sb.Append(", "); sb.Append("ImbalanceShares"); first = false; }
-            if (Has(7)) { if (!first) sb.Append(", "); sb.Append("ImbalanceSide"); first = false; }
-            if (Has(8)) { if (!first) sb.Append(", "); sb.Append("ExtensionNumber"); first = false; }
-            if (Has(9)) { if (!first) sb.Append(", "); sb.Append("ScheduledAuctionTime"); first = false; }
-            if (Has(10)) { if (!first) sb.Append(", "); sb.Append("AuctionBookClearingPrice"); first = false; }
-            if (Has(11)) { if (!first) sb.Append(", "); sb.Append("CollarReferencePrice"); first = false; }
-            if (Has(12)) { if (!first) sb.Append(", "); sb.Append("LowerAuctionCollar"); first = false; }
-            if (Has(13)) { if (!first) sb.Append(", "); sb.Append("UpperAuctionCollar"); first = false; }
-            return sb.ToString();
+            var names = new List<string>();
+            if (Has(FieldName.DataValue)) names.Add(nameof(FieldName.DataValue));
+            if (Has(FieldName.AuctionType)) names.Add(nameof(FieldName.AuctionType));
+            if (Has(FieldName.Timestamp)) names.Add(nameof(FieldName.Timestamp));
+            if (Has(FieldName.Symbol)) names.Add(nameof(FieldName.Symbol));
+            if (Has(FieldName.PairedShares)) names.Add(nameof(FieldName.PairedShares));
+            if (Has(FieldName.ReferencePrice)) names.Add(nameof(FieldName.ReferencePrice));
+            if (Has(FieldName.IndicativeClearingPrice)) names.Add(nameof(FieldName.IndicativeClearingPrice));
+            if (Has(FieldName.ImbalanceShares)) names.Add(nameof(FieldName.ImbalanceShares));
+            if (Has(FieldName.ImbalanceSide)) names.Add(nameof(FieldName.ImbalanceSide));
+            if (Has(FieldName.ExtensionNumber)) names.Add(nameof(FieldName.ExtensionNumber));
+            if (Has(FieldName.ScheduledAuctionTime)) names.Add(nameof(FieldName.ScheduledAuctionTime));
+            if (Has(FieldName.AuctionBookClearingPrice)) names.Add(nameof(FieldName.AuctionBookClearingPrice));
+            if (Has(FieldName.CollarReferencePrice)) names.Add(nameof(FieldName.CollarReferencePrice));
+            if (Has(FieldName.LowerAuctionCollar)) names.Add(nameof(FieldName.LowerAuctionCollar));
+            if (Has(FieldName.UpperAuctionCollar)) names.Add(nameof(FieldName.UpperAuctionCollar));
+            return names.Count == 0 ? "None" : string.Join(", ", names);
         }
     }
 
-    /// <summary>Compares two messages field by field and returns a <c>Changes</c> value identifying which fields and counted-group containers differ.</summary>
+    /// <summary>
+    ///  Compares this instance with another and identifies the fields that differ.
+    /// </summary>
+    /// <returns>The fields that differ, or None if there are no differences.</returns>
+    /// <exception cref="ArgumentNullException">The other instance is <see langword="null"/>.</exception>
     public Changes Diff(AuctionInformationMessage other)
     {
         ArgumentNullException.ThrowIfNull(other);
         var diff = Changes.None;
-        if (!AuctionType.Equals(other.AuctionType)) diff = diff.With(0);
-        if (!Timestamp.Equals(other.Timestamp)) diff = diff.With(1);
-        if (!Symbol.Equals(other.Symbol)) diff = diff.With(2);
-        if (!PairedShares.Equals(other.PairedShares)) diff = diff.With(3);
-        if (!ReferencePrice.Equals(other.ReferencePrice)) diff = diff.With(4);
-        if (!IndicativeClearingPrice.Equals(other.IndicativeClearingPrice)) diff = diff.With(5);
-        if (!ImbalanceShares.Equals(other.ImbalanceShares)) diff = diff.With(6);
-        if (!ImbalanceSide.Equals(other.ImbalanceSide)) diff = diff.With(7);
-        if (!ExtensionNumber.Equals(other.ExtensionNumber)) diff = diff.With(8);
-        if (!ScheduledAuctionTime.Equals(other.ScheduledAuctionTime)) diff = diff.With(9);
-        if (!AuctionBookClearingPrice.Equals(other.AuctionBookClearingPrice)) diff = diff.With(10);
-        if (!CollarReferencePrice.Equals(other.CollarReferencePrice)) diff = diff.With(11);
-        if (!LowerAuctionCollar.Equals(other.LowerAuctionCollar)) diff = diff.With(12);
-        if (!UpperAuctionCollar.Equals(other.UpperAuctionCollar)) diff = diff.With(13);
+        if (this.auctionType != other.auctionType) diff = diff.With(FieldName.AuctionType);
+        if (this.timestamp != other.timestamp) diff = diff.With(FieldName.Timestamp);
+        if (this.symbol != other.symbol) diff = diff.With(FieldName.Symbol);
+        if (this.pairedShares != other.pairedShares) diff = diff.With(FieldName.PairedShares);
+        if (this.referencePrice != other.referencePrice) diff = diff.With(FieldName.ReferencePrice);
+        if (this.indicativeClearingPrice != other.indicativeClearingPrice) diff = diff.With(FieldName.IndicativeClearingPrice);
+        if (this.imbalanceShares != other.imbalanceShares) diff = diff.With(FieldName.ImbalanceShares);
+        if (this.imbalanceSide != other.imbalanceSide) diff = diff.With(FieldName.ImbalanceSide);
+        if (this.extensionNumber != other.extensionNumber) diff = diff.With(FieldName.ExtensionNumber);
+        if (this.scheduledAuctionTime != other.scheduledAuctionTime) diff = diff.With(FieldName.ScheduledAuctionTime);
+        if (this.auctionBookClearingPrice != other.auctionBookClearingPrice) diff = diff.With(FieldName.AuctionBookClearingPrice);
+        if (this.collarReferencePrice != other.collarReferencePrice) diff = diff.With(FieldName.CollarReferencePrice);
+        if (this.lowerAuctionCollar != other.lowerAuctionCollar) diff = diff.With(FieldName.LowerAuctionCollar);
+        if (this.upperAuctionCollar != other.upperAuctionCollar) diff = diff.With(FieldName.UpperAuctionCollar);
         return diff;
     }
 
-    /// <summary>Enumerates scalar fields that differ between this message and another. The other message must be the same type. Counted-group container changes are visible via Diff() and DiffReport() but not enumerated here.</summary>
-    public IEnumerable<Field> DiffFields(IMessage other)
+    private void CopyField(FieldName field, AuctionInformationMessage from)
     {
-        ArgumentNullException.ThrowIfNull(other);
-        if (other is not AuctionInformationMessage typed) throw new ArgumentException("DiffFields requires same message type", nameof(other));
-        var changes = Diff(typed);
-        const ulong FieldMaskW0 = 0x0000000000003FFFUL;
-        var word0 = changes.Word(0) & FieldMaskW0;
-        while (word0 != 0)
+        switch (field)
         {
-            var bit = (0 * 64) + System.Numerics.BitOperations.TrailingZeroCount(word0);
-            yield return GetField((FieldName)bit);
-            word0 &= word0 - 1;
+            case FieldName.AuctionType:
+                this.auctionType = from.auctionType;
+                break;
+            case FieldName.Timestamp:
+                this.timestamp = from.timestamp;
+                break;
+            case FieldName.Symbol:
+                this.symbol = from.symbol;
+                break;
+            case FieldName.PairedShares:
+                this.pairedShares = from.pairedShares;
+                break;
+            case FieldName.ReferencePrice:
+                this.referencePrice = from.referencePrice;
+                break;
+            case FieldName.IndicativeClearingPrice:
+                this.indicativeClearingPrice = from.indicativeClearingPrice;
+                break;
+            case FieldName.ImbalanceShares:
+                this.imbalanceShares = from.imbalanceShares;
+                break;
+            case FieldName.ImbalanceSide:
+                this.imbalanceSide = from.imbalanceSide;
+                break;
+            case FieldName.ExtensionNumber:
+                this.extensionNumber = from.extensionNumber;
+                break;
+            case FieldName.ScheduledAuctionTime:
+                this.scheduledAuctionTime = from.scheduledAuctionTime;
+                break;
+            case FieldName.AuctionBookClearingPrice:
+                this.auctionBookClearingPrice = from.auctionBookClearingPrice;
+                break;
+            case FieldName.CollarReferencePrice:
+                this.collarReferencePrice = from.collarReferencePrice;
+                break;
+            case FieldName.LowerAuctionCollar:
+                this.lowerAuctionCollar = from.lowerAuctionCollar;
+                break;
+            case FieldName.UpperAuctionCollar:
+                this.upperAuctionCollar = from.upperAuctionCollar;
+                break;
+            default:
+                return;
         }
+        Touch();
     }
 
-    /// <summary>Enumerates changed fields and counted-group containers as (Name, Before, After) tuples. The other message must be the same message type.</summary>
-    public IEnumerable<(string Name, string Before, string After)> DiffReport(AuctionInformationMessage other)
+    /// <summary>
+    ///  Returns the values formatted on a single line.
+    /// </summary>
+    public override string ToString() => $"AuctionInformationMessage {{ AuctionType: {(Text.Enum(this.auctionType))}, Timestamp: {(Text.Instant(this.timestamp, TimestampNanosecondsPerUnit))}, Symbol: {(Text.Of(this.symbol))}, PairedShares: {(Text.Of(this.pairedShares))}, ReferencePrice: {(Text.Of(FixedPoint.ToDecimal(this.referencePrice, ReferencePriceScale)))}, IndicativeClearingPrice: {(Text.Of(FixedPoint.ToDecimal(this.indicativeClearingPrice, IndicativeClearingPriceScale)))}, ImbalanceShares: {(Text.Of(this.imbalanceShares))}, ImbalanceSide: {(Text.Enum(this.imbalanceSide))}, ExtensionNumber: {(Text.Of(this.extensionNumber))}, ScheduledAuctionTime: {(Text.Instant(this.scheduledAuctionTime, ScheduledAuctionTimeNanosecondsPerUnit))}, AuctionBookClearingPrice: {(Text.Of(FixedPoint.ToDecimal(this.auctionBookClearingPrice, AuctionBookClearingPriceScale)))}, CollarReferencePrice: {(Text.Of(FixedPoint.ToDecimal(this.collarReferencePrice, CollarReferencePriceScale)))}, LowerAuctionCollar: {(Text.Of(FixedPoint.ToDecimal(this.lowerAuctionCollar, LowerAuctionCollarScale)))}, UpperAuctionCollar: {(Text.Of(FixedPoint.ToDecimal(this.upperAuctionCollar, UpperAuctionCollarScale)))} }}{(this.trailer.Length == 0 ? string.Empty : $" Trailer: {(Text.Of(this.trailer.Length))} bytes")}";
+
+    private string DebuggerDisplay => $"[{DataValue}] [{(Text.Enum(this.auctionType))}] [{(Text.Instant(this.timestamp, TimestampNanosecondsPerUnit))}] [{(Text.Of(this.symbol))}]";
+
+    IFieldOwner? IFieldOwner.Owner
     {
-        ArgumentNullException.ThrowIfNull(other);
-        var changes = Diff(other);
-        if (changes.IsNone) yield break;
-        if (changes.Has(0)) yield return (AuctionType.Name, AuctionType.ToFormattedString(), other.AuctionType.ToFormattedString());
-        if (changes.Has(1)) yield return (Timestamp.Name, Timestamp.ToFormattedString(), other.Timestamp.ToFormattedString());
-        if (changes.Has(2)) yield return (Symbol.Name, Symbol.ToFormattedString(), other.Symbol.ToFormattedString());
-        if (changes.Has(3)) yield return (PairedShares.Name, PairedShares.ToFormattedString(), other.PairedShares.ToFormattedString());
-        if (changes.Has(4)) yield return (ReferencePrice.Name, ReferencePrice.ToFormattedString(), other.ReferencePrice.ToFormattedString());
-        if (changes.Has(5)) yield return (IndicativeClearingPrice.Name, IndicativeClearingPrice.ToFormattedString(), other.IndicativeClearingPrice.ToFormattedString());
-        if (changes.Has(6)) yield return (ImbalanceShares.Name, ImbalanceShares.ToFormattedString(), other.ImbalanceShares.ToFormattedString());
-        if (changes.Has(7)) yield return (ImbalanceSide.Name, ImbalanceSide.ToFormattedString(), other.ImbalanceSide.ToFormattedString());
-        if (changes.Has(8)) yield return (ExtensionNumber.Name, ExtensionNumber.ToFormattedString(), other.ExtensionNumber.ToFormattedString());
-        if (changes.Has(9)) yield return (ScheduledAuctionTime.Name, ScheduledAuctionTime.ToFormattedString(), other.ScheduledAuctionTime.ToFormattedString());
-        if (changes.Has(10)) yield return (AuctionBookClearingPrice.Name, AuctionBookClearingPrice.ToFormattedString(), other.AuctionBookClearingPrice.ToFormattedString());
-        if (changes.Has(11)) yield return (CollarReferencePrice.Name, CollarReferencePrice.ToFormattedString(), other.CollarReferencePrice.ToFormattedString());
-        if (changes.Has(12)) yield return (LowerAuctionCollar.Name, LowerAuctionCollar.ToFormattedString(), other.LowerAuctionCollar.ToFormattedString());
-        if (changes.Has(13)) yield return (UpperAuctionCollar.Name, UpperAuctionCollar.ToFormattedString(), other.UpperAuctionCollar.ToFormattedString());
+        get => this.owner;
+        set => this.owner = value;
     }
 
-    /// <summary>Enumerates all fields in declaration order.</summary>
-    public IEnumerable<Field> Fields
-    {
-        get
-        {
-            yield return AuctionType;
-            yield return Timestamp;
-            yield return Symbol;
-            yield return PairedShares;
-            yield return ReferencePrice;
-            yield return IndicativeClearingPrice;
-            yield return ImbalanceShares;
-            yield return ImbalanceSide;
-            yield return ExtensionNumber;
-            yield return ScheduledAuctionTime;
-            yield return AuctionBookClearingPrice;
-            yield return CollarReferencePrice;
-            yield return LowerAuctionCollar;
-            yield return UpperAuctionCollar;
-        }
-    }
+    FieldDescriptor[] IFieldOwner.Descriptors => Descriptors;
 
-    /// <summary>Looks up a field by its declared PascalCase name. Returns false if the name is not found.</summary>
-    public bool TryGetField(string name, out Field field)
-    {
-        foreach (var f in Fields)
-            if (f.Name == name) { field = f; return true; }
-        field = null!;
-        return false;
-    }
+    void IFieldOwner.Touch() => Touch();
 
-    /// <summary>Returns the field identified by <paramref name="field"/>.</summary>
-    public Field GetField(FieldName field) => field switch
+    string IFieldOwner.TextOf(int field) => (FieldName)field switch
     {
-        FieldName.AuctionType => AuctionType,
-        FieldName.Timestamp => Timestamp,
-        FieldName.Symbol => Symbol,
-        FieldName.PairedShares => PairedShares,
-        FieldName.ReferencePrice => ReferencePrice,
-        FieldName.IndicativeClearingPrice => IndicativeClearingPrice,
-        FieldName.ImbalanceShares => ImbalanceShares,
-        FieldName.ImbalanceSide => ImbalanceSide,
-        FieldName.ExtensionNumber => ExtensionNumber,
-        FieldName.ScheduledAuctionTime => ScheduledAuctionTime,
-        FieldName.AuctionBookClearingPrice => AuctionBookClearingPrice,
-        FieldName.CollarReferencePrice => CollarReferencePrice,
-        FieldName.LowerAuctionCollar => LowerAuctionCollar,
-        FieldName.UpperAuctionCollar => UpperAuctionCollar,
+        FieldName.DataValue => Text.Enum(PacketMessageCode.AuctionInformationMessage),
+        FieldName.AuctionType => Text.Enum(this.auctionType),
+        FieldName.Timestamp => Text.Instant(this.timestamp, TimestampNanosecondsPerUnit),
+        FieldName.Symbol => Text.Of(this.symbol),
+        FieldName.PairedShares => Text.Of(this.pairedShares),
+        FieldName.ReferencePrice => Text.Of(FixedPoint.ToDecimal(this.referencePrice, ReferencePriceScale)),
+        FieldName.IndicativeClearingPrice => Text.Of(FixedPoint.ToDecimal(this.indicativeClearingPrice, IndicativeClearingPriceScale)),
+        FieldName.ImbalanceShares => Text.Of(this.imbalanceShares),
+        FieldName.ImbalanceSide => Text.Enum(this.imbalanceSide),
+        FieldName.ExtensionNumber => Text.Of(this.extensionNumber),
+        FieldName.ScheduledAuctionTime => Text.Instant(this.scheduledAuctionTime, ScheduledAuctionTimeNanosecondsPerUnit),
+        FieldName.AuctionBookClearingPrice => Text.Of(FixedPoint.ToDecimal(this.auctionBookClearingPrice, AuctionBookClearingPriceScale)),
+        FieldName.CollarReferencePrice => Text.Of(FixedPoint.ToDecimal(this.collarReferencePrice, CollarReferencePriceScale)),
+        FieldName.LowerAuctionCollar => Text.Of(FixedPoint.ToDecimal(this.lowerAuctionCollar, LowerAuctionCollarScale)),
+        FieldName.UpperAuctionCollar => Text.Of(FixedPoint.ToDecimal(this.upperAuctionCollar, UpperAuctionCollarScale)),
+        _ => string.Empty,
+    };
+
+    bool IFieldOwner.IsRecognized(int field) => (FieldName)field switch
+    {
+        FieldName.AuctionType => global::System.Enum.IsDefined(this.auctionType),
+        FieldName.ImbalanceSide => global::System.Enum.IsDefined(this.imbalanceSide),
+        _ => true,
+    };
+
+    bool IFieldOwner.IsPresent(int field) => true;
+
+    bool IFieldOwner.IsParsed(int field) => this.status == ParseStatus.Ok || field < (int?)this.failed;
+
+    bool IFieldOwner.IsReached(int field) => this.modified || this.status is ParseStatus.None or ParseStatus.Ok || field <= (int?)this.failed;
+
+    bool IFieldOwner.HasParseLayout(int field) => false;
+
+    int IFieldOwner.OffsetOf(int field) => (FieldName)field switch
+    {
+        FieldName.DataValue => FieldView.NotInMessage,
+        FieldName.AuctionType => AuctionTypeOffset,
+        FieldName.Timestamp => TimestampOffset,
+        FieldName.Symbol => SymbolOffset,
+        FieldName.PairedShares => PairedSharesOffset,
+        FieldName.ReferencePrice => ReferencePriceOffset,
+        FieldName.IndicativeClearingPrice => IndicativeClearingPriceOffset,
+        FieldName.ImbalanceShares => ImbalanceSharesOffset,
+        FieldName.ImbalanceSide => ImbalanceSideOffset,
+        FieldName.ExtensionNumber => ExtensionNumberOffset,
+        FieldName.ScheduledAuctionTime => ScheduledAuctionTimeOffset,
+        FieldName.AuctionBookClearingPrice => AuctionBookClearingPriceOffset,
+        FieldName.CollarReferencePrice => CollarReferencePriceOffset,
+        FieldName.LowerAuctionCollar => LowerAuctionCollarOffset,
+        FieldName.UpperAuctionCollar => UpperAuctionCollarOffset,
         _ => throw new ArgumentOutOfRangeException(nameof(field)),
     };
 
-    /// <summary>
-    ///  Appends a human-readable representation of all fields in this <see cref="AuctionInformationMessage"/> to <paramref name="builder"/>,
-    ///  indented according to <paramref name="options"/>.
-    /// </summary>
-    public void ToFormattedString(StringBuilder builder, PrintOptions options = default)
+    int IFieldOwner.LengthOf(int field) => (FieldName)field switch
     {
-        var indent = options.Prefix;
-        builder.Append(indent).AppendLine("AuctionInformationMessage:");
-        foreach (var f in Fields)
-        {
-            builder.Append(indent).Append("  ").Append(f.Name).Append(": ");
-            f.ToFormattedString(builder, options);
-            builder.AppendLine();
-        }
-    }
+        FieldName.DataValue => DataValueLength,
+        FieldName.AuctionType => AuctionTypeLength,
+        FieldName.Timestamp => TimestampLength,
+        FieldName.Symbol => SymbolLength,
+        FieldName.PairedShares => PairedSharesLength,
+        FieldName.ReferencePrice => ReferencePriceLength,
+        FieldName.IndicativeClearingPrice => IndicativeClearingPriceLength,
+        FieldName.ImbalanceShares => ImbalanceSharesLength,
+        FieldName.ImbalanceSide => ImbalanceSideLength,
+        FieldName.ExtensionNumber => ExtensionNumberLength,
+        FieldName.ScheduledAuctionTime => ScheduledAuctionTimeLength,
+        FieldName.AuctionBookClearingPrice => AuctionBookClearingPriceLength,
+        FieldName.CollarReferencePrice => CollarReferencePriceLength,
+        FieldName.LowerAuctionCollar => LowerAuctionCollarLength,
+        FieldName.UpperAuctionCollar => UpperAuctionCollarLength,
+        _ => throw new ArgumentOutOfRangeException(nameof(field)),
+    };
 
-    /// <summary>
-    ///  Returns a human-readable representation of all fields in this <see cref="AuctionInformationMessage"/>,
-    ///  indented according to <paramref name="options"/>. When <paramref name="options"/> is
-    ///  <see cref="PrintOptions.Identifier"/>, returns a compact one-line summary.
-    ///  When <paramref name="options"/> is <see cref="PrintOptions.Compact"/>, returns a one-line
-    ///  summary with all fields.
-    /// </summary>
-    public string ToFormattedString(PrintOptions options = default)
+    IReadOnlyList<IGroupEntry>? IFieldOwner.EntriesOf(int field) => null;
+
+    IMessage? IFieldOwner.MessageOf(int field) => null;
+
+    ulong[] IFieldOwner.ChangedAgainst(IFieldOwner other) => other is AuctionInformationMessage typed ? Diff(typed).ToWords() : throw new ArgumentException("The other instance is not of the same type.", nameof(other));
+
+    void IFieldOwner.CopyField(int field, IFieldOwner from) => CopyField((FieldName)field, from as AuctionInformationMessage ?? throw new ArgumentException("The other instance is not of the same type.", nameof(from)));
+
+    ReadOnlyMemory<byte> IFieldOwner.CodeBytes(int field)
     {
-        if (options.IsIdentifier)
-            return $"[{MessageType}] [{AuctionType.Value}] [{Timestamp.Value}] [{Symbol.Value}]";
-        if (options.IsCompact)
+        if (field == (int)FieldName.DataValue)
         {
-            var sb = new StringBuilder();
-            sb.Append("AuctionInformationMessage { ");
-            bool first = true;
-            foreach (var f in Fields)
-            {
-                if (!first) sb.Append(", ");
-                sb.Append(f.Name).Append(": ");
-                f.ToFormattedString(sb, options);
-                first = false;
-            }
-            sb.Append(" }");
-            return sb.ToString();
+            var bytes = new byte[DataValueLength];
+            bytes[0] = unchecked((byte)(PacketMessageCode.AuctionInformationMessage));
+            return bytes;
         }
-        var builder = new StringBuilder();
-        ToFormattedString(builder, options);
-        return builder.ToString();
+        return ReadOnlyMemory<byte>.Empty;
     }
-
-    /// <summary>
-    ///  Returns a compact one-line representation of all fields in this <see cref="AuctionInformationMessage"/>.
-    /// </summary>
-    public string ToCompact() => ToFormattedString(PrintOptions.Compact);
-
-    /// <summary>
-    ///  Returns a human-readable representation of this <see cref="AuctionInformationMessage"/>.
-    /// </summary>
-    public override string ToString() => ToFormattedString();
 }

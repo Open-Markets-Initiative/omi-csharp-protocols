@@ -1,0 +1,75 @@
+using System.Runtime.CompilerServices;
+
+namespace Nasdaq.NsmEquities.TotalView.Itch.v5_0_2023;
+
+/// <summary>
+///  Interest Flag
+/// </summary>
+/// <remarks>
+///  Each value is the ASCII character that represents it on the wire.
+/// </remarks>
+public enum InterestFlag : byte
+{
+    /// <summary>
+    ///  RPI orders available on the buy side
+    /// </summary>
+    BuySide = (byte)'B',
+
+    /// <summary>
+    ///  RPI orders available on the sell side
+    /// </summary>
+    SellSide = (byte)'S',
+
+    /// <summary>
+    ///  RPI orders available on both sides (buy and sell)
+    /// </summary>
+    BothSides = (byte)'A',
+
+    /// <summary>
+    ///  No RPI Orders Available
+    /// </summary>
+    NoRpiOrdersAvailable = (byte)'N',
+
+}
+
+/// <summary>
+///  Reads and writes the Interest Flag field in place.
+/// </summary>
+public struct InterestFlagField
+{
+    /// <summary>
+    ///  The size of the Interest Flag field in bytes.
+    /// </summary>
+    public const int Size = 1;
+
+    /// <summary>
+    ///  Interest Flag
+    /// </summary>
+    public InterestFlag Value
+    {
+        readonly get => Decode();
+        set => Encode(value);
+    }
+
+    /// <summary>
+    ///  Returns the wire value of the Interest Flag field.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly InterestFlag Decode()
+        => (InterestFlag)Byte;
+
+    /// <summary>
+    ///  Writes an unscaled wire value into the Interest Flag field.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Encode(InterestFlag value)
+        => Byte = (byte)value;
+
+    /// <summary>
+    ///  Returns the value of the field as text.
+    /// </summary>
+    public readonly override string ToString()
+        => string.Create(global::System.Globalization.CultureInfo.InvariantCulture, $"{Value}");
+
+    internal byte Byte;
+}

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+<PropertyGroup>
+<OutputType>Exe</OutputType>
+<TargetFramework>net10.0</TargetFramework>
+<ImplicitUsings>enable</ImplicitUsings>
+<Nullable>enable</Nullable>
+</PropertyGroup>
+
+<ItemGroup>
+<Using Include="Databento.MarketData.Normalized.Dbn.v3" />
+<Using Include="Databento.MarketData.Normalized.Dbn.v3.GatewayManager" />
+<Using Include="Omi.Pcap" />
+</ItemGroup>
+
+<ItemGroup>
+<ProjectReference Include="../../../../../Omi.Pcap/Omi.Pcap.csproj" />
+<ProjectReference Include="../../Databento.MarketData.Normalized.Dbn.v3/Databento.MarketData.Normalized.Dbn.v3.csproj" />
+</ItemGroup>
+
+</Project>

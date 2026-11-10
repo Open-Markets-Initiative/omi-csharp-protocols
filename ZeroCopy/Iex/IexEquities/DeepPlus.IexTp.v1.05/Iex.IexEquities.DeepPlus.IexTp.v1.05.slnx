@@ -1,0 +1,15 @@
+<Solution>
+  <Project Path="Iex.IexEquities.DeepPlus.IexTp.v1.05/Iex.IexEquities.DeepPlus.IexTp.v1.05.csproj" />
+  <Folder Name="/Examples/">
+    <Project Path="Examples/Counter/Iex.IexEquities.DeepPlus.IexTp.v1.05.Counter.csproj" />
+    <Project Path="Examples/Iterator/Iex.IexEquities.DeepPlus.IexTp.v1.05.Iterator.csproj" />
+    <Project Path="Examples/Manager/Iex.IexEquities.DeepPlus.IexTp.v1.05.Manager.csproj" />
+    <Project Path="Examples/Viewer/Iex.IexEquities.DeepPlus.IexTp.v1.05.Viewer.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/Test/Iex.IexEquities.DeepPlus.IexTp.v1.05.Test.csproj" />
+  </Folder>
+  <Folder Name="/Omi.Pcap/">
+    <Project Path="../../../Omi.Pcap/Omi.Pcap.csproj" />
+  </Folder>
+</Solution>

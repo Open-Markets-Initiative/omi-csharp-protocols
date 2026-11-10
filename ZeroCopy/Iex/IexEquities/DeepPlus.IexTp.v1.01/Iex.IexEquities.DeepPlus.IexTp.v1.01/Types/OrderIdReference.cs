@@ -1,46 +1,45 @@
 using System.Runtime.CompilerServices;
 
-namespace Iex.IexEquities.DeepPlus.IexTp;
+namespace Iex.IexEquities.DeepPlus.IexTp.v1_01;
 
 /// <summary>
-///  Represents the OrderIdReference field as 8-byte little-endian unsigned integer.
+///  Order ID of the referenced order
 /// </summary>
-
 public struct OrderIdReference
 {
     /// <summary>
-    ///  Size of OrderIdReference in bytes
+    ///  The size of the Order Id Reference field in bytes.
     /// </summary>
     public const int Size = 8;
 
     /// <summary>
-    ///  Gets the decoded Order Id Reference value.
+    ///  Order ID of the referenced order
     /// </summary>
-    public readonly ulong Value
-        => Decode();
+    public ulong Value
+    {
+        readonly get => Decode();
+        set => Encode(value);
+    }
 
     /// <summary>
-    ///  Decodes the raw bytes into the Order Id Reference value.
+    ///  Returns the wire value of the Order Id Reference field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly ulong Decode()
-        => Underlying;
+        => global::System.Buffers.Binary.BinaryPrimitives.ReadUInt64LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.ReadOnlySpan<ulong>(in Underlying)));
 
     /// <summary>
-    ///  Encodes a value into the underlying Order Id Reference bytes.
+    ///  Writes an unscaled wire value into the Order Id Reference field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Encode(ulong value)
-        => Underlying = value;
+        => global::System.Buffers.Binary.BinaryPrimitives.WriteUInt64LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.Span<ulong>(ref Underlying)), value);
 
     /// <summary>
-    ///  Returns the string representation of the Order Id Reference value.
+    ///  Returns the value of the field as text.
     /// </summary>
     public readonly override string ToString()
-        => $"{Value}";
+        => string.Create(global::System.Globalization.CultureInfo.InvariantCulture, $"{Value}");
 
-    /// <summary>
-    ///  Underlying bytes
-    /// </summary>
     internal ulong Underlying;
 }

@@ -19,6 +19,15 @@ jobs:
       - name: Clone Omi Data
         run: git clone --depth=1 https://github.com/Open-Markets-Initiative/omi-data-pcaps.git
 
+      - name: Build Classes/Databento/MarketData/Normalized.Dbn.v1
+        run: dotnet build Classes/Databento/MarketData/Normalized.Dbn.v1/Databento.MarketData.Normalized.Dbn.v1.slnx --nologo
+
+      - name: Build Classes/Databento/MarketData/Normalized.Dbn.v2
+        run: dotnet build Classes/Databento/MarketData/Normalized.Dbn.v2/Databento.MarketData.Normalized.Dbn.v2.slnx --nologo
+
+      - name: Build Classes/Databento/MarketData/Normalized.Dbn.v3
+        run: dotnet build Classes/Databento/MarketData/Normalized.Dbn.v3/Databento.MarketData.Normalized.Dbn.v3.slnx --nologo
+
       - name: Build Classes/Iex/IexEquities/Deep.IexTp.v1.06
         run: dotnet build Classes/Iex/IexEquities/Deep.IexTp.v1.06/Iex.IexEquities.Deep.IexTp.v1.06.slnx --nologo
 
@@ -28,8 +37,8 @@ jobs:
       - name: Build Classes/Iex/IexEquities/DeepPlus.IexTp.v1.01
         run: dotnet build Classes/Iex/IexEquities/DeepPlus.IexTp.v1.01/Iex.IexEquities.DeepPlus.IexTp.v1.01.slnx --nologo
 
-      - name: Build Classes/Iex/IexEquities/DeepPlus.IexTp.v1.04
-        run: dotnet build Classes/Iex/IexEquities/DeepPlus.IexTp.v1.04/Iex.IexEquities.DeepPlus.IexTp.v1.04.slnx --nologo
+      - name: Build Classes/Iex/IexEquities/DeepPlus.IexTp.v1.05
+        run: dotnet build Classes/Iex/IexEquities/DeepPlus.IexTp.v1.05/Iex.IexEquities.DeepPlus.IexTp.v1.05.slnx --nologo
 
       - name: Build Classes/Iex/IexEquities/Tops.IexTp.v1.56
         run: dotnet build Classes/Iex/IexEquities/Tops.IexTp.v1.56/Iex.IexEquities.Tops.IexTp.v1.56.slnx --nologo
@@ -40,6 +49,39 @@ jobs:
       - name: Build Classes/Iex/IexEquities/Tops.IexTp.v1.66
         run: dotnet build Classes/Iex/IexEquities/Tops.IexTp.v1.66/Iex.IexEquities.Tops.IexTp.v1.66.slnx --nologo
 
+      - name: Build Classes/Nasdaq/IseOptions/OrderComboFeed.Itch.v1.1
+        run: dotnet build Classes/Nasdaq/IseOptions/OrderComboFeed.Itch.v1.1/Nasdaq.IseOptions.OrderComboFeed.Itch.v1.1.slnx --nologo
+
+      - name: Build Classes/Nasdaq/IseOptions/TopComboQuoteFeed.Itch.v1.0
+        run: dotnet build Classes/Nasdaq/IseOptions/TopComboQuoteFeed.Itch.v1.0/Nasdaq.IseOptions.TopComboQuoteFeed.Itch.v1.0.slnx --nologo
+
+      - name: Build Classes/Nasdaq/NsmEquities/Orders.Ouch.v5.0
+        run: dotnet build Classes/Nasdaq/NsmEquities/Orders.Ouch.v5.0/Nasdaq.NsmEquities.Orders.Ouch.v5.0.slnx --nologo
+
+      - name: Build Classes/Nasdaq/NsmEquities/Qbbo.Itch.v2.1
+        run: dotnet build Classes/Nasdaq/NsmEquities/Qbbo.Itch.v2.1/Nasdaq.NsmEquities.Qbbo.Itch.v2.1.slnx --nologo
+
+      - name: Build Classes/Nasdaq/NsmEquities/TotalView.Itch.v5.0.2023
+        run: dotnet build Classes/Nasdaq/NsmEquities/TotalView.Itch.v5.0.2023/Nasdaq.NsmEquities.TotalView.Itch.v5.0.2023.slnx --nologo
+
+      - name: Build Classes/Nasdaq/NsmEquities/TotalView.Itch.v5.0.2026
+        run: dotnet build Classes/Nasdaq/NsmEquities/TotalView.Itch.v5.0.2026/Nasdaq.NsmEquities.TotalView.Itch.v5.0.2026.slnx --nologo
+
+      - name: Build Classes/Nasdaq/NtxEquities/TotalView.Itch.v5.0
+        run: dotnet build Classes/Nasdaq/NtxEquities/TotalView.Itch.v5.0/Nasdaq.NtxEquities.TotalView.Itch.v5.0.slnx --nologo
+
+      - name: Build Classes/Nasdaq/PsxEquities/TotalView.Itch.v5.0
+        run: dotnet build Classes/Nasdaq/PsxEquities/TotalView.Itch.v5.0/Nasdaq.PsxEquities.TotalView.Itch.v5.0.slnx --nologo
+
+      - name: Build ZeroCopy/Databento/MarketData/Normalized.Dbn.v1
+        run: dotnet build ZeroCopy/Databento/MarketData/Normalized.Dbn.v1/Databento.MarketData.Normalized.Dbn.v1.slnx --nologo
+
+      - name: Build ZeroCopy/Databento/MarketData/Normalized.Dbn.v2
+        run: dotnet build ZeroCopy/Databento/MarketData/Normalized.Dbn.v2/Databento.MarketData.Normalized.Dbn.v2.slnx --nologo
+
+      - name: Build ZeroCopy/Databento/MarketData/Normalized.Dbn.v3
+        run: dotnet build ZeroCopy/Databento/MarketData/Normalized.Dbn.v3/Databento.MarketData.Normalized.Dbn.v3.slnx --nologo
+
       - name: Build ZeroCopy/Iex/IexEquities/Deep.IexTp.v1.06
         run: dotnet build ZeroCopy/Iex/IexEquities/Deep.IexTp.v1.06/Iex.IexEquities.Deep.IexTp.v1.06.slnx --nologo
 
@@ -49,8 +91,8 @@ jobs:
       - name: Build ZeroCopy/Iex/IexEquities/DeepPlus.IexTp.v1.01
         run: dotnet build ZeroCopy/Iex/IexEquities/DeepPlus.IexTp.v1.01/Iex.IexEquities.DeepPlus.IexTp.v1.01.slnx --nologo
 
-      - name: Build ZeroCopy/Iex/IexEquities/DeepPlus.IexTp.v1.04
-        run: dotnet build ZeroCopy/Iex/IexEquities/DeepPlus.IexTp.v1.04/Iex.IexEquities.DeepPlus.IexTp.v1.04.slnx --nologo
+      - name: Build ZeroCopy/Iex/IexEquities/DeepPlus.IexTp.v1.05
+        run: dotnet build ZeroCopy/Iex/IexEquities/DeepPlus.IexTp.v1.05/Iex.IexEquities.DeepPlus.IexTp.v1.05.slnx --nologo
 
       - name: Build ZeroCopy/Iex/IexEquities/Tops.IexTp.v1.56
         run: dotnet build ZeroCopy/Iex/IexEquities/Tops.IexTp.v1.56/Iex.IexEquities.Tops.IexTp.v1.56.slnx --nologo
@@ -61,39 +103,75 @@ jobs:
       - name: Build ZeroCopy/Iex/IexEquities/Tops.IexTp.v1.66
         run: dotnet build ZeroCopy/Iex/IexEquities/Tops.IexTp.v1.66/Iex.IexEquities.Tops.IexTp.v1.66.slnx --nologo
 
-      - name: Test Classes/Iex/IexEquities/Deep.IexTp.v1.08/Test
+      - name: Build ZeroCopy/Nasdaq/IseOptions/OrderComboFeed.Itch.v1.1
+        run: dotnet build ZeroCopy/Nasdaq/IseOptions/OrderComboFeed.Itch.v1.1/Nasdaq.IseOptions.OrderComboFeed.Itch.v1.1.slnx --nologo
+
+      - name: Build ZeroCopy/Nasdaq/IseOptions/TopComboQuoteFeed.Itch.v1.0
+        run: dotnet build ZeroCopy/Nasdaq/IseOptions/TopComboQuoteFeed.Itch.v1.0/Nasdaq.IseOptions.TopComboQuoteFeed.Itch.v1.0.slnx --nologo
+
+      - name: Build ZeroCopy/Nasdaq/NsmEquities/Orders.Ouch.v5.0
+        run: dotnet build ZeroCopy/Nasdaq/NsmEquities/Orders.Ouch.v5.0/Nasdaq.NsmEquities.Orders.Ouch.v5.0.slnx --nologo
+
+      - name: Build ZeroCopy/Nasdaq/NsmEquities/Qbbo.Itch.v2.1
+        run: dotnet build ZeroCopy/Nasdaq/NsmEquities/Qbbo.Itch.v2.1/Nasdaq.NsmEquities.Qbbo.Itch.v2.1.slnx --nologo
+
+      - name: Build ZeroCopy/Nasdaq/NsmEquities/TotalView.Itch.v5.0.2023
+        run: dotnet build ZeroCopy/Nasdaq/NsmEquities/TotalView.Itch.v5.0.2023/Nasdaq.NsmEquities.TotalView.Itch.v5.0.2023.slnx --nologo
+
+      - name: Build ZeroCopy/Nasdaq/NsmEquities/TotalView.Itch.v5.0.2026
+        run: dotnet build ZeroCopy/Nasdaq/NsmEquities/TotalView.Itch.v5.0.2026/Nasdaq.NsmEquities.TotalView.Itch.v5.0.2026.slnx --nologo
+
+      - name: Build ZeroCopy/Nasdaq/NtxEquities/TotalView.Itch.v5.0
+        run: dotnet build ZeroCopy/Nasdaq/NtxEquities/TotalView.Itch.v5.0/Nasdaq.NtxEquities.TotalView.Itch.v5.0.slnx --nologo
+
+      - name: Build ZeroCopy/Nasdaq/PsxEquities/TotalView.Itch.v5.0
+        run: dotnet build ZeroCopy/Nasdaq/PsxEquities/TotalView.Itch.v5.0/Nasdaq.PsxEquities.TotalView.Itch.v5.0.slnx --nologo
+
+      - name: Test Classes/Iex/IexEquities/Deep.IexTp.v1.08/Tests/Test iex/IexEquities/Deep.v1.0.zst
         run: |
           set -o pipefail
           zstd -d -f omi-data-pcaps/iex/IexEquities/Deep.v1.0.zst -o capture.pcap
-          dotnet run --no-build --project Classes/Iex/IexEquities/Deep.IexTp.v1.08/Test -- capture.pcap | tail -25
+          dotnet run --no-build --project Classes/Iex/IexEquities/Deep.IexTp.v1.08/Tests/Test -- capture.pcap | tail -25
 
-      - name: Test Classes/Iex/IexEquities/DeepPlus.IexTp.v1.04/Test
+      - name: Test Classes/Iex/IexEquities/DeepPlus.IexTp.v1.05/Tests/Test iex/IexEquities/DeepPlus.v1.0.zst
         run: |
           set -o pipefail
           zstd -d -f omi-data-pcaps/iex/IexEquities/DeepPlus.v1.0.zst -o capture.pcap
-          dotnet run --no-build --project Classes/Iex/IexEquities/DeepPlus.IexTp.v1.04/Test -- capture.pcap | tail -25
+          dotnet run --no-build --project Classes/Iex/IexEquities/DeepPlus.IexTp.v1.05/Tests/Test -- capture.pcap | tail -25
 
-      - name: Test Classes/Iex/IexEquities/Tops.IexTp.v1.66/Test
+      - name: Test Classes/Iex/IexEquities/Tops.IexTp.v1.66/Tests/Test iex/IexEquities/Tops.v1.6.zst
         run: |
           set -o pipefail
           zstd -d -f omi-data-pcaps/iex/IexEquities/Tops.v1.6.zst -o capture.pcap
-          dotnet run --no-build --project Classes/Iex/IexEquities/Tops.IexTp.v1.66/Test -- capture.pcap | tail -25
+          dotnet run --no-build --project Classes/Iex/IexEquities/Tops.IexTp.v1.66/Tests/Test -- capture.pcap | tail -25
 
-      - name: Test ZeroCopy/Iex/IexEquities/Deep.IexTp.v1.08/Iex.IexEquities.Deep.IexTp.v1.08/Test
+      - name: Test Classes/Nasdaq/NsmEquities/TotalView.Itch.v5.0.2026/Tests/Test nasdaq/NsmEquities/TotalView.v5.0.zst
+        run: |
+          set -o pipefail
+          zstd -d -f omi-data-pcaps/nasdaq/NsmEquities/TotalView.v5.0.zst -o capture.pcap
+          dotnet run --no-build --project Classes/Nasdaq/NsmEquities/TotalView.Itch.v5.0.2026/Tests/Test -- capture.pcap | tail -25
+
+      - name: Test ZeroCopy/Iex/IexEquities/Deep.IexTp.v1.08/Tests/Test iex/IexEquities/Deep.v1.0.zst
         run: |
           set -o pipefail
           zstd -d -f omi-data-pcaps/iex/IexEquities/Deep.v1.0.zst -o capture.pcap
-          dotnet run --no-build --project ZeroCopy/Iex/IexEquities/Deep.IexTp.v1.08/Iex.IexEquities.Deep.IexTp.v1.08/Test -- capture.pcap | tail -25
+          dotnet run --no-build --project ZeroCopy/Iex/IexEquities/Deep.IexTp.v1.08/Tests/Test -- capture.pcap | tail -25
 
-      - name: Test ZeroCopy/Iex/IexEquities/DeepPlus.IexTp.v1.04/Iex.IexEquities.DeepPlus.IexTp.v1.04/Test
+      - name: Test ZeroCopy/Iex/IexEquities/DeepPlus.IexTp.v1.05/Tests/Test iex/IexEquities/DeepPlus.v1.0.zst
         run: |
           set -o pipefail
           zstd -d -f omi-data-pcaps/iex/IexEquities/DeepPlus.v1.0.zst -o capture.pcap
-          dotnet run --no-build --project ZeroCopy/Iex/IexEquities/DeepPlus.IexTp.v1.04/Iex.IexEquities.DeepPlus.IexTp.v1.04/Test -- capture.pcap | tail -25
+          dotnet run --no-build --project ZeroCopy/Iex/IexEquities/DeepPlus.IexTp.v1.05/Tests/Test -- capture.pcap | tail -25
 
-      - name: Test ZeroCopy/Iex/IexEquities/Tops.IexTp.v1.66/Iex.IexEquities.Tops.IexTp.v1.66/Test
+      - name: Test ZeroCopy/Iex/IexEquities/Tops.IexTp.v1.66/Tests/Test iex/IexEquities/Tops.v1.6.zst
         run: |
           set -o pipefail
           zstd -d -f omi-data-pcaps/iex/IexEquities/Tops.v1.6.zst -o capture.pcap
-          dotnet run --no-build --project ZeroCopy/Iex/IexEquities/Tops.IexTp.v1.66/Iex.IexEquities.Tops.IexTp.v1.66/Test -- capture.pcap | tail -25
+          dotnet run --no-build --project ZeroCopy/Iex/IexEquities/Tops.IexTp.v1.66/Tests/Test -- capture.pcap | tail -25
+
+      - name: Test ZeroCopy/Nasdaq/NsmEquities/TotalView.Itch.v5.0.2026/Tests/Test nasdaq/NsmEquities/TotalView.v5.0.zst
+        run: |
+          set -o pipefail
+          zstd -d -f omi-data-pcaps/nasdaq/NsmEquities/TotalView.v5.0.zst -o capture.pcap
+          dotnet run --no-build --project ZeroCopy/Nasdaq/NsmEquities/TotalView.Itch.v5.0.2026/Tests/Test -- capture.pcap | tail -25
 

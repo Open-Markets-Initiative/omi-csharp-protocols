@@ -1,46 +1,57 @@
 using System.Runtime.CompilerServices;
 
-namespace Iex.IexEquities.DeepPlus.IexTp;
+namespace Iex.IexEquities.DeepPlus.IexTp.v1_01;
 
 /// <summary>
-///  Represents the Reserved1 field as a single ASCII character.
+///  Reserved for future use
 /// </summary>
-
 public struct Reserved1
 {
     /// <summary>
-    ///  Size of Reserved1 in bytes
+    ///  The size of the Reserved 1 field in bytes.
     /// </summary>
     public const int Size = 1;
 
     /// <summary>
-    ///  Gets the decoded Reserved 1 value.
+    ///  Reserved for future use
     /// </summary>
-    public readonly char Value
-        => (char)Byte;
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///  The value does not fit its field.
+    /// </exception>
+    public char Value
+    {
+        readonly get => (char)Byte;
+        set => Encode(value);
+    }
 
     /// <summary>
-    ///  Decodes the raw bytes into the Reserved 1 value.
+    ///  Returns the wire value of the Reserved 1 field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly char Decode()
-        => (char)Byte;
+    public readonly byte Decode()
+        => Byte;
 
     /// <summary>
-    ///  Encodes a value into the underlying Reserved 1 bytes.
+    ///  Writes a value into the Reserved 1 field.
     /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///  The value does not fit its field.
+    /// </exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Encode(char value)
-        => Byte = (byte)value;
+    {
+        if (value > byte.MaxValue)
+        {
+            throw new ArgumentOutOfRangeException(nameof(value), global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.WriterValueDoesNotFit);
+        }
+        Byte = (byte)value;
+    }
 
     /// <summary>
-    ///  Returns the string representation of the Reserved 1 value.
+    ///  Returns the value of the field as text.
     /// </summary>
     public readonly override string ToString()
         => $"{Value}";
 
-    /// <summary>
-    ///  Underlying byte
-    /// </summary>
     internal byte Byte;
 }

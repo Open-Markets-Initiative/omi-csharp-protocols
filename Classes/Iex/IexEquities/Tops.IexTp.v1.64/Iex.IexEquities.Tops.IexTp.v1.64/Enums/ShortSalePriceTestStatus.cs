@@ -1,10 +1,10 @@
-namespace Iex.IexEquities.Tops.IexTp;
+namespace Iex.IexEquities.Tops.IexTp.v1_64;
 
 /// <summary>
 ///  Reg. SHO short sale price test restriction status
 /// </summary>
 /// <remarks>
-///  Backed by byte. Values correspond to the wire-format integer encoding.
+///  Each value is the number that represents it on the wire.
 /// </remarks>
 public enum ShortSalePriceTestStatus : byte
 {

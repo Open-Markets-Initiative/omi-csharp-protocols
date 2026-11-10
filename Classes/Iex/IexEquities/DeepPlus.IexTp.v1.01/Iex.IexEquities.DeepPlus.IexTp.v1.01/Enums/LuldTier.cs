@@ -1,10 +1,10 @@
-namespace Iex.IexEquities.DeepPlus.IexTp;
+namespace Iex.IexEquities.DeepPlus.IexTp.v1_01;
 
 /// <summary>
 ///  Indicates which Limit Up-Limit Down price band calculation parameter is to be used
 /// </summary>
 /// <remarks>
-///  Backed by byte. Values correspond to the wire-format integer encoding.
+///  Each value is the number that represents it on the wire.
 /// </remarks>
 public enum LuldTier : byte
 {

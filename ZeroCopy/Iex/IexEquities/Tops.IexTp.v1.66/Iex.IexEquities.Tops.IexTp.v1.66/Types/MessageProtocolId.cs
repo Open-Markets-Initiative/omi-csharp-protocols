@@ -1,51 +1,50 @@
 using System.Runtime.CompilerServices;
 
-namespace Iex.IexEquities.Tops.IexTp;
+namespace Iex.IexEquities.Tops.IexTp.v1_66;
 
 /// <summary>
-///  Represents the MessageProtocolId field as 2-byte little-endian unsigned integer.
+///  Unique identifier of the higher layer protocol
 /// </summary>
-
 public struct MessageProtocolId
 {
     /// <summary>
-    ///  Required value for Message Protocol Id
+    ///  Iex Tops Protocol
     /// </summary>
     public const ushort StaticValue = 32771;
 
     /// <summary>
-    ///  Size of MessageProtocolId in bytes
+    ///  The size of the Message Protocol Id field in bytes.
     /// </summary>
     public const int Size = 2;
 
     /// <summary>
-    ///  Gets the decoded Message Protocol Id value.
+    ///  Unique identifier of the higher layer protocol
     /// </summary>
-    public readonly ushort Value
-        => Decode();
+    public ushort Value
+    {
+        readonly get => Decode();
+        set => Encode(value);
+    }
 
     /// <summary>
-    ///  Decodes the raw bytes into the Message Protocol Id value.
+    ///  Returns the wire value of the Message Protocol Id field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly ushort Decode()
-        => Underlying;
+        => global::System.Buffers.Binary.BinaryPrimitives.ReadUInt16LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.ReadOnlySpan<ushort>(in Underlying)));
 
     /// <summary>
-    ///  Encodes a value into the underlying Message Protocol Id bytes.
+    ///  Writes an unscaled wire value into the Message Protocol Id field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Encode(ushort value)
-        => Underlying = value;
+        => global::System.Buffers.Binary.BinaryPrimitives.WriteUInt16LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.Span<ushort>(ref Underlying)), value);
 
     /// <summary>
-    ///  Returns the string representation of the Message Protocol Id value.
+    ///  Returns the value of the field as text.
     /// </summary>
     public readonly override string ToString()
-        => $"{Value}";
+        => string.Create(global::System.Globalization.CultureInfo.InvariantCulture, $"{Value}");
 
-    /// <summary>
-    ///  Underlying bytes
-    /// </summary>
     internal ushort Underlying;
 }

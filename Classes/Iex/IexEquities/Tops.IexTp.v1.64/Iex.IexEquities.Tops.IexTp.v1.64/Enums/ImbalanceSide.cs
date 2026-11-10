@@ -1,10 +1,10 @@
-namespace Iex.IexEquities.Tops.IexTp;
+namespace Iex.IexEquities.Tops.IexTp.v1_64;
 
 /// <summary>
 ///  Side of the unpaired shares at the Reference Price using orders on the Auction Book
 /// </summary>
 /// <remarks>
-///  Each value corresponds to the ASCII byte value used as the wire-format discriminator.
+///  Each value is the ASCII character that represents it on the wire.
 /// </remarks>
 public enum ImbalanceSide : byte
 {

@@ -1,0 +1,14 @@
+<Solution>
+  <Project Path="Nasdaq.IseOptions.TopComboQuoteFeed.Itch.v1.0/Nasdaq.IseOptions.TopComboQuoteFeed.Itch.v1.0.csproj" />
+  <Folder Name="/Examples/">
+    <Project Path="Examples/Iterator/Nasdaq.IseOptions.TopComboQuoteFeed.Itch.v1.0.Iterator.csproj" />
+    <Project Path="Examples/PacketManager/Nasdaq.IseOptions.TopComboQuoteFeed.Itch.v1.0.PacketManager.csproj" />
+    <Project Path="Examples/Viewer/Nasdaq.IseOptions.TopComboQuoteFeed.Itch.v1.0.Viewer.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/Test/Nasdaq.IseOptions.TopComboQuoteFeed.Itch.v1.0.Test.csproj" />
+  </Folder>
+  <Folder Name="/Omi.Pcap/">
+    <Project Path="../../../Omi.Pcap/Omi.Pcap.csproj" />
+  </Folder>
+</Solution>

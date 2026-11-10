@@ -1,41 +1,152 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace Iex.IexEquities.DeepPlus.IexTp;
+namespace Iex.IexEquities.DeepPlus.IexTp.v1_01;
 
 /// <summary>
-///  Represents the OrderDeleteMessage message from the DeepPlus protocol.
+///  A displayed order that was removed from the IEX Book
 /// </summary>
-
-public partial class OrderDeleteMessage
+public static class OrderDeleteMessage
 {
     /// <summary>
-    ///  Reserved for future use
+    ///  The fixed fields in wire order, laid out as they are in the bytes.
     /// </summary>
-    public char Reserved1 => Fields.Reserved1.Value;
-
-    /// <summary>
-    ///  Time stamp of the system event
-    /// </summary>
-    public DateTime Timestamp => Fields.Timestamp.Value;
-
-    /// <summary>
-    ///  Security identifier
-    /// </summary>
-    public string Symbol => Fields.Symbol.Value;
-
-    /// <summary>
-    ///  Order ID of the referenced order
-    /// </summary>
-    public ulong OrderIdReference => Fields.OrderIdReference.Value;
-
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public unsafe struct Layout
+    public struct Layout
     {
-        public Reserved1 Reserved1;
-        public Timestamp Timestamp;
-        public Symbol Symbol;
-        public OrderIdReference OrderIdReference;
-    };
+        /// <summary>
+        ///  The length of the Order Delete Message in bytes.
+        /// </summary>
+        public const int Size = global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.SizeReserved1 + global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.SizeTimestamp + global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.SizeSymbol + global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.SizeOrderIdReference;
 
-    protected Layout Fields;
-};
+        /// <summary>
+        ///  Gets the Order Delete Message laid over the start of the bytes.
+        /// </summary>
+        /// <remarks>
+        ///  Checks only that the bytes are long enough.
+        /// </remarks>
+        /// <exception cref="ArgumentException">
+        ///  The bytes are shorter than the Order Delete Message.
+        /// </exception>
+        public static ref readonly Layout Read(ReadOnlySpan<byte> source)
+        {
+            if (Size > source.Length) throw new global::System.ArgumentException(global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.ReadTooShort, nameof(source));
+            return ref global::System.Runtime.InteropServices.MemoryMarshal.AsRef<Layout>(source);
+        }
+
+        /// <summary>
+        ///  Clears the Order Delete Message at the start of the buffer, writes its fixed values, and gets the Order Delete Message laid over them.
+        /// </summary>
+        /// <exception cref="ArgumentException">
+        ///  The buffer has no room for the Order Delete Message.
+        /// </exception>
+        public static ref Layout Initialize(global::System.Span<byte> destination)
+        {
+            if (Size > destination.Length) throw new global::System.ArgumentException(global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.WriterNoRoom, nameof(destination));
+            destination[..Size].Clear();
+            return ref global::System.Runtime.InteropServices.MemoryMarshal.AsRef<Layout>(destination);
+        }
+
+        /// <summary>
+        ///  Gets the fixed fields over the start of the bytes without clearing or writing them, for changes in place.
+        /// </summary>
+        /// <remarks>
+        ///  Checks only that the bytes are long enough.
+        /// </remarks>
+        /// <exception cref="ArgumentException">
+        ///  The bytes are shorter than the fixed fields.
+        /// </exception>
+        public static ref Layout Over(global::System.Span<byte> bytes)
+        {
+            if (Size > bytes.Length) throw new global::System.ArgumentException(global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.ReadTooShort, nameof(bytes));
+            return ref global::System.Runtime.InteropServices.MemoryMarshal.AsRef<Layout>(bytes);
+        }
+
+        /// <summary>
+        ///  Reserved for future use
+        /// </summary>
+        public global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Reserved1 Reserved1;
+        /// <summary>
+        ///  Time stamp of the system event
+        /// </summary>
+        public global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Timestamp Timestamp;
+        /// <summary>
+        ///  Security identifier
+        /// </summary>
+        public global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Symbol Symbol;
+        /// <summary>
+        ///  Order ID of the referenced order
+        /// </summary>
+        public global::Iex.IexEquities.DeepPlus.IexTp.v1_01.OrderIdReference OrderIdReference;
+    }
+
+    /// <summary>
+    ///  The Order Delete Message fields to write.
+    /// </summary>
+    public readonly struct Value
+    {
+        /// <summary>
+        ///  Reserved for future use
+        /// </summary>
+        public required global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Reserved1 Reserved1 { get; init; }
+
+        /// <summary>
+        ///  Time stamp of the system event
+        /// </summary>
+        public required global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Timestamp Timestamp { get; init; }
+
+        /// <summary>
+        ///  Security identifier
+        /// </summary>
+        public required global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Symbol Symbol { get; init; }
+
+        /// <summary>
+        ///  Order ID of the referenced order
+        /// </summary>
+        public required global::Iex.IexEquities.DeepPlus.IexTp.v1_01.OrderIdReference OrderIdReference { get; init; }
+
+        /// <summary>
+        ///  Creates the value of the Order Delete Message, with each field that it leaves out absent.
+        /// </summary>
+        public Value() { }
+    }
+
+    internal const int LayoutSize = global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.SizeReserved1 + global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.SizeTimestamp + global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.SizeSymbol + global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.SizeOrderIdReference;
+
+    /// <summary>
+    ///  Writes the Order Delete Message to the start of destination and fills in each length, count and message type in it.
+    /// </summary>
+    /// <param name="destination">
+    ///  The buffer that receives the bytes.
+    /// </param>
+    /// <param name="value">
+    ///  The fields to write.
+    /// </param>
+    /// <returns>
+    ///  The bytes of the Order Delete Message.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    ///  The destination is too short, a value selects no message, or two values disagree.
+    /// </exception>
+    /// <exception cref="OverflowException">
+    ///  A length or a count does not fit its field.
+    /// </exception>
+    public static global::System.Span<byte> Write(global::System.Span<byte> destination, scoped in Value value)
+    {
+        var cursor = new global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.WriterCursor();
+        return Write(destination, ref cursor, global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.Position.Minimum, in value);
+    }
+
+    internal static global::System.Span<byte> Write(global::System.Span<byte> bytes, scoped ref global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.WriterCursor cursor, int start, scoped in Value value)
+    {
+        if (LayoutSize > bytes.Length - cursor.Index) throw new global::System.ArgumentException(global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.WriterNoRoom, global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.WriterDestination);
+        ref Layout orderDeleteMessageReserved1WriterLayout = ref global::System.Runtime.InteropServices.MemoryMarshal.AsRef<Layout>(bytes[cursor.Index..]);
+        orderDeleteMessageReserved1WriterLayout.Reserved1 = value.Reserved1;
+        orderDeleteMessageReserved1WriterLayout.Timestamp = value.Timestamp;
+        orderDeleteMessageReserved1WriterLayout.Symbol = value.Symbol;
+        orderDeleteMessageReserved1WriterLayout.OrderIdReference = value.OrderIdReference;
+        cursor.Index += LayoutSize;
+        return bytes[start..cursor.Index];
+    }
+}

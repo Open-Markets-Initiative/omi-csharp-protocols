@@ -1,8 +1,15 @@
 <Solution>
-  <Folder Name="/ZeroCopy/">
-    <Project Path="Iex.IexEquities.Tops.IexTp.v1.66/ConsoleDumpManager/Iex.IexEquities.Tops.IexTp.v1.66.ConsoleDumpManager.csproj" />
-    <Project Path="Iex.IexEquities.Tops.IexTp.v1.66/Iex.IexEquities.Tops.IexTp.v1.66.csproj" />
-    <Project Path="Iex.IexEquities.Tops.IexTp.v1.66/Manager/Iex.IexEquities.Tops.IexTp.v1.66.Manager.csproj" />
-    <Project Path="Iex.IexEquities.Tops.IexTp.v1.66/Test/Iex.IexEquities.Tops.IexTp.v1.66.Test.csproj" />
+  <Project Path="Iex.IexEquities.Tops.IexTp.v1.66/Iex.IexEquities.Tops.IexTp.v1.66.csproj" />
+  <Folder Name="/Examples/">
+    <Project Path="Examples/Counter/Iex.IexEquities.Tops.IexTp.v1.66.Counter.csproj" />
+    <Project Path="Examples/Iterator/Iex.IexEquities.Tops.IexTp.v1.66.Iterator.csproj" />
+    <Project Path="Examples/Manager/Iex.IexEquities.Tops.IexTp.v1.66.Manager.csproj" />
+    <Project Path="Examples/Viewer/Iex.IexEquities.Tops.IexTp.v1.66.Viewer.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/Test/Iex.IexEquities.Tops.IexTp.v1.66.Test.csproj" />
+  </Folder>
+  <Folder Name="/Omi.Pcap/">
+    <Project Path="../../../Omi.Pcap/Omi.Pcap.csproj" />
   </Folder>
 </Solution>

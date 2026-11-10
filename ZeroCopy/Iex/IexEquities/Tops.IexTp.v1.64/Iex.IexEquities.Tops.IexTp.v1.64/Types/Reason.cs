@@ -1,94 +1,96 @@
 using System.Runtime.CompilerServices;
 
-namespace Iex.IexEquities.Tops.IexTp;
+namespace Iex.IexEquities.Tops.IexTp.v1_64;
 
 /// <summary>
-///  Represents the Reason field as 4-byte ASCII string.
+///  Reason for the trading status change
 /// </summary>
-
 public unsafe struct Reason
 {
     /// <summary>
-    ///  Size of Reason in bytes
+    ///  The size of the Reason field in bytes.
     /// </summary>
     public const int Size = 4;
 
     /// <summary>
-    ///  Length of Reason field
+    ///  The byte that fills the unused bytes of the Reason field.
     /// </summary>
-    public int Length
+    public const byte FillByte = 0x20;
+
+    /// <summary>
+    ///  Gets the number of encoded bytes in the Reason field.
+    /// </summary>
+    public readonly int Length
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
-            if (Bytes[0] == (byte)' ') { return 0; }
-            if (Bytes[1] == (byte)' ') { return 1; }
-            if (Bytes[2] == (byte)' ') { return 2; }
-            if (Bytes[3] == (byte)' ') { return 3; }
+            for (var index = Size - 1; index >= 0; index--)
+            {
+                if (Bytes[index] != FillByte)
+                {
+                    return index + 1;
+                }
+            }
 
-            return 4;
+            return 0;
         }
     }
 
     /// <summary>
-    ///  Gets the decoded Reason value.
+    ///  Reason for the trading status change
     /// </summary>
-    public readonly string Value
-        => Decode(this);
-
-    /// <summary>
-    ///  Does Reason field contain a value?
-    /// </summary>
-    public readonly bool HasValue
+    /// <exception cref="ArgumentException">
+    ///  The encoded text is longer than the field.
+    /// </exception>
+    public string Value
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get { return Bytes[0] != (byte)' '; }
+        readonly get => global::System.Text.Encoding.ASCII.GetString(ValueSpan);
+        set => Encode(value);
     }
 
     /// <summary>
-    ///  Decodes the raw bytes into the Reason value.
+    ///  Gets the encoded bytes of the text in the Reason field, without the fill.
     /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string Decode(Reason value)
-        => new string((sbyte*)value.Bytes, 0, value.Length);
+    [global::System.Diagnostics.CodeAnalysis.UnscopedRef]
+    public readonly ReadOnlySpan<byte> ValueSpan
+        => global::System.Runtime.InteropServices.MemoryMarshal.CreateReadOnlySpan(ref global::System.Runtime.CompilerServices.Unsafe.As<Reason, byte>(ref global::System.Runtime.CompilerServices.Unsafe.AsRef(in this)), Size)[..Length];
 
     /// <summary>
-    ///  Attempts to read Reason, returning false if the field is not present.
+    ///  Returns the wire value of the Reason field.
     /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly bool TryRead(out string value)
-    {
-        if (HasValue)
-        {
-            value = Decode(this);
-            return true;
-        }
-
-        value = string.Empty;
-        return false;
-    }
+    [global::System.Diagnostics.CodeAnalysis.UnscopedRef]
+    public readonly ReadOnlySpan<byte> Decode()
+        => global::System.Runtime.InteropServices.MemoryMarshal.CreateReadOnlySpan(ref global::System.Runtime.CompilerServices.Unsafe.As<Reason, byte>(ref global::System.Runtime.CompilerServices.Unsafe.AsRef(in this)), Size);
 
     /// <summary>
-    ///  Encodes a value into the underlying Reason bytes.
+    ///  Writes a value into the Reason field.
     /// </summary>
+    /// <exception cref="ArgumentException">
+    ///  The encoded text is longer than the field.
+    /// </exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Encode(string value)
     {
-        var length = value.Length;
-        Bytes[0] = length > 0 ? (byte)value[0] : (byte)' ';
-        Bytes[1] = length > 1 ? (byte)value[1] : (byte)' ';
-        Bytes[2] = length > 2 ? (byte)value[2] : (byte)' ';
-        Bytes[3] = length > 3 ? (byte)value[3] : (byte)' ';
+        var encoding = global::System.Text.Encoding.ASCII;
+        var length = encoding.GetByteCount(value);
+        if (length > Size)
+        {
+            throw new ArgumentException(global::Iex.IexEquities.Tops.IexTp.v1_64.Parser.FieldTextTooLong, nameof(value));
+        }
+        fixed (byte* pointer = Bytes)
+        {
+            var bytes = new Span<byte>(pointer, Size);
+            bytes.Fill(FillByte);
+            encoding.GetBytes(value.AsSpan(), bytes);
+        }
     }
 
     /// <summary>
-    ///  Returns the string representation of the Reason value.
+    ///  Returns the value of the field as text.
     /// </summary>
     public readonly override string ToString()
         => Value;
 
-    /// <summary>
-    ///  Underlying bytes
-    /// </summary>
     internal fixed byte Bytes[Size];
 }

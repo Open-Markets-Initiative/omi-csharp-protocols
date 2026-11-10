@@ -1,0 +1,191 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+namespace Iex.IexEquities.DeepPlus.IexTp.v1_05;
+
+/// <summary>
+///  IexTp message
+/// </summary>
+public static class Message
+{
+    /// <summary>
+    ///  The fixed fields in wire order, laid out as they are in the bytes.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct Layout
+    {
+        /// <summary>
+        ///  Gets the fixed fields over the start of the bytes without clearing or writing them, for changes in place.
+        /// </summary>
+        /// <remarks>
+        ///  Checks only that the bytes are long enough.
+        /// </remarks>
+        /// <exception cref="ArgumentException">
+        ///  The bytes are shorter than the fixed fields.
+        /// </exception>
+        public static ref Layout Over(global::System.Span<byte> bytes)
+        {
+            if (global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Message.LayoutSize > bytes.Length) throw new global::System.ArgumentException(global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.ReadTooShort, nameof(bytes));
+            return ref global::System.Runtime.InteropServices.MemoryMarshal.AsRef<Layout>(bytes);
+        }
+
+        /// <summary>
+        ///  IexTp message header
+        /// </summary>
+        public global::Iex.IexEquities.DeepPlus.IexTp.v1_05.MessageHeader.Layout MessageHeader;
+    }
+
+    /// <summary>
+    ///  Reads the Message in place.
+    /// </summary>
+    public readonly ref struct Reader
+    {
+        private readonly ReadOnlySpan<byte> bytes;
+        private readonly int start;
+        private readonly int end;
+        private readonly ulong firstMessageSequenceNumberSequenceSeed;
+        private ref readonly Layout layout => ref global::System.Runtime.InteropServices.MemoryMarshal.AsRef<Layout>(this.bytes[this.start..this.end]);
+
+        internal Reader(ReadOnlySpan<byte> bytes, int start, int end, ulong firstMessageSequenceNumberSequenceSeed)
+        {
+            this.bytes = bytes;
+            this.start = start;
+            this.end = end;
+            this.firstMessageSequenceNumberSequenceSeed = firstMessageSequenceNumberSequenceSeed;
+        }
+
+        /// <summary>
+        ///  Gets the bytes of the Message.
+        /// </summary>
+        public ReadOnlySpan<byte> Bytes => this.bytes[this.start..this.end];
+
+        /// <summary>
+        ///  Gets the fixed fields at the start of the Message.
+        /// </summary>
+        public ref readonly Layout Layout => ref this.layout;
+
+        /// <summary>
+        ///  IexTp message header
+        /// </summary>
+        public ref readonly MessageHeader.Layout MessageHeader => ref this.layout.MessageHeader;
+
+        /// <summary>
+        ///  Branch
+        /// </summary>
+        public MessageData.Reader MessageData
+        {
+            get
+            {
+                int messageDataReaderPosition = Parser.Valid(Parser.MessageMessageDataStart(this.bytes, this.start, this.end, this.start, out var messageTypeValue));
+                return new(this.bytes, messageDataReaderPosition, this.end, messageTypeValue);
+            }
+        }
+
+        /// <summary>
+        ///  Gets the sequence number of the Message.
+        /// </summary>
+        public ulong SequenceNumber => this.firstMessageSequenceNumberSequenceSeed;
+    }
+
+    /// <summary>
+    ///  The Message fields to write.
+    /// </summary>
+    public readonly struct Value
+    {
+        /// <summary>
+        ///  IexTp message header
+        /// </summary>
+        public global::Iex.IexEquities.DeepPlus.IexTp.v1_05.MessageHeader.Value MessageHeader { get; init; } = new();
+
+        /// <summary>
+        ///  Branch
+        /// </summary>
+        public global::Iex.IexEquities.DeepPlus.IexTp.v1_05.MessageData.Value MessageData { get; init; } = new();
+
+        /// <summary>
+        ///  Creates the value of the Message, with each field that it leaves out absent.
+        /// </summary>
+        public Value() { }
+    }
+
+    internal const int LayoutSize = global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.SizeMessageHeader;
+    private const int messageLengthDependencyWriteDistanceFromMessageHeader = 0;
+    private const int messageTypeDependencyWriteDistanceFromMessageHeader = 2;
+    private const int SystemEventMessageCase = 1;
+    private const int SecurityDirectoryMessageCase = 2;
+    private const int TradingStatusMessageCase = 3;
+    private const int RetailLiquidityIndicatorMessageCase = 4;
+    private const int OperationalHaltStatusMessageCase = 5;
+    private const int ShortSalePriceTestStatusMessageCase = 6;
+    private const int SecurityEventMessageCase = 7;
+    private const int AddOrderMessageCase = 8;
+    private const int OrderModifyMessageCase = 9;
+    private const int OrderDeleteMessageCase = 10;
+    private const int OrderExecutedMessageCase = 11;
+    private const int TradeMessageCase = 12;
+    private const int TradeBreakMessageCase = 13;
+    private const int ClearBookMessageCase = 14;
+
+    /// <summary>
+    ///  Writes the Message to the start of destination and fills in each length, count and message type in it.
+    /// </summary>
+    /// <param name="destination">
+    ///  The buffer that receives the bytes.
+    /// </param>
+    /// <param name="value">
+    ///  The fields to write.
+    /// </param>
+    /// <returns>
+    ///  The bytes of the Message.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    ///  The destination is too short, a value selects no message, or two values disagree.
+    /// </exception>
+    /// <exception cref="OverflowException">
+    ///  A length or a count does not fit its field.
+    /// </exception>
+    public static global::System.Span<byte> Write(global::System.Span<byte> destination, scoped in Value value)
+    {
+        var cursor = new global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.WriterCursor();
+        return Write(destination, ref cursor, global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Minimum, in value);
+    }
+
+    internal static global::System.Span<byte> Write(global::System.Span<byte> bytes, scoped ref global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.WriterCursor cursor, int start, scoped in Value value)
+    {
+        int messageHeaderWriterStart = global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent;
+        int messageDataWriterStart = global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent;
+        int messageDataWriterCase = global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent;
+        bool messageLengthDependencyFirstUsed = false;
+        bool messageTypeDependencyFirstUsed = false;
+        if (LayoutSize > bytes.Length - cursor.Index) throw new global::System.ArgumentException(global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.WriterNoRoom, global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.WriterDestination);
+        if (messageHeaderWriterStart == global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent) messageHeaderWriterStart = cursor.Index;
+        int messageHeaderWriting = cursor.Index;
+        var messageHeaderWriteValue = value.MessageHeader;
+        global::Iex.IexEquities.DeepPlus.IexTp.v1_05.MessageHeader.Write(bytes, ref cursor, messageHeaderWriting, ref messageHeaderWriterStart == messageHeaderWriting ? ref messageLengthDependencyFirstUsed : ref global::System.Runtime.CompilerServices.Unsafe.NullRef<bool>(), ref messageHeaderWriterStart == messageHeaderWriting ? ref messageTypeDependencyFirstUsed : ref global::System.Runtime.CompilerServices.Unsafe.NullRef<bool>(), in messageHeaderWriteValue);
+        if (messageHeaderWriterStart == global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent) messageHeaderWriterStart = cursor.Index;
+        if (messageDataWriterStart == global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent) messageDataWriterStart = cursor.Index;
+        int messageDataWriting = cursor.Index;
+        var messageDataWriteValue = value.MessageData;
+        global::Iex.IexEquities.DeepPlus.IexTp.v1_05.MessageData.Write(bytes, ref cursor, messageDataWriting, ref messageDataWriterCase, in messageDataWriteValue);
+        if (messageHeaderWriterStart == global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent) messageHeaderWriterStart = cursor.Index;
+        if (messageDataWriterStart == global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent) messageDataWriterStart = cursor.Index;
+        global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.MessageWriter.MessageSizeRule1(bytes, ref cursor, messageHeaderWriterStart < global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Minimum ? global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent : messageHeaderWriterStart + messageLengthDependencyWriteDistanceFromMessageHeader, ref messageLengthDependencyFirstUsed, start, cursor.Index);
+        if (messageDataWriterCase == SystemEventMessageCase) global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.MessageWriter.MessageDataBranchRule0(bytes, ref cursor, messageHeaderWriterStart < global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Minimum ? global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent : messageHeaderWriterStart + messageTypeDependencyWriteDistanceFromMessageHeader, ref messageTypeDependencyFirstUsed, messageDataWriterStart);
+        if (messageDataWriterCase == SecurityDirectoryMessageCase) global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.MessageWriter.MessageDataBranchRule1(bytes, ref cursor, messageHeaderWriterStart < global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Minimum ? global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent : messageHeaderWriterStart + messageTypeDependencyWriteDistanceFromMessageHeader, ref messageTypeDependencyFirstUsed, messageDataWriterStart);
+        if (messageDataWriterCase == TradingStatusMessageCase) global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.MessageWriter.MessageDataBranchRule2(bytes, ref cursor, messageHeaderWriterStart < global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Minimum ? global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent : messageHeaderWriterStart + messageTypeDependencyWriteDistanceFromMessageHeader, ref messageTypeDependencyFirstUsed, messageDataWriterStart);
+        if (messageDataWriterCase == RetailLiquidityIndicatorMessageCase) global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.MessageWriter.MessageDataBranchRule3(bytes, ref cursor, messageHeaderWriterStart < global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Minimum ? global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent : messageHeaderWriterStart + messageTypeDependencyWriteDistanceFromMessageHeader, ref messageTypeDependencyFirstUsed, messageDataWriterStart);
+        if (messageDataWriterCase == OperationalHaltStatusMessageCase) global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.MessageWriter.MessageDataBranchRule4(bytes, ref cursor, messageHeaderWriterStart < global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Minimum ? global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent : messageHeaderWriterStart + messageTypeDependencyWriteDistanceFromMessageHeader, ref messageTypeDependencyFirstUsed, messageDataWriterStart);
+        if (messageDataWriterCase == ShortSalePriceTestStatusMessageCase) global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.MessageWriter.MessageDataBranchRule5(bytes, ref cursor, messageHeaderWriterStart < global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Minimum ? global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent : messageHeaderWriterStart + messageTypeDependencyWriteDistanceFromMessageHeader, ref messageTypeDependencyFirstUsed, messageDataWriterStart);
+        if (messageDataWriterCase == SecurityEventMessageCase) global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.MessageWriter.MessageDataBranchRule6(bytes, ref cursor, messageHeaderWriterStart < global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Minimum ? global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent : messageHeaderWriterStart + messageTypeDependencyWriteDistanceFromMessageHeader, ref messageTypeDependencyFirstUsed, messageDataWriterStart);
+        if (messageDataWriterCase == AddOrderMessageCase) global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.MessageWriter.MessageDataBranchRule7(bytes, ref cursor, messageHeaderWriterStart < global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Minimum ? global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent : messageHeaderWriterStart + messageTypeDependencyWriteDistanceFromMessageHeader, ref messageTypeDependencyFirstUsed, messageDataWriterStart);
+        if (messageDataWriterCase == OrderModifyMessageCase) global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.MessageWriter.MessageDataBranchRule8(bytes, ref cursor, messageHeaderWriterStart < global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Minimum ? global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent : messageHeaderWriterStart + messageTypeDependencyWriteDistanceFromMessageHeader, ref messageTypeDependencyFirstUsed, messageDataWriterStart);
+        if (messageDataWriterCase == OrderDeleteMessageCase) global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.MessageWriter.MessageDataBranchRule9(bytes, ref cursor, messageHeaderWriterStart < global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Minimum ? global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent : messageHeaderWriterStart + messageTypeDependencyWriteDistanceFromMessageHeader, ref messageTypeDependencyFirstUsed, messageDataWriterStart);
+        if (messageDataWriterCase == OrderExecutedMessageCase) global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.MessageWriter.MessageDataBranchRule10(bytes, ref cursor, messageHeaderWriterStart < global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Minimum ? global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent : messageHeaderWriterStart + messageTypeDependencyWriteDistanceFromMessageHeader, ref messageTypeDependencyFirstUsed, messageDataWriterStart);
+        if (messageDataWriterCase == TradeMessageCase) global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.MessageWriter.MessageDataBranchRule11(bytes, ref cursor, messageHeaderWriterStart < global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Minimum ? global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent : messageHeaderWriterStart + messageTypeDependencyWriteDistanceFromMessageHeader, ref messageTypeDependencyFirstUsed, messageDataWriterStart);
+        if (messageDataWriterCase == TradeBreakMessageCase) global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.MessageWriter.MessageDataBranchRule12(bytes, ref cursor, messageHeaderWriterStart < global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Minimum ? global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent : messageHeaderWriterStart + messageTypeDependencyWriteDistanceFromMessageHeader, ref messageTypeDependencyFirstUsed, messageDataWriterStart);
+        if (messageDataWriterCase == ClearBookMessageCase) global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.MessageWriter.MessageDataBranchRule13(bytes, ref cursor, messageHeaderWriterStart < global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Minimum ? global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent : messageHeaderWriterStart + messageTypeDependencyWriteDistanceFromMessageHeader, ref messageTypeDependencyFirstUsed, messageDataWriterStart);
+        global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.MessageWriter.MessageDataCases(bytes, ref cursor, messageHeaderWriterStart < global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Minimum ? global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent : messageHeaderWriterStart + messageTypeDependencyWriteDistanceFromMessageHeader, ref messageTypeDependencyFirstUsed, messageDataWriterStart, messageDataWriterCase == global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.NoCase ? global::Iex.IexEquities.DeepPlus.IexTp.v1_05.Parser.Position.Absent : messageDataWriterCase);
+        return bytes[start..cursor.Index];
+    }
+}

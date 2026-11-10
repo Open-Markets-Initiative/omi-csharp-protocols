@@ -1,0 +1,15 @@
+<Solution>
+  <Project Path="Nasdaq.NsmEquities.Orders.Ouch.v5.0/Nasdaq.NsmEquities.Orders.Ouch.v5.0.csproj" />
+  <Folder Name="/Examples/">
+    <Project Path="Examples/ClientManager/Nasdaq.NsmEquities.Orders.Ouch.v5.0.ClientManager.csproj" />
+    <Project Path="Examples/Iterator/Nasdaq.NsmEquities.Orders.Ouch.v5.0.Iterator.csproj" />
+    <Project Path="Examples/ServerManager/Nasdaq.NsmEquities.Orders.Ouch.v5.0.ServerManager.csproj" />
+    <Project Path="Examples/Viewer/Nasdaq.NsmEquities.Orders.Ouch.v5.0.Viewer.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/Test/Nasdaq.NsmEquities.Orders.Ouch.v5.0.Test.csproj" />
+  </Folder>
+  <Folder Name="/Omi.Pcap/">
+    <Project Path="../../../Omi.Pcap/Omi.Pcap.csproj" />
+  </Folder>
+</Solution>

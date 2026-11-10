@@ -1,46 +1,45 @@
 using System.Runtime.CompilerServices;
 
-namespace Iex.IexEquities.Tops.IexTp;
+namespace Iex.IexEquities.Tops.IexTp.v1_66;
 
 /// <summary>
-///  Represents the ImbalanceShares field as 4-byte little-endian unsigned integer.
+///  Number of unpaired shares at the Reference Price using orders on the Auction Book
 /// </summary>
-
 public struct ImbalanceShares
 {
     /// <summary>
-    ///  Size of ImbalanceShares in bytes
+    ///  The size of the Imbalance Shares field in bytes.
     /// </summary>
     public const int Size = 4;
 
     /// <summary>
-    ///  Gets the decoded Imbalance Shares value.
+    ///  Number of unpaired shares at the Reference Price using orders on the Auction Book
     /// </summary>
-    public readonly uint Value
-        => Decode();
+    public uint Value
+    {
+        readonly get => Decode();
+        set => Encode(value);
+    }
 
     /// <summary>
-    ///  Decodes the raw bytes into the Imbalance Shares value.
+    ///  Returns the wire value of the Imbalance Shares field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly uint Decode()
-        => Underlying;
+        => global::System.Buffers.Binary.BinaryPrimitives.ReadUInt32LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.ReadOnlySpan<uint>(in Underlying)));
 
     /// <summary>
-    ///  Encodes a value into the underlying Imbalance Shares bytes.
+    ///  Writes an unscaled wire value into the Imbalance Shares field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Encode(uint value)
-        => Underlying = value;
+        => global::System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.Span<uint>(ref Underlying)), value);
 
     /// <summary>
-    ///  Returns the string representation of the Imbalance Shares value.
+    ///  Returns the value of the field as text.
     /// </summary>
     public readonly override string ToString()
-        => $"{Value}";
+        => string.Create(global::System.Globalization.CultureInfo.InvariantCulture, $"{Value}");
 
-    /// <summary>
-    ///  Underlying bytes
-    /// </summary>
     internal uint Underlying;
 }

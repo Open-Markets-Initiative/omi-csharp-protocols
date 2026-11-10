@@ -1,102 +1,96 @@
 using System.Runtime.CompilerServices;
 
-namespace Iex.IexEquities.DeepPlus.IexTp;
+namespace Iex.IexEquities.DeepPlus.IexTp.v1_01;
 
 /// <summary>
-///  Represents the Symbol field as 8-byte ASCII string.
+///  Security identifier
 /// </summary>
-
 public unsafe struct Symbol
 {
     /// <summary>
-    ///  Size of Symbol in bytes
+    ///  The size of the Symbol field in bytes.
     /// </summary>
     public const int Size = 8;
 
     /// <summary>
-    ///  Length of Symbol field
+    ///  The byte that fills the unused bytes of the Symbol field.
     /// </summary>
-    public int Length
+    public const byte FillByte = 0x20;
+
+    /// <summary>
+    ///  Gets the number of encoded bytes in the Symbol field.
+    /// </summary>
+    public readonly int Length
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
-            if (Bytes[0] == (byte)' ') { return 0; }
-            if (Bytes[1] == (byte)' ') { return 1; }
-            if (Bytes[2] == (byte)' ') { return 2; }
-            if (Bytes[3] == (byte)' ') { return 3; }
-            if (Bytes[4] == (byte)' ') { return 4; }
-            if (Bytes[5] == (byte)' ') { return 5; }
-            if (Bytes[6] == (byte)' ') { return 6; }
-            if (Bytes[7] == (byte)' ') { return 7; }
+            for (var index = Size - 1; index >= 0; index--)
+            {
+                if (Bytes[index] != FillByte)
+                {
+                    return index + 1;
+                }
+            }
 
-            return 8;
+            return 0;
         }
     }
 
     /// <summary>
-    ///  Gets the decoded Symbol value.
+    ///  Security identifier
     /// </summary>
-    public readonly string Value
-        => Decode(this);
-
-    /// <summary>
-    ///  Does Symbol field contain a value?
-    /// </summary>
-    public readonly bool HasValue
+    /// <exception cref="ArgumentException">
+    ///  The encoded text is longer than the field.
+    /// </exception>
+    public string Value
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get { return Bytes[0] != (byte)' '; }
+        readonly get => global::System.Text.Encoding.ASCII.GetString(ValueSpan);
+        set => Encode(value);
     }
 
     /// <summary>
-    ///  Decodes the raw bytes into the Symbol value.
+    ///  Gets the encoded bytes of the text in the Symbol field, without the fill.
     /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string Decode(Symbol value)
-        => new string((sbyte*)value.Bytes, 0, value.Length);
+    [global::System.Diagnostics.CodeAnalysis.UnscopedRef]
+    public readonly ReadOnlySpan<byte> ValueSpan
+        => global::System.Runtime.InteropServices.MemoryMarshal.CreateReadOnlySpan(ref global::System.Runtime.CompilerServices.Unsafe.As<Symbol, byte>(ref global::System.Runtime.CompilerServices.Unsafe.AsRef(in this)), Size)[..Length];
 
     /// <summary>
-    ///  Attempts to read Symbol, returning false if the field is not present.
+    ///  Returns the wire value of the Symbol field.
     /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly bool TryRead(out string value)
-    {
-        if (HasValue)
-        {
-            value = Decode(this);
-            return true;
-        }
-
-        value = string.Empty;
-        return false;
-    }
+    [global::System.Diagnostics.CodeAnalysis.UnscopedRef]
+    public readonly ReadOnlySpan<byte> Decode()
+        => global::System.Runtime.InteropServices.MemoryMarshal.CreateReadOnlySpan(ref global::System.Runtime.CompilerServices.Unsafe.As<Symbol, byte>(ref global::System.Runtime.CompilerServices.Unsafe.AsRef(in this)), Size);
 
     /// <summary>
-    ///  Encodes a value into the underlying Symbol bytes.
+    ///  Writes a value into the Symbol field.
     /// </summary>
+    /// <exception cref="ArgumentException">
+    ///  The encoded text is longer than the field.
+    /// </exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Encode(string value)
     {
-        var length = value.Length;
-        Bytes[0] = length > 0 ? (byte)value[0] : (byte)' ';
-        Bytes[1] = length > 1 ? (byte)value[1] : (byte)' ';
-        Bytes[2] = length > 2 ? (byte)value[2] : (byte)' ';
-        Bytes[3] = length > 3 ? (byte)value[3] : (byte)' ';
-        Bytes[4] = length > 4 ? (byte)value[4] : (byte)' ';
-        Bytes[5] = length > 5 ? (byte)value[5] : (byte)' ';
-        Bytes[6] = length > 6 ? (byte)value[6] : (byte)' ';
-        Bytes[7] = length > 7 ? (byte)value[7] : (byte)' ';
+        var encoding = global::System.Text.Encoding.ASCII;
+        var length = encoding.GetByteCount(value);
+        if (length > Size)
+        {
+            throw new ArgumentException(global::Iex.IexEquities.DeepPlus.IexTp.v1_01.Parser.FieldTextTooLong, nameof(value));
+        }
+        fixed (byte* pointer = Bytes)
+        {
+            var bytes = new Span<byte>(pointer, Size);
+            bytes.Fill(FillByte);
+            encoding.GetBytes(value.AsSpan(), bytes);
+        }
     }
 
     /// <summary>
-    ///  Returns the string representation of the Symbol value.
+    ///  Returns the value of the field as text.
     /// </summary>
     public readonly override string ToString()
         => Value;
 
-    /// <summary>
-    ///  Underlying bytes
-    /// </summary>
     internal fixed byte Bytes[Size];
 }

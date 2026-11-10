@@ -1,8 +1,20 @@
 <Project>
   <PropertyGroup>
-    <Authors>Omi Developers</Authors>
-    <Version>1.64</Version>
+    <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Description>Generated C# parser for Iex Equities Top Of Book IexTp v1.64.</Description>
+    <Version>1.0.0</Version>
     <IsPackable Condition="'$(MSBuildProjectName)' != 'Iex.IexEquities.Tops.IexTp.v1.64'">false</IsPackable>
     <PackageId Condition="'$(MSBuildProjectName)' == 'Iex.IexEquities.Tops.IexTp.v1.64'">Iex.IexEquities.Tops.IexTp.v1.64.Classes</PackageId>
+    <AssemblyName Condition="'$(MSBuildProjectName)' == 'Iex.IexEquities.Tops.IexTp.v1.64'">Iex.IexEquities.Tops.IexTp.v1.64.Classes</AssemblyName>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile Condition="'$(MSBuildProjectName)' == 'Iex.IexEquities.Tops.IexTp.v1.64'">ReadMe.md</PackageReadmeFile>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(MSBuildProjectName)' == 'Iex.IexEquities.Tops.IexTp.v1.64'">
+    <None Include="$(MSBuildThisFileDirectory)ReadMe.md" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+  <PropertyGroup>
+    <RepositoryUrl>https://github.com/Open-Markets-Initiative/omi-csharp-protocols</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Open-Markets-Initiative/omi-csharp-protocols</PackageProjectUrl>
   </PropertyGroup>
 </Project>

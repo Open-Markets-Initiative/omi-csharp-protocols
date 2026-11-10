@@ -1,46 +1,45 @@
 using System.Runtime.CompilerServices;
 
-namespace Iex.IexEquities.DeepPlus.IexTp;
+namespace Iex.IexEquities.DeepPlus.IexTp.v1_01;
 
 /// <summary>
-///  Represents the TradeId field as 8-byte little-endian unsigned integer.
+///  IEX Generated Identifier
 /// </summary>
-
 public struct TradeId
 {
     /// <summary>
-    ///  Size of TradeId in bytes
+    ///  The size of the Trade Id field in bytes.
     /// </summary>
     public const int Size = 8;
 
     /// <summary>
-    ///  Gets the decoded Trade Id value.
+    ///  IEX Generated Identifier
     /// </summary>
-    public readonly ulong Value
-        => Decode();
+    public ulong Value
+    {
+        readonly get => Decode();
+        set => Encode(value);
+    }
 
     /// <summary>
-    ///  Decodes the raw bytes into the Trade Id value.
+    ///  Returns the wire value of the Trade Id field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly ulong Decode()
-        => Underlying;
+        => global::System.Buffers.Binary.BinaryPrimitives.ReadUInt64LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.ReadOnlySpan<ulong>(in Underlying)));
 
     /// <summary>
-    ///  Encodes a value into the underlying Trade Id bytes.
+    ///  Writes an unscaled wire value into the Trade Id field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Encode(ulong value)
-        => Underlying = value;
+        => global::System.Buffers.Binary.BinaryPrimitives.WriteUInt64LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.Span<ulong>(ref Underlying)), value);
 
     /// <summary>
-    ///  Returns the string representation of the Trade Id value.
+    ///  Returns the value of the field as text.
     /// </summary>
     public readonly override string ToString()
-        => $"{Value}";
+        => string.Create(global::System.Globalization.CultureInfo.InvariantCulture, $"{Value}");
 
-    /// <summary>
-    ///  Underlying bytes
-    /// </summary>
     internal ulong Underlying;
 }

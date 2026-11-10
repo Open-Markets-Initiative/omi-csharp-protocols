@@ -1,0 +1,20 @@
+<Project>
+  <PropertyGroup>
+    <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Description>Generated C# parser for Databento Normalized Dbn v2.</Description>
+    <Version>1.0.0</Version>
+    <IsPackable Condition="'$(MSBuildProjectName)' != 'Databento.MarketData.Normalized.Dbn.v2'">false</IsPackable>
+    <PackageId Condition="'$(MSBuildProjectName)' == 'Databento.MarketData.Normalized.Dbn.v2'">Databento.MarketData.Normalized.Dbn.v2.ZeroCopy</PackageId>
+    <AssemblyName Condition="'$(MSBuildProjectName)' == 'Databento.MarketData.Normalized.Dbn.v2'">Databento.MarketData.Normalized.Dbn.v2.ZeroCopy</AssemblyName>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile Condition="'$(MSBuildProjectName)' == 'Databento.MarketData.Normalized.Dbn.v2'">ReadMe.md</PackageReadmeFile>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(MSBuildProjectName)' == 'Databento.MarketData.Normalized.Dbn.v2'">
+    <None Include="$(MSBuildThisFileDirectory)ReadMe.md" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+  <PropertyGroup>
+    <RepositoryUrl>https://github.com/Open-Markets-Initiative/omi-csharp-protocols</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Open-Markets-Initiative/omi-csharp-protocols</PackageProjectUrl>
+  </PropertyGroup>
+</Project>

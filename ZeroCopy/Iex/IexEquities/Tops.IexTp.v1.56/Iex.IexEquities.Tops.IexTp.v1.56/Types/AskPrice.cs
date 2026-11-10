@@ -1,51 +1,69 @@
 using System.Runtime.CompilerServices;
 
-namespace Iex.IexEquities.Tops.IexTp;
+namespace Iex.IexEquities.Tops.IexTp.v1_56;
 
 /// <summary>
-///  Represents the AskPrice field as a fixed-point decimal (8-byte little-endian integer divided by 10000).
+///  Best quoted ask price
 /// </summary>
-
 public struct AskPrice
 {
     /// <summary>
-    ///  Decimal place factor for Ask Price
+    ///  The number by which the wire value of Ask Price is divided to give its value.
     /// </summary>
-    public const long Factor = 10000;
+    public const decimal Factor = 10000m;
+
+    private const string NotMultiple = "The value is not a multiple of 0.0001.";
 
     /// <summary>
-    ///  Size of AskPrice in bytes
+    ///  The size of the Ask Price field in bytes.
     /// </summary>
     public const int Size = 8;
 
     /// <summary>
-    ///  Gets the decoded Ask Price value.
+    ///  Best quoted ask price
     /// </summary>
-    public readonly decimal Value
-        => (decimal)Decode() / Factor;
+    /// <remarks>
+    ///  The value is <see cref="Decode"/> divided by <see cref="Factor"/>.
+    /// </remarks>
+    /// <exception cref="ArgumentException">
+    ///  The value is not a multiple of 0.0001.
+    /// </exception>
+    /// <exception cref="OverflowException">
+    ///  The value does not fit its field.
+    /// </exception>
+    public decimal Value
+    {
+        readonly get => (decimal)Decode() / Factor;
+        set
+        {
+            var units = value * Factor;
+            if (units != decimal.Truncate(units) || units / Factor != value)
+            {
+                throw new ArgumentException(NotMultiple, nameof(value));
+            }
+            Encode(checked((long)units));
+        }
+    }
 
     /// <summary>
-    ///  Decodes the raw bytes into the Ask Price value.
+    ///  Returns the wire value of the Ask Price field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly long Decode()
-        => Underlying;
+        => global::System.Buffers.Binary.BinaryPrimitives.ReadInt64LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.ReadOnlySpan<long>(in Underlying)));
 
     /// <summary>
-    ///  Encodes a value into the underlying Ask Price bytes.
+    ///  Writes an unscaled wire value into the Ask Price field.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Encode(long value)
-        => Underlying = value;
+        => global::System.Buffers.Binary.BinaryPrimitives.WriteInt64LittleEndian(global::System.Runtime.InteropServices.MemoryMarshal.AsBytes(new global::System.Span<long>(ref Underlying)), value);
 
     /// <summary>
-    ///  Returns the string representation of the Ask Price value.
+    ///  Returns the value of the field as text.
     /// </summary>
     public readonly override string ToString()
-        => $"{Value}";
+        => string.Create(global::System.Globalization.CultureInfo.InvariantCulture, $"{Value}");
 
-    /// <summary>
-    ///  Underlying bytes
-    /// </summary>
     internal long Underlying;
 }

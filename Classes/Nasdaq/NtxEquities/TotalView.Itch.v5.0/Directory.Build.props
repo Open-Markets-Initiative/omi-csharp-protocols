@@ -1,0 +1,20 @@
+<Project>
+  <PropertyGroup>
+    <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Description>Generated C# parser for Nasdaq Texas TX TotalView Itch v5.0.</Description>
+    <Version>1.0.0</Version>
+    <IsPackable Condition="'$(MSBuildProjectName)' != 'Nasdaq.NtxEquities.TotalView.Itch.v5.0'">false</IsPackable>
+    <PackageId Condition="'$(MSBuildProjectName)' == 'Nasdaq.NtxEquities.TotalView.Itch.v5.0'">Nasdaq.NtxEquities.TotalView.Itch.v5.0.Classes</PackageId>
+    <AssemblyName Condition="'$(MSBuildProjectName)' == 'Nasdaq.NtxEquities.TotalView.Itch.v5.0'">Nasdaq.NtxEquities.TotalView.Itch.v5.0.Classes</AssemblyName>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile Condition="'$(MSBuildProjectName)' == 'Nasdaq.NtxEquities.TotalView.Itch.v5.0'">ReadMe.md</PackageReadmeFile>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(MSBuildProjectName)' == 'Nasdaq.NtxEquities.TotalView.Itch.v5.0'">
+    <None Include="$(MSBuildThisFileDirectory)ReadMe.md" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+  <PropertyGroup>
+    <RepositoryUrl>https://github.com/Open-Markets-Initiative/omi-csharp-protocols</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Open-Markets-Initiative/omi-csharp-protocols</PackageProjectUrl>
+  </PropertyGroup>
+</Project>
