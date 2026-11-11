@@ -594,12 +594,13 @@ public sealed class BrokenTradeMessage : ISequencedMessage, IEquatable<BrokenTra
             BrokenTradeAppendageCountRule0RawEnd = checked((checked((global::System.Int128)(brokenTradeMessageAppendageLengthValue)) + checked((global::System.Int128)(cursor))));
             if (BrokenTradeAppendageCountRule0RawEnd < cursor || BrokenTradeAppendageCountRule0RawEnd > data.Length) { Fail(ParseStatus.Truncated, FieldName.Appendage, groupStart - start, data[start..]); return; }
             BrokenTradeAppendageCountRule0End = (int)BrokenTradeAppendageCountRule0RawEnd;
+            var brokenTradeAppendageOccurrenceBytes = data[..BrokenTradeAppendageCountRule0End];
             while (cursor < BrokenTradeAppendageCountRule0End)
             {
                 int brokenTradeAppendageEntryStart = cursor;
                 var entry = new BrokenTradeAppendage();
                 var contract = (IGroupEntry)entry;
-                contract.ParseFrom(data[..BrokenTradeAppendageCountRule0End], ref cursor);
+                contract.ParseFrom(brokenTradeAppendageOccurrenceBytes, ref cursor);
                 if (contract.Status != ParseStatus.Ok)
                 {
                     this.appendage = new BrokenTradeAppendageList(entries, contract.Status, entry);

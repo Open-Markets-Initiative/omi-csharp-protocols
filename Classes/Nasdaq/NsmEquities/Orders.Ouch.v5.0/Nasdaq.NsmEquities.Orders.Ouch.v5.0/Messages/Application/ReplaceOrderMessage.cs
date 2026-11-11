@@ -683,12 +683,13 @@ public sealed class ReplaceOrderMessage : IUnsequencedMessage, IEquatable<Replac
             ReplaceOrderAppendageCountRule0RawEnd = checked((checked((global::System.Int128)(replaceOrderMessageAppendageLengthValue)) + checked((global::System.Int128)(cursor))));
             if (ReplaceOrderAppendageCountRule0RawEnd < cursor || ReplaceOrderAppendageCountRule0RawEnd > data.Length) { Fail(ParseStatus.Truncated, FieldName.Appendage, groupStart - start, data[start..]); return; }
             ReplaceOrderAppendageCountRule0End = (int)ReplaceOrderAppendageCountRule0RawEnd;
+            var replaceOrderAppendageOccurrenceBytes = data[..ReplaceOrderAppendageCountRule0End];
             while (cursor < ReplaceOrderAppendageCountRule0End)
             {
                 int replaceOrderAppendageEntryStart = cursor;
                 var entry = new ReplaceOrderAppendage();
                 var contract = (IGroupEntry)entry;
-                contract.ParseFrom(data[..ReplaceOrderAppendageCountRule0End], ref cursor);
+                contract.ParseFrom(replaceOrderAppendageOccurrenceBytes, ref cursor);
                 if (contract.Status != ParseStatus.Ok)
                 {
                     this.appendage = new ReplaceOrderAppendageList(entries, contract.Status, entry);

@@ -505,12 +505,13 @@ public sealed class OrderRestatedMessage : ISequencedMessage, IEquatable<OrderRe
             OrderRestatedAppendageCountRule0RawEnd = checked((checked((global::System.Int128)(orderRestatedMessageAppendageLengthValue)) + checked((global::System.Int128)(cursor))));
             if (OrderRestatedAppendageCountRule0RawEnd < cursor || OrderRestatedAppendageCountRule0RawEnd > data.Length) { Fail(ParseStatus.Truncated, FieldName.Appendage, groupStart - start, data[start..]); return; }
             OrderRestatedAppendageCountRule0End = (int)OrderRestatedAppendageCountRule0RawEnd;
+            var orderRestatedAppendageOccurrenceBytes = data[..OrderRestatedAppendageCountRule0End];
             while (cursor < OrderRestatedAppendageCountRule0End)
             {
                 int orderRestatedAppendageEntryStart = cursor;
                 var entry = new OrderRestatedAppendage();
                 var contract = (IGroupEntry)entry;
-                contract.ParseFrom(data[..OrderRestatedAppendageCountRule0End], ref cursor);
+                contract.ParseFrom(orderRestatedAppendageOccurrenceBytes, ref cursor);
                 if (contract.Status != ParseStatus.Ok)
                 {
                     this.appendage = new OrderRestatedAppendageList(entries, contract.Status, entry);

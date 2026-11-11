@@ -967,12 +967,13 @@ public sealed class ReplacedMessage : ISequencedMessage, IEquatable<ReplacedMess
             ReplacedMessageAppendageCountRule0RawEnd = checked((checked((global::System.Int128)(replacedMessageAppendageLengthValue)) + checked((global::System.Int128)(cursor))));
             if (ReplacedMessageAppendageCountRule0RawEnd < cursor || ReplacedMessageAppendageCountRule0RawEnd > data.Length) { Fail(ParseStatus.Truncated, FieldName.Appendage, groupStart - start, data[start..]); return; }
             ReplacedMessageAppendageCountRule0End = (int)ReplacedMessageAppendageCountRule0RawEnd;
+            var replacedMessageAppendageOccurrenceBytes = data[..ReplacedMessageAppendageCountRule0End];
             while (cursor < ReplacedMessageAppendageCountRule0End)
             {
                 int replacedMessageAppendageEntryStart = cursor;
                 var entry = new ReplacedMessageAppendage();
                 var contract = (IGroupEntry)entry;
-                contract.ParseFrom(data[..ReplacedMessageAppendageCountRule0End], ref cursor);
+                contract.ParseFrom(replacedMessageAppendageOccurrenceBytes, ref cursor);
                 if (contract.Status != ParseStatus.Ok)
                 {
                     this.appendage = new ReplacedMessageAppendageList(entries, contract.Status, entry);

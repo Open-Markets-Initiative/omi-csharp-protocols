@@ -450,12 +450,13 @@ public sealed class CancelOrderMessage : IUnsequencedMessage, IEquatable<CancelO
             CancelOrderAppendageCountRule0RawEnd = checked((checked((global::System.Int128)(cancelOrderMessageAppendageLengthValue)) + checked((global::System.Int128)(cursor))));
             if (CancelOrderAppendageCountRule0RawEnd < cursor || CancelOrderAppendageCountRule0RawEnd > data.Length) { Fail(ParseStatus.Truncated, FieldName.Appendage, groupStart - start, data[start..]); return; }
             CancelOrderAppendageCountRule0End = (int)CancelOrderAppendageCountRule0RawEnd;
+            var cancelOrderAppendageOccurrenceBytes = data[..CancelOrderAppendageCountRule0End];
             while (cursor < CancelOrderAppendageCountRule0End)
             {
                 int cancelOrderAppendageEntryStart = cursor;
                 var entry = new CancelOrderAppendage();
                 var contract = (IGroupEntry)entry;
-                contract.ParseFrom(data[..CancelOrderAppendageCountRule0End], ref cursor);
+                contract.ParseFrom(cancelOrderAppendageOccurrenceBytes, ref cursor);
                 if (contract.Status != ParseStatus.Ok)
                 {
                     this.appendage = new CancelOrderAppendageList(entries, contract.Status, entry);

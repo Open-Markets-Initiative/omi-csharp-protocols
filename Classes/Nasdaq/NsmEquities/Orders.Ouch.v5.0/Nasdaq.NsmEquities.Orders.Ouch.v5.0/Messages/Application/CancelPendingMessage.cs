@@ -481,12 +481,13 @@ public sealed class CancelPendingMessage : ISequencedMessage, IEquatable<CancelP
             CancelPendingAppendageCountRule0RawEnd = checked((checked((global::System.Int128)(cancelPendingMessageAppendageLengthValue)) + checked((global::System.Int128)(cursor))));
             if (CancelPendingAppendageCountRule0RawEnd < cursor || CancelPendingAppendageCountRule0RawEnd > data.Length) { Fail(ParseStatus.Truncated, FieldName.Appendage, groupStart - start, data[start..]); return; }
             CancelPendingAppendageCountRule0End = (int)CancelPendingAppendageCountRule0RawEnd;
+            var cancelPendingAppendageOccurrenceBytes = data[..CancelPendingAppendageCountRule0End];
             while (cursor < CancelPendingAppendageCountRule0End)
             {
                 int cancelPendingAppendageEntryStart = cursor;
                 var entry = new CancelPendingAppendage();
                 var contract = (IGroupEntry)entry;
-                contract.ParseFrom(data[..CancelPendingAppendageCountRule0End], ref cursor);
+                contract.ParseFrom(cancelPendingAppendageOccurrenceBytes, ref cursor);
                 if (contract.Status != ParseStatus.Ok)
                 {
                     this.appendage = new CancelPendingAppendageList(entries, contract.Status, entry);

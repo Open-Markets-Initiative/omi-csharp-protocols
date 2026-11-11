@@ -490,12 +490,13 @@ public sealed class MassCancelRequestMessage : IUnsequencedMessage, IEquatable<M
             MassCancelRequestAppendageCountRule0RawEnd = checked((checked((global::System.Int128)(massCancelRequestMessageAppendageLengthValue)) + checked((global::System.Int128)(cursor))));
             if (MassCancelRequestAppendageCountRule0RawEnd < cursor || MassCancelRequestAppendageCountRule0RawEnd > data.Length) { Fail(ParseStatus.Truncated, FieldName.Appendage, groupStart - start, data[start..]); return; }
             MassCancelRequestAppendageCountRule0End = (int)MassCancelRequestAppendageCountRule0RawEnd;
+            var massCancelRequestAppendageOccurrenceBytes = data[..MassCancelRequestAppendageCountRule0End];
             while (cursor < MassCancelRequestAppendageCountRule0End)
             {
                 int massCancelRequestAppendageEntryStart = cursor;
                 var entry = new MassCancelRequestAppendage();
                 var contract = (IGroupEntry)entry;
-                contract.ParseFrom(data[..MassCancelRequestAppendageCountRule0End], ref cursor);
+                contract.ParseFrom(massCancelRequestAppendageOccurrenceBytes, ref cursor);
                 if (contract.Status != ParseStatus.Ok)
                 {
                     this.appendage = new MassCancelRequestAppendageList(entries, contract.Status, entry);

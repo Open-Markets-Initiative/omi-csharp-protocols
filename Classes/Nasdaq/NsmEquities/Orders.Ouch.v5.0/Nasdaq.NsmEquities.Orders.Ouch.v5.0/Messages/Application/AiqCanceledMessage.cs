@@ -717,12 +717,13 @@ public sealed class AiqCanceledMessage : ISequencedMessage, IEquatable<AiqCancel
             AiqCanceledAppendageCountRule0RawEnd = checked((checked((global::System.Int128)(aiqCanceledMessageAppendageLengthValue)) + checked((global::System.Int128)(cursor))));
             if (AiqCanceledAppendageCountRule0RawEnd < cursor || AiqCanceledAppendageCountRule0RawEnd > data.Length) { Fail(ParseStatus.Truncated, FieldName.Appendage, groupStart - start, data[start..]); return; }
             AiqCanceledAppendageCountRule0End = (int)AiqCanceledAppendageCountRule0RawEnd;
+            var aiqCanceledAppendageOccurrenceBytes = data[..AiqCanceledAppendageCountRule0End];
             while (cursor < AiqCanceledAppendageCountRule0End)
             {
                 int aiqCanceledAppendageEntryStart = cursor;
                 var entry = new AiqCanceledAppendage();
                 var contract = (IGroupEntry)entry;
-                contract.ParseFrom(data[..AiqCanceledAppendageCountRule0End], ref cursor);
+                contract.ParseFrom(aiqCanceledAppendageOccurrenceBytes, ref cursor);
                 if (contract.Status != ParseStatus.Ok)
                 {
                     this.appendage = new AiqCanceledAppendageList(entries, contract.Status, entry);

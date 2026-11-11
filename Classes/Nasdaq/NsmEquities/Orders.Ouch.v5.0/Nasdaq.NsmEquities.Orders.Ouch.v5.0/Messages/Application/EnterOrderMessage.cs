@@ -796,12 +796,13 @@ public sealed class EnterOrderMessage : IUnsequencedMessage, IEquatable<EnterOrd
             EnterOrderAppendageCountRule0RawEnd = checked((checked((global::System.Int128)(enterOrderMessageAppendageLengthValue)) + checked((global::System.Int128)(cursor))));
             if (EnterOrderAppendageCountRule0RawEnd < cursor || EnterOrderAppendageCountRule0RawEnd > data.Length) { Fail(ParseStatus.Truncated, FieldName.Appendage, groupStart - start, data[start..]); return; }
             EnterOrderAppendageCountRule0End = (int)EnterOrderAppendageCountRule0RawEnd;
+            var enterOrderAppendageOccurrenceBytes = data[..EnterOrderAppendageCountRule0End];
             while (cursor < EnterOrderAppendageCountRule0End)
             {
                 int enterOrderAppendageEntryStart = cursor;
                 var entry = new EnterOrderAppendage();
                 var contract = (IGroupEntry)entry;
-                contract.ParseFrom(data[..EnterOrderAppendageCountRule0End], ref cursor);
+                contract.ParseFrom(enterOrderAppendageOccurrenceBytes, ref cursor);
                 if (contract.Status != ParseStatus.Ok)
                 {
                     this.appendage = new EnterOrderAppendageList(entries, contract.Status, entry);

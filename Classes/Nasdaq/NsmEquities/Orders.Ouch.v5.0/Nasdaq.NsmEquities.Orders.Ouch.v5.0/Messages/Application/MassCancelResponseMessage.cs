@@ -556,12 +556,13 @@ public sealed class MassCancelResponseMessage : ISequencedMessage, IEquatable<Ma
             MassCancelResponseAppendageCountRule0RawEnd = checked((checked((global::System.Int128)(massCancelResponseMessageAppendageLengthValue)) + checked((global::System.Int128)(cursor))));
             if (MassCancelResponseAppendageCountRule0RawEnd < cursor || MassCancelResponseAppendageCountRule0RawEnd > data.Length) { Fail(ParseStatus.Truncated, FieldName.Appendage, groupStart - start, data[start..]); return; }
             MassCancelResponseAppendageCountRule0End = (int)MassCancelResponseAppendageCountRule0RawEnd;
+            var massCancelResponseAppendageOccurrenceBytes = data[..MassCancelResponseAppendageCountRule0End];
             while (cursor < MassCancelResponseAppendageCountRule0End)
             {
                 int massCancelResponseAppendageEntryStart = cursor;
                 var entry = new MassCancelResponseAppendage();
                 var contract = (IGroupEntry)entry;
-                contract.ParseFrom(data[..MassCancelResponseAppendageCountRule0End], ref cursor);
+                contract.ParseFrom(massCancelResponseAppendageOccurrenceBytes, ref cursor);
                 if (contract.Status != ParseStatus.Ok)
                 {
                     this.appendage = new MassCancelResponseAppendageList(entries, contract.Status, entry);

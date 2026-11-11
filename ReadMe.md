@@ -35,7 +35,7 @@ Updates are greatly appreciated; however, this entire repository is source gener
 
 | Parser | Protocol Count | Generated Lines |
 | --- | --- | --- |
-| Classes | 18 | 596,125 |
+| Classes | 18 | 596,149 |
 | ZeroCopy | 18 | 354,286 |
 
 ## Testing

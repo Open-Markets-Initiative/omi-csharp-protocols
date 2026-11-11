@@ -380,12 +380,13 @@ public sealed class AccountQueryMessage : IUnsequencedMessage, IEquatable<Accoun
             AccountQueryAppendageCountRule0RawEnd = checked((checked((global::System.Int128)(accountQueryMessageAppendageLengthValue)) + checked((global::System.Int128)(cursor))));
             if (AccountQueryAppendageCountRule0RawEnd < cursor || AccountQueryAppendageCountRule0RawEnd > data.Length) { Fail(ParseStatus.Truncated, FieldName.Appendage, groupStart - start, data[start..]); return; }
             AccountQueryAppendageCountRule0End = (int)AccountQueryAppendageCountRule0RawEnd;
+            var accountQueryAppendageOccurrenceBytes = data[..AccountQueryAppendageCountRule0End];
             while (cursor < AccountQueryAppendageCountRule0End)
             {
                 int accountQueryAppendageEntryStart = cursor;
                 var entry = new AccountQueryAppendage();
                 var contract = (IGroupEntry)entry;
-                contract.ParseFrom(data[..AccountQueryAppendageCountRule0End], ref cursor);
+                contract.ParseFrom(accountQueryAppendageOccurrenceBytes, ref cursor);
                 if (contract.Status != ParseStatus.Ok)
                 {
                     this.appendage = new AccountQueryAppendageList(entries, contract.Status, entry);

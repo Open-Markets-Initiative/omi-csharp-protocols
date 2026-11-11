@@ -559,12 +559,13 @@ public sealed class RejectedOrderMessage : ISequencedMessage, IEquatable<Rejecte
             RejectedOrderAppendageCountRule0RawEnd = checked((checked((global::System.Int128)(rejectedOrderMessageAppendageLengthValue)) + checked((global::System.Int128)(cursor))));
             if (RejectedOrderAppendageCountRule0RawEnd < cursor || RejectedOrderAppendageCountRule0RawEnd > data.Length) { Fail(ParseStatus.Truncated, FieldName.Appendage, groupStart - start, data[start..]); return; }
             RejectedOrderAppendageCountRule0End = (int)RejectedOrderAppendageCountRule0RawEnd;
+            var rejectedOrderAppendageOccurrenceBytes = data[..RejectedOrderAppendageCountRule0End];
             while (cursor < RejectedOrderAppendageCountRule0End)
             {
                 int rejectedOrderAppendageEntryStart = cursor;
                 var entry = new RejectedOrderAppendage();
                 var contract = (IGroupEntry)entry;
-                contract.ParseFrom(data[..RejectedOrderAppendageCountRule0End], ref cursor);
+                contract.ParseFrom(rejectedOrderAppendageOccurrenceBytes, ref cursor);
                 if (contract.Status != ParseStatus.Ok)
                 {
                     this.appendage = new RejectedOrderAppendageList(entries, contract.Status, entry);

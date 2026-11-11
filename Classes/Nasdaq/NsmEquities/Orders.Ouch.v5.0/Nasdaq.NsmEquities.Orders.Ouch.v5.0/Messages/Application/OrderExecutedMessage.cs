@@ -636,12 +636,13 @@ public sealed class OrderExecutedMessage : ISequencedMessage, IEquatable<OrderEx
             OrderExecutedAppendageCountRule0RawEnd = checked((checked((global::System.Int128)(orderExecutedMessageAppendageLengthValue)) + checked((global::System.Int128)(cursor))));
             if (OrderExecutedAppendageCountRule0RawEnd < cursor || OrderExecutedAppendageCountRule0RawEnd > data.Length) { Fail(ParseStatus.Truncated, FieldName.Appendage, groupStart - start, data[start..]); return; }
             OrderExecutedAppendageCountRule0End = (int)OrderExecutedAppendageCountRule0RawEnd;
+            var orderExecutedAppendageOccurrenceBytes = data[..OrderExecutedAppendageCountRule0End];
             while (cursor < OrderExecutedAppendageCountRule0End)
             {
                 int orderExecutedAppendageEntryStart = cursor;
                 var entry = new OrderExecutedAppendage();
                 var contract = (IGroupEntry)entry;
-                contract.ParseFrom(data[..OrderExecutedAppendageCountRule0End], ref cursor);
+                contract.ParseFrom(orderExecutedAppendageOccurrenceBytes, ref cursor);
                 if (contract.Status != ParseStatus.Ok)
                 {
                     this.appendage = new OrderExecutedAppendageList(entries, contract.Status, entry);

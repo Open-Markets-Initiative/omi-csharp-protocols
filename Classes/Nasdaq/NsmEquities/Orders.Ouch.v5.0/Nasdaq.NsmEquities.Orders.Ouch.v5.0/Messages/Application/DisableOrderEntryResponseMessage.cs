@@ -513,12 +513,13 @@ public sealed class DisableOrderEntryResponseMessage : ISequencedMessage, IEquat
             DisableOrderEntryResponseAppendageCountRule0RawEnd = checked((checked((global::System.Int128)(disableOrderEntryResponseMessageAppendageLengthValue)) + checked((global::System.Int128)(cursor))));
             if (DisableOrderEntryResponseAppendageCountRule0RawEnd < cursor || DisableOrderEntryResponseAppendageCountRule0RawEnd > data.Length) { Fail(ParseStatus.Truncated, FieldName.Appendage, groupStart - start, data[start..]); return; }
             DisableOrderEntryResponseAppendageCountRule0End = (int)DisableOrderEntryResponseAppendageCountRule0RawEnd;
+            var disableOrderEntryResponseAppendageOccurrenceBytes = data[..DisableOrderEntryResponseAppendageCountRule0End];
             while (cursor < DisableOrderEntryResponseAppendageCountRule0End)
             {
                 int disableOrderEntryResponseAppendageEntryStart = cursor;
                 var entry = new DisableOrderEntryResponseAppendage();
                 var contract = (IGroupEntry)entry;
-                contract.ParseFrom(data[..DisableOrderEntryResponseAppendageCountRule0End], ref cursor);
+                contract.ParseFrom(disableOrderEntryResponseAppendageOccurrenceBytes, ref cursor);
                 if (contract.Status != ParseStatus.Ok)
                 {
                     this.appendage = new DisableOrderEntryResponseAppendageList(entries, contract.Status, entry);

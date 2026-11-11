@@ -612,12 +612,13 @@ public sealed class OrderPriorityUpdateMessage : ISequencedMessage, IEquatable<O
             OrderPriorityUpdateAppendageCountRule0RawEnd = checked((checked((global::System.Int128)(orderPriorityUpdateMessageAppendageLengthValue)) + checked((global::System.Int128)(cursor))));
             if (OrderPriorityUpdateAppendageCountRule0RawEnd < cursor || OrderPriorityUpdateAppendageCountRule0RawEnd > data.Length) { Fail(ParseStatus.Truncated, FieldName.Appendage, groupStart - start, data[start..]); return; }
             OrderPriorityUpdateAppendageCountRule0End = (int)OrderPriorityUpdateAppendageCountRule0RawEnd;
+            var orderPriorityUpdateAppendageOccurrenceBytes = data[..OrderPriorityUpdateAppendageCountRule0End];
             while (cursor < OrderPriorityUpdateAppendageCountRule0End)
             {
                 int orderPriorityUpdateAppendageEntryStart = cursor;
                 var entry = new OrderPriorityUpdateAppendage();
                 var contract = (IGroupEntry)entry;
-                contract.ParseFrom(data[..OrderPriorityUpdateAppendageCountRule0End], ref cursor);
+                contract.ParseFrom(orderPriorityUpdateAppendageOccurrenceBytes, ref cursor);
                 if (contract.Status != ParseStatus.Ok)
                 {
                     this.appendage = new OrderPriorityUpdateAppendageList(entries, contract.Status, entry);

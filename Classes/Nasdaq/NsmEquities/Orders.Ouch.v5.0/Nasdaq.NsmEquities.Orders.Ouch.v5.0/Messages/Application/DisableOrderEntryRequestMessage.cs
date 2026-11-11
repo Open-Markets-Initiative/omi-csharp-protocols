@@ -447,12 +447,13 @@ public sealed class DisableOrderEntryRequestMessage : IUnsequencedMessage, IEqua
             DisableOrderEntryRequestAppendageCountRule0RawEnd = checked((checked((global::System.Int128)(disableOrderEntryRequestMessageAppendageLengthValue)) + checked((global::System.Int128)(cursor))));
             if (DisableOrderEntryRequestAppendageCountRule0RawEnd < cursor || DisableOrderEntryRequestAppendageCountRule0RawEnd > data.Length) { Fail(ParseStatus.Truncated, FieldName.Appendage, groupStart - start, data[start..]); return; }
             DisableOrderEntryRequestAppendageCountRule0End = (int)DisableOrderEntryRequestAppendageCountRule0RawEnd;
+            var disableOrderEntryRequestAppendageOccurrenceBytes = data[..DisableOrderEntryRequestAppendageCountRule0End];
             while (cursor < DisableOrderEntryRequestAppendageCountRule0End)
             {
                 int disableOrderEntryRequestAppendageEntryStart = cursor;
                 var entry = new DisableOrderEntryRequestAppendage();
                 var contract = (IGroupEntry)entry;
-                contract.ParseFrom(data[..DisableOrderEntryRequestAppendageCountRule0End], ref cursor);
+                contract.ParseFrom(disableOrderEntryRequestAppendageOccurrenceBytes, ref cursor);
                 if (contract.Status != ParseStatus.Ok)
                 {
                     this.appendage = new DisableOrderEntryRequestAppendageList(entries, contract.Status, entry);

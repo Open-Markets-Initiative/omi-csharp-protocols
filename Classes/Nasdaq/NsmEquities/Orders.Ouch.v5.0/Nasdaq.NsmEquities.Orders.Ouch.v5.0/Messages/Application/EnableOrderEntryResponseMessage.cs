@@ -513,12 +513,13 @@ public sealed class EnableOrderEntryResponseMessage : ISequencedMessage, IEquata
             EnableOrderEntryResponseAppendageCountRule0RawEnd = checked((checked((global::System.Int128)(enableOrderEntryResponseMessageAppendageLengthValue)) + checked((global::System.Int128)(cursor))));
             if (EnableOrderEntryResponseAppendageCountRule0RawEnd < cursor || EnableOrderEntryResponseAppendageCountRule0RawEnd > data.Length) { Fail(ParseStatus.Truncated, FieldName.Appendage, groupStart - start, data[start..]); return; }
             EnableOrderEntryResponseAppendageCountRule0End = (int)EnableOrderEntryResponseAppendageCountRule0RawEnd;
+            var enableOrderEntryResponseAppendageOccurrenceBytes = data[..EnableOrderEntryResponseAppendageCountRule0End];
             while (cursor < EnableOrderEntryResponseAppendageCountRule0End)
             {
                 int enableOrderEntryResponseAppendageEntryStart = cursor;
                 var entry = new EnableOrderEntryResponseAppendage();
                 var contract = (IGroupEntry)entry;
-                contract.ParseFrom(data[..EnableOrderEntryResponseAppendageCountRule0End], ref cursor);
+                contract.ParseFrom(enableOrderEntryResponseAppendageOccurrenceBytes, ref cursor);
                 if (contract.Status != ParseStatus.Ok)
                 {
                     this.appendage = new EnableOrderEntryResponseAppendageList(entries, contract.Status, entry);
